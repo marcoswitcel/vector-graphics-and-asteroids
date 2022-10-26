@@ -1,0 +1,5 @@
+
+# dependências
+node_modules
+# builds
+public/dist

@@ -1,0 +1,15 @@
+{
+  "name": "vector-graphics-and-asteroids",
+  "version": "1.0.0",
+  "description": "Projeto para prática de geometria e gráficos vetoriais",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -w"
+  },
+  "author": "João Witcel",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.8.4"
+  }
+}
