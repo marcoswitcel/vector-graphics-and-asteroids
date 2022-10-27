@@ -1,12 +1,7 @@
 import { drawPolygon, makePolygonWithAbsolutePosition, Vector2 } from "./draw.js";
+import { createCanvas } from "./utils.js";
 
-const canvas = document.createElement('canvas');
-
-document.body.appendChild(canvas);
-
-canvas.width = 500;
-canvas.height = 500;
-
+const canvas = createCanvas(500, 500, document.body);
 const ctx = canvas.getContext('2d');
 
 if (ctx === null) throw 'Contexto nulo';
