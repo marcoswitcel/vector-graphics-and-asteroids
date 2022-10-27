@@ -4,6 +4,13 @@ export type Vector2 = {
     y: number
 };
 
+export function scalePolygon(polygon: readonly Vector2[], factor: number) : Vector2[] {
+    return polygon.map(point => ({
+        x: point.x * factor,
+        y: point.y * factor,
+    }));
+}
+
 export function makePolygonWithAbsolutePosition(position: Vector2, polygon: readonly Vector2[]): Vector2[] {
     return polygon.map(point => ({
         x: position.x + point.x,
@@ -13,14 +20,15 @@ export function makePolygonWithAbsolutePosition(position: Vector2, polygon: read
 
 export function drawPolygon(ctx: CanvasRenderingContext2D, polygon: readonly Vector2[]) {
     let point: Vector2 = polygon[0];
+    const { width, height } = ctx.canvas;
     ctx.beginPath();
-    ctx.moveTo(point.x, point.y);
+    ctx.moveTo((point.x+1)/2 * width, height - (point.y+1)/2 * height);
     for (let i = 1; i < polygon.length; i++) {
         point = polygon[i];
-        ctx.lineTo(point.x, point.y);
+        ctx.lineTo((point.x+1)/2 * width, height - (point.y+1)/2 * height);
     }
     point = polygon[0];
-    ctx.lineTo(point.x, point.y);
+    ctx.lineTo((point.x+1)/2 * width, height - (point.y+1)/2 * height);
     ctx.closePath();
     ctx.lineWidth = 1;
     ctx.strokeStyle = '#FFFFFF';
