@@ -11,6 +11,18 @@ export function scalePolygon(polygon: readonly Vector2[], xScaleFactor: number, 
     }));
 }
 
+export function rotatePolygon(polygon: readonly Vector2[], angle: number): Vector2[] {
+    const sin = Math.sin(angle);
+    const cos = Math.cos(angle);
+
+    return polygon.map(point => {
+        return {
+            x: point.x * cos - point.y * sin,
+            y: point.x * sin + point.y * cos
+        };
+    })
+}
+
 export function makePolygonWithAbsolutePosition(position: Vector2, polygon: readonly Vector2[]): Vector2[] {
     return polygon.map(point => ({
         x: position.x + point.x,
