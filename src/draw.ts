@@ -4,10 +4,10 @@ export type Vector2 = {
     y: number
 };
 
-export function scalePolygon(polygon: readonly Vector2[], factor: number) : Vector2[] {
+export function scalePolygon(polygon: readonly Vector2[], xScaleFactor: number, yScaleFactor = xScaleFactor) : Vector2[] {
     return polygon.map(point => ({
-        x: point.x * factor,
-        y: point.y * factor,
+        x: point.x * xScaleFactor,
+        y: point.y * yScaleFactor,
     }));
 }
 

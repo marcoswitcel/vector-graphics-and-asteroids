@@ -26,6 +26,8 @@ drawPolygon(ctx, makePolygonWithAbsolutePosition({ x: -0.5, y: 0.75 }, scalePoly
 
 drawPolygon(ctx, makePolygonWithAbsolutePosition({ x: -0.5, y: -0.5 }, scalePolygon(polygon, 0.5)));
 
+drawPolygon(ctx, makePolygonWithAbsolutePosition({ x: 0, y: 0 }, scalePolygon(polygon, 0.25, 0.45)));
+
 const eventLoop = new EventLoop();
 
 eventLoop.add((time: number) => {
