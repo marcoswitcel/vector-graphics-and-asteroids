@@ -1,4 +1,4 @@
-import { drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
+import { drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
 import { Entity } from "./entity.js";
 import { EventLoop } from "./event-loop.js";
 import { KeyBoardInput } from "./keyboard-input.js";
@@ -30,10 +30,10 @@ eventLoop.add((time: number) => {
         entity.velocity.y -= entity.acceleration.y;
     }
     if (keyBoardInput.isKeyPressed('d')) {
-        entity.acceleration = rotatePoint(entity.acceleration, -0.01);
+        entity.acceleration = rotatePoint(entity.acceleration, -0.02);
     }
     if (keyBoardInput.isKeyPressed('a')) {
-        entity.acceleration = rotatePoint(entity.acceleration, 0.01);
+        entity.acceleration = rotatePoint(entity.acceleration, 0.02);
     }
     entity.position.x += entity.velocity.x;
     entity.position.y += entity.velocity.y;
@@ -45,6 +45,13 @@ eventLoop.add((time: number) => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, scalePolygon(polygon, 0.05)));
+
+    // @todo João, organizar informação visual de debug
+    const endPosition = {
+        x: entity.position.x + entity.acceleration.x * 2000,
+        y: entity.position.y + entity.acceleration.y * 2000,
+    };
+    drawLine(ctx, entity.position, endPosition);
 });
 
 eventLoop.start();

@@ -56,3 +56,12 @@ export function drawPolygon(ctx: CanvasRenderingContext2D, polygon: readonly Vec
     ctx.strokeStyle = '#FFFFFF';
     ctx.stroke();
 }
+
+export function drawLine(ctx: CanvasRenderingContext2D, pointA: Vector2, pointB: Vector2) {
+    const { width, height } = ctx.canvas;
+    ctx.moveTo((pointA.x+1)/2 * width, height - (pointA.y+1)/2 * height);
+    ctx.lineTo((pointB.x+1)/2 * width, height - (pointB.y+1)/2 * height);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.stroke();
+}
