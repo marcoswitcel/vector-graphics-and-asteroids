@@ -15,7 +15,7 @@ const polygon: Vector2[] = [
     { x: 1, y: -1 },
     { x: -1, y: -1 },
 ];
-const entity = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0.0001 });
+const entity = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0.0001 }, 0);
 
 const eventLoop = new EventLoop();
 const keyBoardInput = new KeyBoardInput({ autoStart: true });
@@ -30,10 +30,12 @@ eventLoop.add((time: number) => {
         entity.velocity.y -= entity.acceleration.y;
     }
     if (keyBoardInput.isKeyPressed('d')) {
-        entity.acceleration = rotatePoint(entity.acceleration, -0.02);
+        entity.acceleration = rotatePoint(entity.acceleration, -0.04);
+        entity.angle += -0.04
     }
     if (keyBoardInput.isKeyPressed('a')) {
-        entity.acceleration = rotatePoint(entity.acceleration, 0.02);
+        entity.acceleration = rotatePoint(entity.acceleration, 0.04);
+        entity.angle += 0.04
     }
     entity.position.x += entity.velocity.x;
     entity.position.y += entity.velocity.y;
@@ -44,7 +46,7 @@ eventLoop.add((time: number) => {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, scalePolygon(polygon, 0.05)));
+    drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(polygon, 0.05), entity.angle)));
 
     // @todo João, organizar informação visual de debug
     const endPosition = {
