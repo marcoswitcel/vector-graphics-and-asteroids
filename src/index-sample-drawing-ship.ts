@@ -9,7 +9,7 @@ const ctx = canvas.getContext('2d');
 
 if (ctx === null) throw 'Contexto nulo';
 
-// @todo João, definir o formato para trabalhar com os polígonos
+// @todo João, adicionar animação do propulsor
 const polygon: Vector2[] = [
     { x: 0, y: 0.8 },
     { x: 0.8, y: -0.6 },
