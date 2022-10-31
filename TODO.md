@@ -9,6 +9,8 @@
 - [ ] Implementar e organizar um sistema que permita gerenciar as entidades do jogo/simulação.
 - [ ] Implementar/estudar melhor forma de implementar a renderização de animações e figuras compostas de várias formas animadas.
 - [ ] Projetar a nave e asteroides, animar as chamas da nave. Deixar uma pequena cena com a nave pilotável, uma pequena cena asteroides de diversos tamanhos (diversas figuras de asteroides também), se possível clicável e com os asteroides se dividindo em partes menores.
+- [ ] Implementar a funcionalidade de emissão de "projéteis" a partir da nave.
+- [ ] Implementar um sistema de colisão rudimentar para permitir acionar o efeito de fragmentação e ou destruição dos asteroides.
 
 
 ## Ideias para o futuro
