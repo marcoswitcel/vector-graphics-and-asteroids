@@ -17,7 +17,7 @@ const polygon: Vector2[] = [
     { x: -0.4, y: -0.4 },
     { x: -0.8, y: -0.6 },
 ];
-const entity = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0.0001 });
+const entity = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0.0001 }, 0);
 
 const eventLoop = new EventLoop();
 const keyBoardInput = new KeyBoardInput({ autoStart: true });
