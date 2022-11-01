@@ -47,8 +47,12 @@ eventLoop.add((time: number) => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(polygon, 0.05), entity.angle)));
+});
 
-    // @todo João, organizar informação visual de debug
+// Renderiza informação visual de debug
+eventLoop.add((time: number) => {
+    // @todo João, adicionar botão para habilitar desabilitar dados de debug
+    // @todo João, implementar suporte a "deteção" de keydown e keyup
     const endPosition = {
         x: entity.position.x + entity.acceleration.x * 2000,
         y: entity.position.y + entity.acceleration.y * 2000,
