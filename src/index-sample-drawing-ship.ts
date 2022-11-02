@@ -23,25 +23,70 @@ const triangulo: Vector2[] = [
     { x: -1, y: -1 },
 ];
 const entity = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0.0001 }, 0);
+const shipStandingFigure = new ComplexShape([
+    new Shape(polygon),
+], [
+    new DrawInfo({ x: 0, y:0 }, 1, 0),
+]);
+const shipForwardFigure = new ComplexShape([
+    new Shape(polygon),
+    new Shape(triangulo),
+    new Shape(triangulo),
+], [
+    new DrawInfo({ x: 0, y:0 }, 1, 0),
+    new DrawInfo({ x: -0.25, y: -0.55 }, 0.15, 3.14),
+    new DrawInfo({ x: 0.25, y: -0.55 }, 0.15, 3.14),
+]);
+const shipBackwardsFigure = new ComplexShape([
+    new Shape(polygon),
+    new Shape(triangulo),
+    new Shape(triangulo),
+], [
+    new DrawInfo({ x: 0, y:0 }, 1, 0),
+    new DrawInfo({ x: -0.25, y: -0.55 }, 0.15, 0),
+    new DrawInfo({ x: 0.25, y: -0.55 }, 0.15, 0),
+]);
 
 const eventLoop = new EventLoop();
 const keyBoardInput = new KeyBoardInput({ autoStart: true });
+let moving = false;
+let forward = false;
+
+eventLoop.add((time: number) => {
+    if (keyBoardInput.isKeyPressed('w')) {
+        entity.velocity.x += entity.acceleration.x;
+        entity.velocity.y += entity.acceleration.y;
+        moving = true;
+        forward = true;
+    }
+    if (keyBoardInput.isKeyPressed('s')) {
+        entity.velocity.x -= entity.acceleration.x;
+        entity.velocity.y -= entity.acceleration.y;
+        moving = true;
+        forward = false;
+    }
+    if (keyBoardInput.isKeyPressed('d')) {
+        entity.acceleration = rotatePoint(entity.acceleration, -0.04);
+        entity.angle += -0.04
+    }
+    if (keyBoardInput.isKeyPressed('a')) {
+        entity.acceleration = rotatePoint(entity.acceleration, 0.04);
+        entity.angle += 0.04
+    }
+    entity.position.x += entity.velocity.x;
+    entity.position.y += entity.velocity.y;
+});
 
 // Renderiza
 eventLoop.add((time: number) => {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const complexShape = new ComplexShape([
-        new Shape(polygon),
-        new Shape(triangulo),
-        new Shape(triangulo),
-    ], [
-        new DrawInfo({ x: 0, y:0 }, 1, 0),
-        new DrawInfo({ x: -0.25, y: -0.55 }, 0.15, 3.14),
-        new DrawInfo({ x: 0.25, y: -0.55 }, 0.15, 3.14),
-    ]);
-    drawComplexShape(ctx, complexShape, { x: 0, y: 0 }, 1, 0);
+    if (moving) {
+        drawComplexShape(ctx, ((forward) ? shipForwardFigure : shipBackwardsFigure), entity.position, 0.2, entity.angle);
+    } else {
+        drawComplexShape(ctx, shipStandingFigure, entity.position, 0.2, entity.angle);
+    }
 });
 
 eventLoop.start();
