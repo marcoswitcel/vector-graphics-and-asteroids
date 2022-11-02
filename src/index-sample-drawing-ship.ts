@@ -1,4 +1,4 @@
-import { drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
+import { ComplexShape, drawComplexShape, DrawInfo, drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Shape, Vector2 } from "./draw.js";
 import { Entity } from "./entity.js";
 import { EventLoop } from "./event-loop.js";
 import { KeyBoardInput } from "./keyboard-input.js";
@@ -17,6 +17,11 @@ const polygon: Vector2[] = [
     { x: -0.4, y: -0.4 },
     { x: -0.8, y: -0.6 },
 ];
+const triangulo: Vector2[] = [
+    { x: 0, y: 1 },
+    { x: 1, y: -1 },
+    { x: -1, y: -1 },
+];
 const entity = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0.0001 }, 0);
 
 const eventLoop = new EventLoop();
@@ -27,7 +32,16 @@ eventLoop.add((time: number) => {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, scalePolygon(polygon, 1)));
+    const complexShape = new ComplexShape([
+        new Shape(polygon),
+        new Shape(triangulo),
+        new Shape(triangulo),
+    ], [
+        new DrawInfo({ x: 0, y:0 }, 1, 0),
+        new DrawInfo({ x: -0.25, y: -0.55 }, 0.15, 3.14),
+        new DrawInfo({ x: 0.25, y: -0.55 }, 0.15, 3.14),
+    ]);
+    drawComplexShape(ctx, complexShape, { x: 0, y: 0 }, 1, 0);
 });
 
 eventLoop.start();
