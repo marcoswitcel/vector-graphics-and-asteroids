@@ -53,17 +53,20 @@ let moving = false;
 let forward = false;
 
 eventLoop.add((time: number) => {
-    if (keyBoardInput.isKeyPressed('w')) {
+    if (keyBoardInput.areBothKeysPressed('w', 's')) {
+        moving = false;
+    } else if (keyBoardInput.isKeyPressed('w')) {
         entity.velocity.x += entity.acceleration.x;
         entity.velocity.y += entity.acceleration.y;
         moving = true;
         forward = true;
-    }
-    if (keyBoardInput.isKeyPressed('s')) {
+    } else if (keyBoardInput.isKeyPressed('s')) {
         entity.velocity.x -= entity.acceleration.x;
         entity.velocity.y -= entity.acceleration.y;
         moving = true;
         forward = false;
+    } else {
+        moving = false;
     }
     if (keyBoardInput.isKeyPressed('d')) {
         entity.acceleration = rotatePoint(entity.acceleration, -0.04);
