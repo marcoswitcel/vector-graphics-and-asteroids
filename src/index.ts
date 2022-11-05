@@ -19,6 +19,11 @@ const entity = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0.0001 }, 0
 
 const eventLoop = new EventLoop();
 const keyBoardInput = new KeyBoardInput({ autoStart: true });
+let debug = false;
+
+keyBoardInput.addListener('keydown.1', () => {
+    debug = !debug;
+}); 
 
 eventLoop.add((time: number) => {
     if (keyBoardInput.isKeyPressed('w')) {
@@ -51,8 +56,8 @@ eventLoop.add((time: number) => {
 
 // Renderiza informação visual de debug
 eventLoop.add((time: number) => {
-    // @todo João, adicionar botão para habilitar desabilitar dados de debug
-    // @todo João, implementar suporte a "deteção" de keydown e keyup
+    if (!debug) return;
+    
     const endPosition = {
         x: entity.position.x + entity.acceleration.x * 2000,
         y: entity.position.y + entity.acceleration.y * 2000,
