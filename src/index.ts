@@ -16,8 +16,9 @@ const polygon: Vector2[] = [
     { x: 1, y: -1 },
     { x: -1, y: -1 },
 ];
-const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0.0001 }, 0);
-const asteroid = new Entity({ x: 0.75, y: 0.75 }, { x: 0, y: 0 }, { x: 0, y: 0.0001 }, 0);
+const playerAcceleration = { x: 0, y: 0.0001 };
+const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0);
+const asteroid = new Entity({ x: 0.75, y: 0.75 }, { x: -0.005, y: -0.009 }, { x: 0, y: 0 }, 0);
 const entities = [ entityPlayer, asteroid ];
 
 const eventLoop = new EventLoop();
@@ -29,26 +30,49 @@ keyBoardInput.addListener('keyup.1', () => {
 }); 
 
 eventLoop.add((time: number) => {
-    if (keyBoardInput.isKeyPressed('w')) {
-        entityPlayer.velocity.x += entityPlayer.acceleration.x;
-        entityPlayer.velocity.y += entityPlayer.acceleration.y;
-    }
-    if (keyBoardInput.isKeyPressed('s')) {
-        entityPlayer.velocity.x -= entityPlayer.acceleration.x;
-        entityPlayer.velocity.y -= entityPlayer.acceleration.y;
-    }
     if (keyBoardInput.isKeyPressed('d')) {
-        entityPlayer.acceleration = rotatePoint(entityPlayer.acceleration, -0.04);
         entityPlayer.angle += -0.04
     }
     if (keyBoardInput.isKeyPressed('a')) {
-        entityPlayer.acceleration = rotatePoint(entityPlayer.acceleration, 0.04);
         entityPlayer.angle += 0.04
     }
+    
+    if (keyBoardInput.areBothKeysPressed('w', 's')) {
+        entityPlayer.acceleration.x = 0;
+        entityPlayer.acceleration.y = 0;
+    } else  if (keyBoardInput.isKeyPressed('w')) {
+        entityPlayer.acceleration = rotatePoint(playerAcceleration, entityPlayer.angle);
+    } else if (keyBoardInput.isKeyPressed('s')) {
+        entityPlayer.acceleration = rotatePoint(playerAcceleration, entityPlayer.angle);
+        entityPlayer.acceleration.x *= -1;
+        entityPlayer.acceleration.y *= -1;
+    } else {
+        entityPlayer.acceleration.x = 0;
+        entityPlayer.acceleration.y = 0;
+    }
+});
 
+eventLoop.add((time: number) => {
     for (const entity of entities) {
+        // computando velocidade
+        entity.velocity.x += entity.acceleration.x;
+        entity.velocity.y += entity.acceleration.y;
+
+        // computando nova posição
         entity.position.x += entity.velocity.x;
         entity.position.y += entity.velocity.y;
+
+        // limitando o espaço e fazendo o efeito de "sair do outro lado da tela"
+        const xAbs = Math.abs(entity.position.x)
+        if (xAbs > 1) {
+            const diff = xAbs - 1;
+            entity.position.x = (xAbs - 2 * diff) * (entity.position.x / xAbs * -1);
+        }
+        const yAbs = Math.abs(entity.position.y)
+        if (yAbs > 1) {
+            const diff = yAbs - 1;
+            entity.position.y = (yAbs - 2 * diff) * (entity.position.y / yAbs * -1);
+        }
     }
 });
 
