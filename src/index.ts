@@ -21,7 +21,7 @@ const eventLoop = new EventLoop();
 const keyBoardInput = new KeyBoardInput({ autoStart: true });
 let debug = false;
 
-keyBoardInput.addListener('keydown.1', () => {
+keyBoardInput.addListener('keyup.1', () => {
     debug = !debug;
 }); 
 
