@@ -17,16 +17,29 @@ const polygon: Vector2[] = [
     { x: -1, y: -1 },
 ];
 const playerAcceleration = { x: 0, y: 0.0001 };
-const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0);
-const asteroid = new Entity({ x: 0.75, y: 0.75 }, { x: -0.005, y: -0.009 }, { x: 0, y: 0 }, 0);
+const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player');
+const asteroid = new Entity({ x: 0.75, y: 0.75 }, { x: -0.005, y: -0.009 }, { x: 0, y: 0 }, 0, 'asteroids');
 const entities = [ entityPlayer, asteroid ];
+let shootWaitingToBeEmmited = false;
 
 const eventLoop = new EventLoop();
 const keyBoardInput = new KeyBoardInput({ autoStart: true });
 let debug = false;
 
+const emmitShoot = (player: Entity, entities: Entity[]) => {
+    const radius = rotatePoint({ x: 0, y: 0.03 }, entityPlayer.angle);
+    const position = { x: player.position.x + radius.x, y: player.position.y + radius.y };
+    const velocity = rotatePoint({ x: 0, y: 0.02 }, entityPlayer.angle);
+    const shootEntity = new Entity(position, velocity, { x: 0, y: 0 }, player.angle, 'shoot');
+    entities.push(shootEntity);
+}
+
 keyBoardInput.addListener('keyup.1', () => {
     debug = !debug;
+});
+
+keyBoardInput.addListener('keyup. ', () => {
+    shootWaitingToBeEmmited = true;
 }); 
 
 eventLoop.add((time: number) => {
@@ -49,6 +62,11 @@ eventLoop.add((time: number) => {
     } else {
         entityPlayer.acceleration.x = 0;
         entityPlayer.acceleration.y = 0;
+    }
+
+    if (shootWaitingToBeEmmited) {
+        emmitShoot(entityPlayer, entities);
+        shootWaitingToBeEmmited = false;
     }
 });
 
@@ -82,8 +100,21 @@ eventLoop.add((time: number) => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     for (const entity of entities) {
-        if (entity === entityPlayer) drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(polygon, 0.05), entity.angle)));
-        else drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), 0.05), entity.angle)));
+        if (entity === entityPlayer) {
+            drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(polygon, 0.05), entity.angle)));
+        } else if (entity.type === 'shoot') {
+            const startPosition = {
+                x: entity.position.x + entity.velocity.x * -0.75,
+                y: entity.position.y + entity.velocity.y * -0.75,
+            };
+            const endPosition = {
+                x: entity.position.x + entity.velocity.x * 0.75,
+                y: entity.position.y + entity.velocity.y * 0.75,
+            };
+            drawLine(ctx, startPosition, endPosition);
+        } else {
+            drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), 0.05), entity.angle)));
+        }
     }
 });
 
