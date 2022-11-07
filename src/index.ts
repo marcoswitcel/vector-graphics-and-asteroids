@@ -1,4 +1,4 @@
-import { drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
+import { drawCircle, drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
 import { Entity } from "./entity.js";
 import { EventLoop } from "./event-loop.js";
 import { makeAsteroid } from "./figure.js";
@@ -17,14 +17,15 @@ const polygon: Vector2[] = [
     { x: -1, y: -1 },
 ];
 const playerAcceleration = { x: 0, y: 0.0001 };
-const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player');
-const asteroid = new Entity({ x: 0.75, y: 0.75 }, { x: -0.005, y: -0.009 }, { x: 0, y: 0 }, 0, 'asteroids');
+const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.08);
+const asteroid = new Entity({ x: 0.75, y: 0.75 }, { x: -0.005, y: -0.009 }, { x: 0, y: 0 }, 0, 'asteroids', 0.08);
 const entities = [ entityPlayer, asteroid ];
 let shootWaitingToBeEmmited = false;
 
 const eventLoop = new EventLoop();
 const keyBoardInput = new KeyBoardInput({ autoStart: true });
 let debug = false;
+let debugHitRadius = false;
 
 const emmitShoot = (player: Entity, entities: Entity[]) => {
     const radius = rotatePoint({ x: 0, y: 0.03 }, entityPlayer.angle);
@@ -36,6 +37,9 @@ const emmitShoot = (player: Entity, entities: Entity[]) => {
 
 keyBoardInput.addListener('keyup.1', () => {
     debug = !debug;
+});
+keyBoardInput.addListener('keyup.2', () => {
+    debugHitRadius = !debugHitRadius;
 });
 
 keyBoardInput.addListener('keyup. ', () => {
@@ -114,6 +118,17 @@ eventLoop.add((time: number) => {
             drawLine(ctx, startPosition, endPosition);
         } else {
             drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), 0.05), entity.angle)));
+        }
+    }
+});
+
+// Renderiza informação visual da área de hit
+eventLoop.add((time: number) => {
+    if (!debugHitRadius) return;
+    
+    for (const entity of entities) {
+        if (entity.hitRadius) {
+            drawCircle(ctx, entity.position, entity.hitRadius, '#FF0000');
         }
     }
 });

@@ -66,6 +66,15 @@ export function drawLine(ctx: CanvasRenderingContext2D, pointA: Vector2, pointB:
     ctx.stroke();
 }
 
+export function drawCircle(ctx: CanvasRenderingContext2D, position: Vector2, radius: number, strokeStyle = '#FFFFFF') {
+    const { width, height } = ctx.canvas;
+    ctx.beginPath();
+    ctx.arc((position.x+1)/2 * width, height - (position.y+1)/2 * height, radius * width / 2, 0, 2 * Math.PI)
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = strokeStyle;
+    ctx.stroke();
+}
+
 export class Shape {
     public polygon: readonly Vector2[];
 
