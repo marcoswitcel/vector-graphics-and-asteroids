@@ -17,3 +17,4 @@
 
 - [ ] Implementar o efeito de iluminação parecido com o dos arcades para o processo de renderização dos gráficos vetoriais.
 - [ ] sistema de som e sons para a simulação
+- [ ] Achar algum meio para distribuir os asteroides de forma "randômica"
