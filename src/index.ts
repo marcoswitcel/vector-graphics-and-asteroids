@@ -1,5 +1,5 @@
 import { drawCircle, drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
-import { Entity } from "./entity.js";
+import { Entity, createdAtTimestamp } from "./entity.js";
 import { EventLoop } from "./event-loop.js";
 import { makeAsteroid } from "./figure.js";
 import { KeyBoardInput } from "./keyboard-input.js";
@@ -19,7 +19,7 @@ const polygon: Vector2[] = [
 const playerAcceleration = { x: 0, y: 0.0001 };
 const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.08);
 const asteroid = new Entity({ x: 0.75, y: 0.75 }, { x: -0.005, y: -0.009 }, { x: 0, y: 0 }, 0, 'asteroids', 0.08);
-const entities = [ entityPlayer, asteroid ];
+let entities = [ entityPlayer, asteroid ];
 let shootWaitingToBeEmmited = false;
 const primaryWhite = '#FFFFFF';
 const secondaryWhite = 'rgba(255,255,255,0.7)';
@@ -29,11 +29,13 @@ const keyBoardInput = new KeyBoardInput({ autoStart: true });
 let debug = false;
 let debugHitRadius = false;
 
+
 const emmitShoot = (player: Entity, entities: Entity[]) => {
     const radius = rotatePoint({ x: 0, y: 0.03 }, entityPlayer.angle);
     const position = { x: player.position.x + radius.x, y: player.position.y + radius.y };
     const velocity = rotatePoint({ x: 0, y: 0.02 }, entityPlayer.angle);
     const shootEntity = new Entity(position, velocity, { x: 0, y: 0 }, player.angle, 'shoot');
+    shootEntity.components[createdAtTimestamp] = Date.now();
     entities.push(shootEntity);
 }
 
@@ -74,6 +76,13 @@ eventLoop.add((time: number) => {
         emmitShoot(entityPlayer, entities);
         shootWaitingToBeEmmited = false;
     }
+});
+
+eventLoop.add((time: number) => {
+    const now = Date.now();
+    entities = entities.filter(entity => {
+        return !(entity.components[createdAtTimestamp] && now - entity.components[createdAtTimestamp] > 1500);
+    })
 });
 
 eventLoop.add((time: number) => {
