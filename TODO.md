@@ -5,12 +5,14 @@
 - [X] Analisar e escolher um sistema de coordenada para posicionar os elementos (sistema cartesiano com restrição de espaço visível entre -1 e 1 nos dois eixos, -1 para 1 da esquerda para direita e -1 para 1 de baixo para cima, o centro é descrito como o vetor (0,0) ).
 - [X] Representar e desenhar polígonos.
 - [X] Implementar funções de rotação, escalonamento e outras distorções para aplicar nos polígonos.
-- [x] Implementar o sistema básico de física e input e testá-los em conjunto.
+- [X] Implementar o sistema básico de física e input e testá-los em conjunto.
+- [X] Implementar a funcionalidade de emissão de "projéteis" a partir da nave.
+- [ ] Implementar um sistema de colisão rudimentar para permitir acionar o efeito de fragmentação e ou destruição dos asteroides.
+- [ ] Criar e implementar o efeito/algoritmo de fragmentação dos asteroides.
+- [ ] Criar e implementar as funcionalidades e efeitos envolvidos em converter a forma da nave em linhas e criar entidades para que cada linha possa sair flutuando após a fragmentação da nave, ou fragmentação do asteroide que não pode mais ser partidos.  
 - [ ] Implementar e organizar um sistema que permita gerenciar as entidades do jogo/simulação.
 - [ ] Implementar/estudar melhor forma de implementar a renderização de animações e figuras compostas de várias formas animadas.
 - [ ] Projetar a nave e asteroides, animar as chamas da nave. Deixar uma pequena cena com a nave pilotável, uma pequena cena asteroides de diversos tamanhos (diversas figuras de asteroides também), se possível clicável e com os asteroides se dividindo em partes menores.
-- [ ] Implementar a funcionalidade de emissão de "projéteis" a partir da nave.
-- [ ] Implementar um sistema de colisão rudimentar para permitir acionar o efeito de fragmentação e ou destruição dos asteroides.
 
 
 ## Ideias para o futuro
