@@ -40,7 +40,7 @@ export function makePolygonWithAbsolutePosition(position: Vector2, polygon: read
     }));
 }
 
-export function drawPolygon(ctx: CanvasRenderingContext2D, polygon: readonly Vector2[]) {
+export function drawPolygon(ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], strokeStyle = '#FFFFFF') {
     let point: Vector2 = polygon[0];
     const { width, height } = ctx.canvas;
     ctx.beginPath();
@@ -53,16 +53,16 @@ export function drawPolygon(ctx: CanvasRenderingContext2D, polygon: readonly Vec
     ctx.lineTo((point.x+1)/2 * width, height - (point.y+1)/2 * height);
     ctx.closePath();
     ctx.lineWidth = 1;
-    ctx.strokeStyle = '#FFFFFF';
+    ctx.strokeStyle = strokeStyle;
     ctx.stroke();
 }
 
-export function drawLine(ctx: CanvasRenderingContext2D, pointA: Vector2, pointB: Vector2) {
+export function drawLine(ctx: CanvasRenderingContext2D, pointA: Vector2, pointB: Vector2, strokeStyle = '#FFFFFF') {
     const { width, height } = ctx.canvas;
     ctx.moveTo((pointA.x+1)/2 * width, height - (pointA.y+1)/2 * height);
     ctx.lineTo((pointB.x+1)/2 * width, height - (pointB.y+1)/2 * height);
     ctx.lineWidth = 1;
-    ctx.strokeStyle = '#FFFFFF';
+    ctx.strokeStyle = strokeStyle;
     ctx.stroke();
 }
 
