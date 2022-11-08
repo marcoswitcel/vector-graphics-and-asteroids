@@ -59,6 +59,7 @@ export function drawPolygon(ctx: CanvasRenderingContext2D, polygon: readonly Vec
 
 export function drawLine(ctx: CanvasRenderingContext2D, pointA: Vector2, pointB: Vector2, strokeStyle = '#FFFFFF') {
     const { width, height } = ctx.canvas;
+    ctx.beginPath();
     ctx.moveTo((pointA.x+1)/2 * width, height - (pointA.y+1)/2 * height);
     ctx.lineTo((pointB.x+1)/2 * width, height - (pointB.y+1)/2 * height);
     ctx.lineWidth = 1;
