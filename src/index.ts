@@ -1,5 +1,5 @@
-import { drawCircle, drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
-import { Entity, createdAtTimestamp } from "./entity.js";
+import { distance, drawCircle, drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
+import { Entity, createdAtTimestamp, hittedMark } from "./entity.js";
 import { EventLoop } from "./event-loop.js";
 import { makeAsteroid } from "./figure.js";
 import { KeyBoardInput } from "./keyboard-input.js";
@@ -82,7 +82,20 @@ eventLoop.add((time: number) => {
     const now = Date.now();
     entities = entities.filter(entity => {
         return !(entity.components[createdAtTimestamp] && now - entity.components[createdAtTimestamp] > 1500);
-    })
+    });
+
+    const shootEntities = entities.filter(entity => entity.type === 'shoot');
+
+    for (const entity of entities) {
+        if (entity.type !== 'shoot') {
+            for (const shootEntity of shootEntities) {
+
+                if (distance(entity.position, shootEntity.position) < (entity.hitRadius + shootEntity.hitRadius)) {
+                    entity.components[hittedMark] = true;
+                }
+            }
+        }
+    }
 });
 
 eventLoop.add((time: number) => {
@@ -139,7 +152,8 @@ eventLoop.add((time: number) => {
     
     for (const entity of entities) {
         if (entity.hitRadius) {
-            drawCircle(ctx, entity.position, entity.hitRadius, '#FF0000');
+            const color = entity.components[hittedMark] ? '#00FF00' : '#FF0000';
+            drawCircle(ctx, entity.position, entity.hitRadius, color);
         }
     }
 });

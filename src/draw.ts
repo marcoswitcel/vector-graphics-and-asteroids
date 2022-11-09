@@ -4,6 +4,10 @@ export type Vector2 = {
     y: number
 };
 
+export function distance(a: Vector2, b: Vector2) {
+    return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
+}
+
 export function scalePolygon(polygon: readonly Vector2[], xScaleFactor: number, yScaleFactor = xScaleFactor) : Vector2[] {
     return polygon.map(point => ({
         x: point.x * xScaleFactor,
