@@ -1,4 +1,4 @@
-import { drawCircle, drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
+import { distance, drawCircle, drawLine, drawPoint, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
 import { Entity, hittedMark } from "./entity.js";
 import { EventLoop } from "./event-loop.js";
 import { makeAsteroid } from "./figure.js";
@@ -17,20 +17,50 @@ const keyBoardInput = new KeyBoardInput({ autoStart: true });
 const canvas = createCanvas(500, 500, document.body);
 const ctx = canvas.getContext('2d');
 let debugHitRadius = false;
+let clickedPosition: Vector2 | null = null;
 
 keyBoardInput.addListener('keyup.2', () => {
     debugHitRadius = !debugHitRadius;
 });
 
+canvas.addEventListener('click', event => {
+    clickedPosition = {
+        x: event.offsetX / canvas.width * 2 - 1,
+        y: (canvas.height - event.offsetY) / canvas.height * 2 - 1,
+    }
+});
+
 if (ctx === null) throw 'Contexto nulo';
 
-const entities = Array(15).fill(0).map(() => {
+let entities = Array(15).fill(0).map(() => {
     const x = 1.5 - Math.random() * 3.5;
     const y = 1.5 - Math.random() * 3.5;
     return new Entity({ x, y }, { x: -0.02 * Math.random(), y: -0.02 * Math.random() }, { x: 0, y: 0 }, Math.random(), 'asteroids', 0.5);
 });
 
 const eventLoop = new EventLoop();
+
+eventLoop.add((time: number) => {
+
+    // Removendo marca antiga
+    //entities = entities.filter(entity => entity.type !== 'mark');    
+
+    // Adicionando marca se houver
+    // if (clickedPosition) {
+    //     const entity = new Entity(clickedPosition, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'mark');
+    //     clickedPosition = null;
+    //     entities.push(entity);
+    // }
+
+    if (clickedPosition) {
+        for (const entity of entities) {
+            if (distance(clickedPosition, entity.position) < entity.hitRadius) {
+                entity.components[hittedMark] = true;
+            }
+        }
+        clickedPosition = null;
+    }
+});
 
 eventLoop.add((time: number) => {
     for (const entity of entities) {
@@ -52,7 +82,11 @@ eventLoop.add((time: number) => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     for (const entity of entities) {
-        drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), 0.3), entity.angle)));
+        if (entity.type === 'mark') {
+            drawPoint(ctx, entity.position);
+        } else {
+            drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), 0.3), entity.angle)));
+        }
     }
 });
 

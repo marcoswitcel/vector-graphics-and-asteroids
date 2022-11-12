@@ -71,6 +71,12 @@ export function drawLine(ctx: CanvasRenderingContext2D, pointA: Vector2, pointB:
     ctx.stroke();
 }
 
+export function drawPoint(ctx: CanvasRenderingContext2D, position: Vector2, fillStyle = '#FFFFFF') {
+    const { width, height } = ctx.canvas;
+    ctx.fillStyle = fillStyle;
+    ctx.fillRect((position.x+1)/2 * width, height - (position.y+1)/2 * height, 1, 1);
+}
+
 export function drawCircle(ctx: CanvasRenderingContext2D, position: Vector2, radius: number, strokeStyle = '#FFFFFF') {
     const { width, height } = ctx.canvas;
     ctx.beginPath();
