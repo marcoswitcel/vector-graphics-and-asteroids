@@ -35,7 +35,7 @@ if (ctx === null) throw 'Contexto nulo';
 let entities = Array(15).fill(0).map(() => {
     const x = 1.5 - Math.random() * 3.5;
     const y = 1.5 - Math.random() * 3.5;
-    const entity = new Entity({ x, y }, { x: -0.02 * Math.random(), y: -0.02 * Math.random() }, { x: 0, y: 0 }, Math.random(), 'asteroids', 0.33);
+    const entity = new Entity({ x, y }, { x: -0.02 * Math.random(), y: -0.02 * Math.random() }, { x: 0, y: 0 }, Math.random(), 'asteroids', 0.33, 0.3);
     entity.components[fragmentationAllowed] = 4;
     return entity;
 });
@@ -45,11 +45,17 @@ const eventLoop = new EventLoop();
 function fragmentAsteroid(entity: Entity, numberOfFragments = 4): Entity[] {
     const fragments: Entity[] = [];
 
-    for (let i = 0; i < numberOfFragments; i ++) {
-        const position = { ...entity.position };
-        position.x += i * 0.1;
-        const velocity = { ...entity.velocity };
-        const fragment = new Entity(position, velocity, { x: 0, y: 0 }, entity.angle, entity.type, entity.hitRadius);
+    for (let i = 0; i < numberOfFragments; i++) {
+        const scale = entity.scale / numberOfFragments;
+        const fragmentAngle = entity.angle + (i * Math.PI / 2);
+        const radius = rotatePoint({ x: 0, y: entity.scale }, fragmentAngle);
+        const position = {
+            x: entity.position.x + radius.x,
+            y: entity.position.y + radius.y,
+        };
+        const velocity = rotatePoint({ x: entity.velocity.x * 0.85, y: entity.velocity.y * 0.85 }, (i * Math.PI / 8));
+        const hitRadius = entity.hitRadius / numberOfFragments;
+        const fragment = new Entity(position, velocity, { x: 0, y: 0 }, entity.angle, entity.type, hitRadius, scale);
         if (numberOfFragments / 2 > 1) {
             fragment.components[fragmentationAllowed] = numberOfFragments / 2;
         }
@@ -123,7 +129,7 @@ eventLoop.add((time: number) => {
         if (entity.type === 'mark') {
             drawPoint(ctx, entity.position);
         } else {
-            drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), 0.3), entity.angle)));
+            drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), entity.scale), entity.angle)));
         }
     }
 });
