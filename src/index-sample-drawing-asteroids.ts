@@ -1,5 +1,5 @@
 import { distance, drawCircle, drawLine, drawPoint, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
-import { Entity, hittedMark } from "./entity.js";
+import { Entity, fragmentationAllowed, hittedMark } from "./entity.js";
 import { EventLoop } from "./event-loop.js";
 import { makeAsteroid } from "./figure.js";
 import { KeyBoardInput } from "./keyboard-input.js";
@@ -35,10 +35,30 @@ if (ctx === null) throw 'Contexto nulo';
 let entities = Array(15).fill(0).map(() => {
     const x = 1.5 - Math.random() * 3.5;
     const y = 1.5 - Math.random() * 3.5;
-    return new Entity({ x, y }, { x: -0.02 * Math.random(), y: -0.02 * Math.random() }, { x: 0, y: 0 }, Math.random(), 'asteroids', 0.33);
+    const entity = new Entity({ x, y }, { x: -0.02 * Math.random(), y: -0.02 * Math.random() }, { x: 0, y: 0 }, Math.random(), 'asteroids', 0.33);
+    entity.components[fragmentationAllowed] = 4;
+    return entity;
 });
 
 const eventLoop = new EventLoop();
+
+function fragmentAsteroid(entity: Entity, numberOfFragments = 4): Entity[] {
+    const fragments: Entity[] = [];
+
+    for (let i = 0; i < numberOfFragments; i ++) {
+        const position = { ...entity.position };
+        position.x += i * 0.1;
+        const velocity = { ...entity.velocity };
+        const fragment = new Entity(position, velocity, { x: 0, y: 0 }, entity.angle, entity.type, entity.hitRadius);
+        if (numberOfFragments / 2 > 1) {
+            fragment.components[fragmentationAllowed] = numberOfFragments / 2;
+        }
+        fragments.push(fragment);
+    }
+
+    return fragments;
+}
+
 
 eventLoop.add((time: number) => {
 
@@ -60,6 +80,24 @@ eventLoop.add((time: number) => {
         }
         clickedPosition = null;
     }
+});
+
+eventLoop.add((time: number) => {
+    const hittedEntities = entities.filter(entity => entity.components[hittedMark]);
+    if (hittedEntities.length === 0) return;
+
+    const allFragments: Entity[] = [];
+
+    for (const hittedEntity of hittedEntities) {
+        const numberOfFragmentation = hittedEntity.components[fragmentationAllowed];
+        if (numberOfFragmentation) {
+            const fragments = fragmentAsteroid(hittedEntity, numberOfFragmentation);
+            allFragments.push(...fragments);
+        } 
+    }
+
+    entities = entities.filter(entity => !entity.components[hittedMark]);
+    entities.push(...allFragments);
 });
 
 eventLoop.add((time: number) => {
