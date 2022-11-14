@@ -1,9 +1,9 @@
 import { distance, drawCircle, drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
-import { Entity, createdAtTimestamp, hittedMark } from "./entity.js";
+import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed } from "./entity.js";
 import { EventLoop } from "./event-loop.js";
 import { makeAsteroid } from "./figure.js";
 import { KeyBoardInput } from "./keyboard-input.js";
-import { createCanvas } from "./utils.js";
+import { createCanvas, fragmentAsteroid } from "./utils.js";
 
 const canvas = createCanvas(500, 500, document.body);
 const ctx = canvas.getContext('2d');
@@ -17,8 +17,9 @@ const polygon: Vector2[] = [
     { x: -1, y: -1 },
 ];
 const playerAcceleration = { x: 0, y: 0.0001 };
-const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.08);
-const asteroid = new Entity({ x: 0.75, y: 0.75 }, { x: -0.005, y: -0.009 }, { x: 0, y: 0 }, 0, 'asteroids', 0.08);
+const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.08, 0.05);
+const asteroid = new Entity({ x: 0.75, y: 0.75 }, { x: -0.005, y: -0.009 }, { x: 0, y: 0 }, 0, 'asteroids', 0.20, 0.15);
+asteroid.components[fragmentationAllowed] = 4;
 let entities = [ entityPlayer, asteroid ];
 let shootWaitingToBeEmmited = false;
 const primaryWhite = '#FFFFFF';
@@ -87,7 +88,7 @@ eventLoop.add((time: number) => {
     const shootEntities = entities.filter(entity => entity.type === 'shoot');
 
     for (const entity of entities) {
-        if (entity.type !== 'shoot') {
+        if (entity.type !== 'shoot' && entity !== entityPlayer) {
             for (const shootEntity of shootEntities) {
 
                 if (distance(entity.position, shootEntity.position) < (entity.hitRadius + shootEntity.hitRadius)) {
@@ -96,6 +97,24 @@ eventLoop.add((time: number) => {
             }
         }
     }
+});
+
+eventLoop.add((time: number) => {
+    const hittedEntities = entities.filter(entity => entity.components[hittedMark]);
+    if (hittedEntities.length === 0) return;
+
+    const allFragments: Entity[] = [];
+
+    for (const hittedEntity of hittedEntities) {
+        const numberOfFragmentation = hittedEntity.components[fragmentationAllowed];
+        if (numberOfFragmentation) {
+            const fragments = fragmentAsteroid(hittedEntity, numberOfFragmentation);
+            allFragments.push(...fragments);
+        } 
+    }
+
+    entities = entities.filter(entity => !entity.components[hittedMark]);
+    entities.push(...allFragments);
 });
 
 eventLoop.add((time: number) => {
@@ -129,7 +148,7 @@ eventLoop.add((time: number) => {
 
     for (const entity of entities) {
         if (entity === entityPlayer) {
-            drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(polygon, 0.05), entity.angle)), primaryWhite);
+            drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), primaryWhite);
         } else if (entity.type === 'shoot') {
             const startPosition = {
                 x: entity.position.x + entity.velocity.x * -0.75,
@@ -141,7 +160,7 @@ eventLoop.add((time: number) => {
             };
             drawLine(ctx, startPosition, endPosition, primaryWhite);
         } else {
-            drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), 0.05), entity.angle)), secondaryWhite);
+            drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), entity.scale), entity.angle)), secondaryWhite);
         }
     }
 });
