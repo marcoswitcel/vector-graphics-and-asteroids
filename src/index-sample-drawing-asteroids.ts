@@ -3,7 +3,7 @@ import { Entity, fragmentationAllowed, hittedMark } from "./entity.js";
 import { EventLoop } from "./event-loop.js";
 import { makeAsteroid } from "./figure.js";
 import { KeyBoardInput } from "./keyboard-input.js";
-import { createCanvas } from "./utils.js";
+import { createCanvas, fragmentAsteroid } from "./utils.js";
 
 // @todo João, analisar e implementar um mecanismo organizado como lidar com
 // cliques no canvas sem quebrar nenhum ordem de execução. Isso para inserir
@@ -41,30 +41,6 @@ let entities = Array(15).fill(0).map(() => {
 });
 
 const eventLoop = new EventLoop();
-
-function fragmentAsteroid(entity: Entity, numberOfFragments = 4): Entity[] {
-    const fragments: Entity[] = [];
-
-    for (let i = 0; i < numberOfFragments; i++) {
-        const scale = entity.scale / numberOfFragments;
-        const fragmentAngle = entity.angle + (i * Math.PI / 2);
-        const radius = rotatePoint({ x: 0, y: entity.scale }, fragmentAngle);
-        const position = {
-            x: entity.position.x + radius.x,
-            y: entity.position.y + radius.y,
-        };
-        const velocity = rotatePoint({ x: entity.velocity.x * 0.85, y: entity.velocity.y * 0.85 }, (i * Math.PI / 8));
-        const hitRadius = entity.hitRadius / numberOfFragments;
-        const fragment = new Entity(position, velocity, { x: 0, y: 0 }, entity.angle, entity.type, hitRadius, scale);
-        if (numberOfFragments / 2 > 1) {
-            fragment.components[fragmentationAllowed] = numberOfFragments / 2;
-        }
-        fragments.push(fragment);
-    }
-
-    return fragments;
-}
-
 
 eventLoop.add((time: number) => {
 
