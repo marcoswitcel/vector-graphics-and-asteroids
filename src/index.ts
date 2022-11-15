@@ -104,6 +104,7 @@ eventLoop.add((time: number) => {
 
                 if (distance(entity.position, shootEntity.position) < (entity.hitRadius + shootEntity.hitRadius)) {
                     entity.components[hittedMark] = true;
+                    shootEntity.components[hittedMark] = true;
                 }
             }
         }
@@ -111,15 +112,16 @@ eventLoop.add((time: number) => {
 });
 
 eventLoop.add((time: number) => {
-    const hittedEntities = entities.filter(entity => entity.components[hittedMark]);
-    if (hittedEntities.length === 0) return;
+    const hittedAsteroids = entities.filter(entity => entity.components[hittedMark] && entity.type === 'asteroids');
+    if (hittedAsteroids.length === 0) return;
 
     const allFragments: Entity[] = [];
 
-    for (const hittedEntity of hittedEntities) {
-        const numberOfFragmentation = hittedEntity.components[fragmentationAllowed];
+    for (const hittedAsteroid of hittedAsteroids) {
+        console.log(hittedAsteroid.type);
+        const numberOfFragmentation = hittedAsteroid.components[fragmentationAllowed];
         if (numberOfFragmentation) {
-            const fragments = fragmentAsteroid(hittedEntity, numberOfFragmentation);
+            const fragments = fragmentAsteroid(hittedAsteroid, numberOfFragmentation);
             allFragments.push(...fragments);
         } 
     }
