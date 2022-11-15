@@ -14,6 +14,7 @@
 - [ ] Implementar/estudar melhor forma de implementar a renderização de animações e figuras compostas de várias formas animadas.
 - [ ] Projetar a nave, animar as chamas da nave. Deixar uma pequena cena com a nave pilotável
 - [ ] Montar uma pequena cena com  asteroides de diversos tamanhos (diversas figuras de asteroides também), se possível clicável e com os asteroides se dividindo em partes menores.
+- [ ] Melhorar método de renderização para suportar de forma simples e organizada a renderização das entidades que estão atravessando as bordas. Renderizar as partes da entidade em seu devidos lados da tela.
 
 
 ## Ideias para o futuro
