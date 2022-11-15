@@ -15,6 +15,7 @@
 - [ ] Projetar a nave, animar as chamas da nave. Deixar uma pequena cena com a nave pilotável
 - [ ] Montar uma pequena cena com  asteroides de diversos tamanhos (diversas figuras de asteroides também), se possível clicável e com os asteroides se dividindo em partes menores.
 - [ ] Melhorar método de renderização para suportar de forma simples e organizada a renderização das entidades que estão atravessando as bordas. Renderizar as partes da entidade em seu devidos lados da tela.
+- [ ] Implementar suporte a momento angular nas entidades. Assim poderei descrever a rotação de cada entidade separadamente.
 
 
 ## Ideias para o futuro
