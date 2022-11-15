@@ -18,9 +18,20 @@ const polygon: Vector2[] = [
 ];
 const playerAcceleration = { x: 0, y: 0.0001 };
 const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.08, 0.05);
-const asteroid = new Entity({ x: 0.75, y: 0.75 }, { x: -0.005, y: -0.009 }, { x: 0, y: 0 }, 0, 'asteroids', 0.20, 0.15);
-asteroid.components[fragmentationAllowed] = 4;
-let entities = [ entityPlayer, asteroid ];
+const asteroids = Array(3).fill(0).map(() => {
+    const x = Math.random() * 2 - 1;
+    const y = Math.random() * 2 - 1;
+    const scale = 0.15 + Math.random() * 0.1;
+    const hitRadius = scale * 1.33;
+    const defaultVelocity = { x: -0.005, y: -0.009 };
+    defaultVelocity.x *= Math.random() > 0.5 ? -1 : 1;
+    defaultVelocity.y *= Math.random() > 0.5 ? -1 : 1;
+
+    const entity = new Entity({ x, y }, defaultVelocity, { x: 0, y: 0 }, 0, 'asteroids', hitRadius, scale);
+    entity.components[fragmentationAllowed] = 4;
+    return entity;
+});
+let entities = [ entityPlayer, ...asteroids ];
 let shootWaitingToBeEmmited = false;
 const primaryWhite = '#FFFFFF';
 const secondaryWhite = 'rgba(255,255,255,0.7)';
@@ -137,6 +148,10 @@ eventLoop.add((time: number) => {
         if (yAbs > 1) {
             const diff = yAbs - 1;
             entity.position.y = (yAbs - 2 * diff) * (entity.position.y / yAbs * -1);
+        }
+
+        if (entity.type === 'asteroids') {
+            entity.angle += -0.01
         }
     }
 });
