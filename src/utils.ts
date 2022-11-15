@@ -36,9 +36,10 @@ export function createCanvas(width: number, height: number, appendTo?: HTMLEleme
  */
 export function fragmentAsteroid(entity: Entity, numberOfFragments = 4): Entity[] {
     const fragments: Entity[] = [];
+    const fragmentScaleFactor = 1.5;
 
     for (let i = 0; i < numberOfFragments; i++) {
-        const scale = entity.scale / numberOfFragments;
+        const scale = entity.scale / numberOfFragments * fragmentScaleFactor;
         const fragmentAngle = entity.angle + (i * Math.PI / 2);
         const radius = rotatePoint({ x: 0, y: entity.scale }, fragmentAngle);
         const position = {
@@ -46,7 +47,7 @@ export function fragmentAsteroid(entity: Entity, numberOfFragments = 4): Entity[
             y: entity.position.y + radius.y,
         };
         const velocity = rotatePoint({ x: entity.velocity.x * 0.85, y: entity.velocity.y * 0.85 }, (i * Math.PI / 8));
-        const hitRadius = entity.hitRadius / numberOfFragments;
+        const hitRadius = entity.hitRadius / numberOfFragments * fragmentScaleFactor;
         const fragment = new Entity(position, velocity, { x: 0, y: 0 }, entity.angle, entity.type, hitRadius, scale);
         if (numberOfFragments / 2 > 1) {
             fragment.components[fragmentationAllowed] = numberOfFragments / 2;
