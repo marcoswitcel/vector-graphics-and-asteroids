@@ -22,6 +22,18 @@ export function createCanvas(width: number, height: number, appendTo?: HTMLEleme
     return canvas;
 }
 
+/**
+ * Função que "fragmenta" um asteroide em asteroides menores.
+ * @observation Essa função pode gerar entidades com a posição fora do
+ * espaço -1 à 1, então as novas entidades precisam te sua posição "revisada"
+ * para seguir as regras da simulação. Isso acontecerá automaticamente se
+ * as entidades forem adicionadas antes da etapa que aplica a regra de
+ * "virada" de um lado para o outro da tela.
+ * @param entity Entidade que será fragmentada, por hora apenas serve para
+ * asteroides, apesar de já ser parcealmente aplicável a outras entidades.
+ * @param numberOfFragments Número de fragmentos a serem criados
+ * @returns A lista com as entidades criadas a partir da entidade original
+ */
 export function fragmentAsteroid(entity: Entity, numberOfFragments = 4): Entity[] {
     const fragments: Entity[] = [];
 
