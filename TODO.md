@@ -16,6 +16,7 @@
 - [ ] Montar uma pequena cena com  asteroides de diversos tamanhos (diversas figuras de asteroides também), se possível clicável e com os asteroides se dividindo em partes menores.
 - [ ] Melhorar método de renderização para suportar de forma simples e organizada a renderização das entidades que estão atravessando as bordas. Renderizar as partes da entidade em seu devidos lados da tela.
 - [ ] Implementar suporte a momento angular nas entidades. Assim poderei descrever a rotação de cada entidade separadamente.
+- [ ] Ajustar o tempo do jogo para não ser influenciado pela taxa de refresh do monitor. Calcular deltatime e usá-lo na hora de computar as animaçõs.
 
 
 ## Ideias para o futuro
