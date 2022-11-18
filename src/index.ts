@@ -118,7 +118,6 @@ eventLoop.add((time: number) => {
     const allFragments: Entity[] = [];
 
     for (const hittedAsteroid of hittedAsteroids) {
-        console.log(hittedAsteroid.type);
         const numberOfFragmentation = hittedAsteroid.components[fragmentationAllowed];
         if (numberOfFragmentation) {
             const fragments = fragmentAsteroid(hittedAsteroid, numberOfFragmentation);
