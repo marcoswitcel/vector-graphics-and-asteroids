@@ -27,7 +27,7 @@ const asteroids = Array(3).fill(0).map(() => {
     defaultVelocity.x *= Math.random() > 0.5 ? -1 : 1;
     defaultVelocity.y *= Math.random() > 0.5 ? -1 : 1;
 
-    const entity = new Entity({ x, y }, defaultVelocity, { x: 0, y: 0 }, 0, 'asteroids', hitRadius, scale);
+    const entity = new Entity({ x, y }, defaultVelocity, { x: 0, y: 0 }, 0, 'asteroids', hitRadius, scale, -0.01);
     entity.components[fragmentationAllowed] = 4;
     return entity;
 });
@@ -151,9 +151,7 @@ eventLoop.add((time: number) => {
             entity.position.y = (yAbs - 2 * diff) * (entity.position.y / yAbs * -1);
         }
 
-        if (entity.type === 'asteroids') {
-            entity.angle += -0.01
-        }
+        entity.angle += entity.angularVelocity;
     }
 });
 

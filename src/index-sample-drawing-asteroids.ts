@@ -35,7 +35,7 @@ if (ctx === null) throw 'Contexto nulo';
 let entities = Array(15).fill(0).map(() => {
     const x = 1.5 - Math.random() * 3.5;
     const y = 1.5 - Math.random() * 3.5;
-    const entity = new Entity({ x, y }, { x: -0.02 * Math.random(), y: -0.02 * Math.random() }, { x: 0, y: 0 }, Math.random(), 'asteroids', 0.33, 0.3);
+    const entity = new Entity({ x, y }, { x: -0.02 * Math.random(), y: -0.02 * Math.random() }, { x: 0, y: 0 }, Math.random(), 'asteroids', 0.33, 0.3, -0.03);
     entity.components[fragmentationAllowed] = 4;
     return entity;
 });
@@ -87,7 +87,7 @@ eventLoop.add((time: number) => {
         entity.position.x += entity.velocity.x;
         entity.position.y += entity.velocity.y;
 
-        entity.angle += -0.03
+        entity.angle += entity.angularVelocity;
 
         if (entity.position.x < -1.5) {
             entity.position.x = 1.5;
