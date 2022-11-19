@@ -99,13 +99,15 @@ eventLoop.add((time: number) => {
     const shootEntities = entities.filter(entity => entity.type === 'shoot');
 
     for (const entity of entities) {
-        if (entity.type !== 'shoot' && entity !== entityPlayer) {
+        if (entity.type === 'asteroids') {
             for (const shootEntity of shootEntities) {
-
                 if (distance(entity.position, shootEntity.position) < (entity.hitRadius + shootEntity.hitRadius)) {
                     entity.components[hittedMark] = true;
                     shootEntity.components[hittedMark] = true;
                 }
+            }
+            if (distance(entity.position, entityPlayer.position) < (entity.hitRadius + entityPlayer.hitRadius)) {
+                entityPlayer.components[hittedMark] = true;
             }
         }
     }
@@ -125,7 +127,7 @@ eventLoop.add((time: number) => {
         } 
     }
 
-    entities = entities.filter(entity => !entity.components[hittedMark]);
+    entities = entities.filter(entity => !entity.components[hittedMark] || entity.type === 'player');
     entities.push(...allFragments);
 });
 
