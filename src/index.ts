@@ -163,7 +163,7 @@ eventLoop.add((time: number) => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     for (const entity of entities) {
-        if (entity === entityPlayer) {
+        if (entity.type === 'player') {
             drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), primaryWhite);
         } else if (entity.type === 'shoot') {
             const startPosition = {
