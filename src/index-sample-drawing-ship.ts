@@ -22,7 +22,7 @@ const triangulo: Vector2[] = [
     { x: 1, y: -1 },
     { x: -1, y: -1 },
 ];
-const entity = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0.0001 }, 0);
+const entity = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0.0001 }, 0, 'player', 0.2);
 const shipStandingFigure = new ComplexShape([
     new Shape(polygon),
 ], [
@@ -101,7 +101,20 @@ eventLoop.add((time: number) => {
         ? (forward ? shipForwardFigure : shipBackwardsFigure)
         : shipStandingFigure;
 
-    drawComplexShape(ctx, figure, entity.position, 0.2, entity.angle);
+    // @todo João, parcialmente funcionando o efeito de espelhamento na
+    // renderização (espelha na horizontal), falta replicar o efeito na
+    // vertical e ajustar para considerar as arestas. 
+    if (Math.abs(entity.position.x) + entity.hitRadius > 1) {
+        const outterX = Math.abs(entity.position.x) + entity.hitRadius - 1;
+        const leftPosition = {
+            x: (entity.position.x > 0 ? -1 - entity.hitRadius + outterX : 1 + entity.hitRadius - outterX),
+            y: entity.position.y,
+        };
+        drawComplexShape(ctx, figure, leftPosition, 0.2, entity.angle);
+        drawComplexShape(ctx, figure, entity.position, 0.2, entity.angle);
+    } else {
+        drawComplexShape(ctx, figure, entity.position, 0.2, entity.angle);
+    }
 });
 
 eventLoop.start();
