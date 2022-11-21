@@ -97,11 +97,11 @@ eventLoop.add((time: number) => {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    if (moving) {
-        drawComplexShape(ctx, ((forward) ? shipForwardFigure : shipBackwardsFigure), entity.position, 0.2, entity.angle);
-    } else {
-        drawComplexShape(ctx, shipStandingFigure, entity.position, 0.2, entity.angle);
-    }
+    const figure = moving
+        ? (forward ? shipForwardFigure : shipBackwardsFigure)
+        : shipStandingFigure;
+
+    drawComplexShape(ctx, figure, entity.position, 0.2, entity.angle);
 });
 
 eventLoop.start();
