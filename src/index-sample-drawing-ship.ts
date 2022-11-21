@@ -78,6 +78,18 @@ eventLoop.add((time: number) => {
     }
     entity.position.x += entity.velocity.x;
     entity.position.y += entity.velocity.y;
+
+    // limitando o espaço e fazendo o efeito de "sair do outro lado da tela"
+    const xAbs = Math.abs(entity.position.x)
+    if (xAbs > 1) {
+        const diff = xAbs - 1;
+        entity.position.x = (xAbs - 2 * diff) * (entity.position.x / xAbs * -1);
+    }
+    const yAbs = Math.abs(entity.position.y)
+    if (yAbs > 1) {
+        const diff = yAbs - 1;
+        entity.position.y = (yAbs - 2 * diff) * (entity.position.y / yAbs * -1);
+    }
 });
 
 // Renderiza
