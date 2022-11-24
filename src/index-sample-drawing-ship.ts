@@ -114,6 +114,16 @@ eventLoop.add((time: number) => {
             x: (entity.position.x > 0 ? -1 - entity.hitRadius + outterX : 1 + entity.hitRadius - outterX),
             y: (entity.position.y > 0 ? -1 - entity.hitRadius + outterY : 1 + entity.hitRadius - outterY),
         };
+        const topPosition = {
+            x: entity.position.x,
+            y: (entity.position.y > 0 ? -1 - entity.hitRadius + outterY : 1 + entity.hitRadius - outterY),
+        };
+        const leftPosition = {
+            x: (entity.position.x > 0 ? -1 - entity.hitRadius + outterX : 1 + entity.hitRadius - outterX),
+            y: entity.position.y,
+        };
+        drawComplexShape(ctx, figure, leftPosition, 0.2, entity.angle);
+        drawComplexShape(ctx, figure, topPosition, 0.2, entity.angle);
         drawComplexShape(ctx, figure, cornerPosition, 0.2, entity.angle);
         drawComplexShape(ctx, figure, entity.position, 0.2, entity.angle);
     } else if (isCrossingY) {
