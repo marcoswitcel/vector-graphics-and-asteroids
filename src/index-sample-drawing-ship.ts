@@ -100,11 +100,31 @@ eventLoop.add((time: number) => {
     const figure = moving
         ? (forward ? shipForwardFigure : shipBackwardsFigure)
         : shipStandingFigure;
+    const isCrossingX = Math.abs(entity.position.x) + entity.hitRadius > 1;
+    const isCrossingY = Math.abs(entity.position.y) + entity.hitRadius > 1; 
 
     // @todo João, parcialmente funcionando o efeito de espelhamento na
-    // renderização (espelha na horizontal), falta replicar o efeito na
-    // vertical e ajustar para considerar as arestas. 
-    if (Math.abs(entity.position.x) + entity.hitRadius > 1) {
+    // horizontal e vertical, falta adaptar o efeito e ajustar para considerar as arestas.
+    if (isCrossingX && isCrossingY) {
+        // @todo João, a versão para arestas está incompleta, e imagino que uma vez
+        // funcional será necessário abstrair esse conceito um pouco e também otimizar
+        const outterX = Math.abs(entity.position.x) + entity.hitRadius - 1;
+        const outterY = Math.abs(entity.position.y) + entity.hitRadius - 1;
+        const cornerPosition = {
+            x: (entity.position.x > 0 ? -1 - entity.hitRadius + outterX : 1 + entity.hitRadius - outterX),
+            y: (entity.position.y > 0 ? -1 - entity.hitRadius + outterY : 1 + entity.hitRadius - outterY),
+        };
+        drawComplexShape(ctx, figure, cornerPosition, 0.2, entity.angle);
+        drawComplexShape(ctx, figure, entity.position, 0.2, entity.angle);
+    } else if (isCrossingY) {
+        const outterY = Math.abs(entity.position.y) + entity.hitRadius - 1;
+        const topPosition = {
+            x: entity.position.x,
+            y: (entity.position.y > 0 ? -1 - entity.hitRadius + outterY : 1 + entity.hitRadius - outterY),
+        };
+        drawComplexShape(ctx, figure, topPosition, 0.2, entity.angle);
+        drawComplexShape(ctx, figure, entity.position, 0.2, entity.angle);
+    } else if (isCrossingX) {
         const outterX = Math.abs(entity.position.x) + entity.hitRadius - 1;
         const leftPosition = {
             x: (entity.position.x > 0 ? -1 - entity.hitRadius + outterX : 1 + entity.hitRadius - outterX),
