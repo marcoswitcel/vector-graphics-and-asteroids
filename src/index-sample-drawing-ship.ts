@@ -103,11 +103,8 @@ eventLoop.add((time: number) => {
     const isCrossingX = Math.abs(entity.position.x) + entity.hitRadius > 1;
     const isCrossingY = Math.abs(entity.position.y) + entity.hitRadius > 1; 
 
-    // @todo João, parcialmente funcionando o efeito de espelhamento na
-    // horizontal e vertical, falta adaptar o efeito e ajustar para considerar as arestas.
     if (isCrossingX && isCrossingY) {
-        // @todo João, a versão para arestas está incompleta, e imagino que uma vez
-        // funcional será necessário abstrair esse conceito um pouco e também otimizar
+        // @todo João é necessário abstrair esse conceito um pouco e otimizar
         const outterX = Math.abs(entity.position.x) + entity.hitRadius - 1;
         const outterY = Math.abs(entity.position.y) + entity.hitRadius - 1;
         const cornerPosition = {
