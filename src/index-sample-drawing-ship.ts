@@ -100,48 +100,39 @@ eventLoop.add((time: number) => {
     const figure = moving
         ? (forward ? shipForwardFigure : shipBackwardsFigure)
         : shipStandingFigure;
+
+    // @todo João é necessário abstrair esse conceito
+    // @todo João é necessário otimizar
     const isCrossingX = Math.abs(entity.position.x) + entity.hitRadius > 1;
     const isCrossingY = Math.abs(entity.position.y) + entity.hitRadius > 1; 
+    const outterX = Math.abs(entity.position.x) + entity.hitRadius - 1;
+    const outterY = Math.abs(entity.position.y) + entity.hitRadius - 1;
 
     if (isCrossingX && isCrossingY) {
-        // @todo João é necessário abstrair esse conceito um pouco e otimizar
-        const outterX = Math.abs(entity.position.x) + entity.hitRadius - 1;
-        const outterY = Math.abs(entity.position.y) + entity.hitRadius - 1;
         const cornerPosition = {
             x: (entity.position.x > 0 ? -1 - entity.hitRadius + outterX : 1 + entity.hitRadius - outterX),
             y: (entity.position.y > 0 ? -1 - entity.hitRadius + outterY : 1 + entity.hitRadius - outterY),
         };
-        const topPosition = {
-            x: entity.position.x,
-            y: (entity.position.y > 0 ? -1 - entity.hitRadius + outterY : 1 + entity.hitRadius - outterY),
-        };
-        const leftPosition = {
-            x: (entity.position.x > 0 ? -1 - entity.hitRadius + outterX : 1 + entity.hitRadius - outterX),
-            y: entity.position.y,
-        };
-        drawComplexShape(ctx, figure, leftPosition, 0.2, entity.angle);
-        drawComplexShape(ctx, figure, topPosition, 0.2, entity.angle);
         drawComplexShape(ctx, figure, cornerPosition, 0.2, entity.angle);
-        drawComplexShape(ctx, figure, entity.position, 0.2, entity.angle);
-    } else if (isCrossingY) {
-        const outterY = Math.abs(entity.position.y) + entity.hitRadius - 1;
+    }
+    
+    if (isCrossingY) {
         const topPosition = {
             x: entity.position.x,
             y: (entity.position.y > 0 ? -1 - entity.hitRadius + outterY : 1 + entity.hitRadius - outterY),
         };
         drawComplexShape(ctx, figure, topPosition, 0.2, entity.angle);
-        drawComplexShape(ctx, figure, entity.position, 0.2, entity.angle);
-    } else if (isCrossingX) {
-        const outterX = Math.abs(entity.position.x) + entity.hitRadius - 1;
+    }
+    
+    if (isCrossingX) {
         const leftPosition = {
             x: (entity.position.x > 0 ? -1 - entity.hitRadius + outterX : 1 + entity.hitRadius - outterX),
             y: entity.position.y,
         };
         drawComplexShape(ctx, figure, leftPosition, 0.2, entity.angle);
-        drawComplexShape(ctx, figure, entity.position, 0.2, entity.angle);
-    } else {
-        drawComplexShape(ctx, figure, entity.position, 0.2, entity.angle);
     }
+
+    drawComplexShape(ctx, figure, entity.position, 0.2, entity.angle);
 });
 
 eventLoop.start();
