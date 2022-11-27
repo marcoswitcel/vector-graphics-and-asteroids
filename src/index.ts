@@ -3,7 +3,7 @@ import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed } from "./
 import { EventLoop } from "./event-loop.js";
 import { makeAsteroid } from "./figure.js";
 import { KeyBoardInput } from "./keyboard-input.js";
-import { createCanvas, fragmentAsteroid } from "./utils.js";
+import { createCanvas, fragmentAsteroid, renderFigureInside } from "./utils.js";
 
 const canvas = createCanvas(500, 500, document.body);
 const ctx = canvas.getContext('2d');
@@ -164,7 +164,13 @@ eventLoop.add((time: number) => {
 
     for (const entity of entities) {
         if (entity.type === 'player') {
-            drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), primaryWhite);
+            // @todo João, avaliar essa solução, visualmente está correto, porém acredito que a função `renderFigureInside` apesar de funcionar
+            // trás uma complecidade desnecessária, acho que seria interessante nessa etapa apenas acumular as figuras que devem ser
+            // desenhadas e em um próximo loop fazer a renderização de fato.
+            // drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), primaryWhite);
+            renderFigureInside(entity, polygon, ctx, (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => {
+                drawPolygon(ctx, makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), primaryWhite);
+            });
         } else if (entity.type === 'shoot') {
             const startPosition = {
                 x: entity.position.x + entity.velocity.x * -0.75,
@@ -176,7 +182,13 @@ eventLoop.add((time: number) => {
             };
             drawLine(ctx, startPosition, endPosition, primaryWhite);
         } else {
-            drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), entity.scale), entity.angle)), secondaryWhite);
+            // @todo João, avaliar essa solução, visualmente está correto, porém acredito que a função `renderFigureInside` apesar de funcionar
+            // trás uma complecidade desnecessária, acho que seria interessante nessa etapa apenas acumular as figuras que devem ser
+            // desenhadas e em um próximo loop fazer a renderização de fato.
+            // drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), entity.scale), entity.angle)), secondaryWhite);
+            renderFigureInside(entity, makeAsteroid(), ctx, (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => {
+                drawPolygon(ctx, makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), secondaryWhite);
+            });
         }
     }
 });

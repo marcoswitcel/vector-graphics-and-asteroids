@@ -1,4 +1,4 @@
-import { rotatePoint } from "./draw.js";
+import { rotatePoint, Vector2 } from "./draw.js";
 import { Entity, fragmentationAllowed } from "./entity.js";
 
 /**
@@ -56,4 +56,40 @@ export function fragmentAsteroid(entity: Entity, numberOfFragments = 4): Entity[
     }
 
     return fragments;
+}
+
+/**
+ * @todo João, avaliar se faz sentido fazer dessa forma. Acredito que isso agregue complexidade.
+ */
+export function renderFigureInside(entity: Entity, figure: Vector2[], ctx: CanvasRenderingContext2D, drawFunction: (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => void) {
+    const isCrossingX = Math.abs(entity.position.x) + entity.hitRadius > 1;
+    const isCrossingY = Math.abs(entity.position.y) + entity.hitRadius > 1; 
+    const outterX = Math.abs(entity.position.x) + entity.hitRadius - 1;
+    const outterY = Math.abs(entity.position.y) + entity.hitRadius - 1;
+
+    if (isCrossingX && isCrossingY) {
+        const cornerPosition = {
+            x: (entity.position.x > 0 ? -1 - entity.hitRadius + outterX : 1 + entity.hitRadius - outterX),
+            y: (entity.position.y > 0 ? -1 - entity.hitRadius + outterY : 1 + entity.hitRadius - outterY),
+        };
+        drawFunction(ctx, figure, cornerPosition, entity);
+    }
+    
+    if (isCrossingY) {
+        const topPosition = {
+            x: entity.position.x,
+            y: (entity.position.y > 0 ? -1 - entity.hitRadius + outterY : 1 + entity.hitRadius - outterY),
+        };
+        drawFunction(ctx, figure, topPosition, entity);
+    }
+    
+    if (isCrossingX) {
+        const leftPosition = {
+            x: (entity.position.x > 0 ? -1 - entity.hitRadius + outterX : 1 + entity.hitRadius - outterX),
+            y: entity.position.y,
+        };
+        drawFunction(ctx, figure, leftPosition, entity);
+    }
+
+    drawFunction(ctx, figure, entity.position, entity);
 }
