@@ -200,7 +200,11 @@ eventLoop.add((time: number) => {
     for (const entity of entities) {
         if (entity.hitRadius) {
             const color = entity.components[hittedMark] ? '#00FF00' : '#FF0000';
-            drawCircle(ctx, entity.position, entity.hitRadius, color);
+            // @todo João, avaliar aqui se faz sentido fazer dessa forma
+            // drawCircle(ctx, entity.position, entity.hitRadius, color);
+            renderFigureInside(entity, polygon, ctx, (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => {
+                drawCircle(ctx, position, entity.hitRadius, color);
+            });
         }
     }
 });
