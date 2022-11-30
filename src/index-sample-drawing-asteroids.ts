@@ -5,13 +5,6 @@ import { makeAsteroid } from "./figure.js";
 import { KeyBoardInput } from "./keyboard-input.js";
 import { createCanvas, fragmentAsteroid } from "./utils.js";
 
-// @todo João, analisar e implementar um mecanismo organizado como lidar com
-// cliques no canvas sem quebrar nenhum ordem de execução. Isso para inserir
-// e armazenar o local do clique para processamento no momento apropriado.
-// @todo João, após armazer o local do clique implementar a lógica que detecta
-// o "clique" no asteroide marca o mesmo para "fragmentação", garantir que
-// o clique só dure um ciclo e que no próximo ciclo o asteroide de fragmente
-// em mais asteroides menores se não estiver já muito pequeno.
 
 const keyBoardInput = new KeyBoardInput({ autoStart: true });
 const canvas = createCanvas(500, 500, document.body);
@@ -45,17 +38,7 @@ let entities = Array(15).fill(0).map(() => {
 const eventLoop = new EventLoop();
 
 eventLoop.add((time: number) => {
-
-    // Removendo marca antiga
-    //entities = entities.filter(entity => entity.type !== 'mark');    
-
-    // Adicionando marca se houver
-    // if (clickedPosition) {
-    //     const entity = new Entity(clickedPosition, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'mark');
-    //     clickedPosition = null;
-    //     entities.push(entity);
-    // }
-
+    // Se presente o valor será processado uma vez e `clickedPosition` receberá null
     if (clickedPosition) {
         for (const entity of entities) {
             if (distance(clickedPosition, entity.position) < entity.hitRadius) {
@@ -104,11 +87,7 @@ eventLoop.add((time: number) => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     for (const entity of entities) {
-        if (entity.type === 'mark') {
-            drawPoint(ctx, entity.position);
-        } else {
-            drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), entity.scale), entity.angle)));
-        }
+        drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), entity.scale), entity.angle)));
     }
 });
 
