@@ -35,7 +35,9 @@ if (ctx === null) throw 'Contexto nulo';
 let entities = Array(15).fill(0).map(() => {
     const x = 1.5 - Math.random() * 3.5;
     const y = 1.5 - Math.random() * 3.5;
-    const entity = new Entity({ x, y }, { x: -0.02 * Math.random(), y: -0.02 * Math.random() }, { x: 0, y: 0 }, Math.random(), 'asteroids', 0.33, 0.3, -0.03);
+    const scale = 0.20 + Math.random() * 0.15;
+    const hitRadius = scale * 1.33;
+    const entity = new Entity({ x, y }, { x: -0.02 * Math.random(), y: -0.02 * Math.random() }, { x: 0, y: 0 }, Math.random(), 'asteroids', hitRadius, scale, -0.03);
     entity.components[fragmentationAllowed] = 4;
     return entity;
 });
