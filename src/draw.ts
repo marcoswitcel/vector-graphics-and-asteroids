@@ -119,12 +119,12 @@ export class ComplexShape {
 /**
  * @todo João, testar mais
  */
-export function drawComplexShape(ctx: CanvasRenderingContext2D, complexShape: ComplexShape, position: Vector2, scale: number, angle: number) {
+export function drawComplexShape(ctx: CanvasRenderingContext2D, complexShape: ComplexShape, position: Vector2, scale: number, angle: number, strokeStyle = '#FFFFFF') {
     for (let index = 0; index < complexShape.shapes.length; index++) {
         const shape = complexShape.shapes[index];
         const drawInfo = complexShape.drawInfo[index];
         let polygon = makePolygonWithAbsolutePosition(drawInfo.position, rotatePolygon(scalePolygon(shape.polygon, drawInfo.scale), drawInfo.angle));
         polygon = makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, scale), angle));
-        drawPolygon(ctx, polygon);
+        drawPolygon(ctx, polygon, strokeStyle);
     }
 }
