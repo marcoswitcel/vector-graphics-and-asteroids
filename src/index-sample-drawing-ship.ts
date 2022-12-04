@@ -1,6 +1,7 @@
 import { ComplexShape, drawComplexShape, DrawInfo, drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Shape, Vector2 } from "./draw.js";
 import { Entity } from "./entity.js";
 import { EventLoop } from "./event-loop.js";
+import { makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure, makeSpaceShip, makeTriangle } from "./figure.js";
 import { KeyBoardInput } from "./keyboard-input.js";
 import { createCanvas } from "./utils.js";
 
@@ -10,42 +11,10 @@ const ctx = canvas.getContext('2d');
 if (ctx === null) throw 'Contexto nulo';
 
 // @todo João, adicionar animação do propulsor
-const polygon: Vector2[] = [
-    { x: 0, y: 0.8 },
-    { x: 0.8, y: -0.6 },
-    { x: 0.4, y: -0.4 },
-    { x: -0.4, y: -0.4 },
-    { x: -0.8, y: -0.6 },
-];
-const triangulo: Vector2[] = [
-    { x: 0, y: 1 },
-    { x: 1, y: -1 },
-    { x: -1, y: -1 },
-];
 const entity = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0.0001 }, 0, 'player', 0.2);
-const shipStandingFigure = new ComplexShape([
-    new Shape(polygon),
-], [
-    new DrawInfo({ x: 0, y:0 }, 1, 0),
-]);
-const shipForwardFigure = new ComplexShape([
-    new Shape(polygon),
-    new Shape(triangulo),
-    new Shape(triangulo),
-], [
-    new DrawInfo({ x: 0, y:0 }, 1, 0),
-    new DrawInfo({ x: -0.25, y: -0.55 }, 0.15, 3.14),
-    new DrawInfo({ x: 0.25, y: -0.55 }, 0.15, 3.14),
-]);
-const shipBackwardsFigure = new ComplexShape([
-    new Shape(polygon),
-    new Shape(triangulo),
-    new Shape(triangulo),
-], [
-    new DrawInfo({ x: 0, y:0 }, 1, 0),
-    new DrawInfo({ x: -0.25, y: -0.55 }, 0.15, 0),
-    new DrawInfo({ x: 0.25, y: -0.55 }, 0.15, 0),
-]);
+const shipStandingFigure = makeShipStandingFigure();
+const shipForwardFigure = makeShipForwardFigure();
+const shipBackwardsFigure = makeShipBackwardsFigure();
 
 const eventLoop = new EventLoop();
 const keyBoardInput = new KeyBoardInput({ autoStart: true });
