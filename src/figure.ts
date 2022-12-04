@@ -1,4 +1,4 @@
-import { Vector2 } from "./draw.js";
+import { ComplexShape, DrawInfo, Shape, Vector2 } from "./draw.js";
 
 export const makeAsteroid = (): Vector2[] => [
     { x: -1, y: 0.2 },
@@ -18,3 +18,43 @@ export const makeAsteroid = (): Vector2[] => [
     { x: -0.70, y: -0.6 },
     { x: -1, y: -0.4 },
 ];
+
+export const makeTriangle = (): Vector2[] => [
+    { x: 0, y: 1 },
+    { x: 1, y: -1 },
+    { x: -1, y: -1 },
+];
+
+export const makeSpaceShip = (): Vector2[] => [
+    { x: 0, y: 0.8 },
+    { x: 0.8, y: -0.6 },
+    { x: 0.4, y: -0.4 },
+    { x: -0.4, y: -0.4 },
+    { x: -0.8, y: -0.6 },
+];
+
+export const makeShipStandingFigure = ():ComplexShape => new ComplexShape([
+    new Shape(makeSpaceShip()),
+], [
+    new DrawInfo({ x: 0, y:0 }, 1, 0),
+]);
+
+export const makeShipForwardFigure = ():ComplexShape =>  new ComplexShape([
+    new Shape(makeSpaceShip()),
+    new Shape(makeTriangle()),
+    new Shape(makeTriangle()),
+], [
+    new DrawInfo({ x: 0, y:0 }, 1, 0),
+    new DrawInfo({ x: -0.25, y: -0.55 }, 0.15, 3.14),
+    new DrawInfo({ x: 0.25, y: -0.55 }, 0.15, 3.14),
+]);
+
+export const makeShipBackwardsFigure = ():ComplexShape =>  new ComplexShape([
+    new Shape(makeSpaceShip()),
+    new Shape(makeTriangle()),
+    new Shape(makeTriangle()),
+], [
+    new DrawInfo({ x: 0, y:0 }, 1, 0),
+    new DrawInfo({ x: -0.25, y: -0.55 }, 0.15, 0),
+    new DrawInfo({ x: 0.25, y: -0.55 }, 0.15, 0),
+]);

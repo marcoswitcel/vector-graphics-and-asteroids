@@ -1,7 +1,7 @@
-import { distance, drawCircle, drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
+import { distance, drawCircle, drawComplexShape, drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
 import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed } from "./entity.js";
 import { EventLoop } from "./event-loop.js";
-import { makeAsteroid } from "./figure.js";
+import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from "./figure.js";
 import { KeyBoardInput } from "./keyboard-input.js";
 import { createCanvas, fragmentAsteroid, renderFigureInside } from "./utils.js";
 
@@ -16,8 +16,13 @@ const polygon: Vector2[] = [
     { x: 1, y: -1 },
     { x: -1, y: -1 },
 ];
+let moving = false;
+let forward = false;
 const playerAcceleration = { x: 0, y: 0.0001 };
-const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.08, 0.05);
+const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.09, 0.08);
+const shipStandingFigure = makeShipStandingFigure();
+const shipForwardFigure = makeShipForwardFigure();
+const shipBackwardsFigure = makeShipBackwardsFigure();
 const asteroids = Array(3).fill(0).map(() => {
     const x = Math.random() * 2 - 1;
     const y = Math.random() * 2 - 1;
@@ -73,15 +78,21 @@ eventLoop.add((time: number) => {
     if (keyBoardInput.areBothKeysPressed('w', 's')) {
         entityPlayer.acceleration.x = 0;
         entityPlayer.acceleration.y = 0;
+        moving = false;
     } else  if (keyBoardInput.isKeyPressed('w')) {
         entityPlayer.acceleration = rotatePoint(playerAcceleration, entityPlayer.angle);
+        moving = true;
+        forward = true;
     } else if (keyBoardInput.isKeyPressed('s')) {
         entityPlayer.acceleration = rotatePoint(playerAcceleration, entityPlayer.angle);
         entityPlayer.acceleration.x *= -1;
         entityPlayer.acceleration.y *= -1;
+        moving = true;
+        forward = false;
     } else {
         entityPlayer.acceleration.x = 0;
         entityPlayer.acceleration.y = 0;
+        moving = false;
     }
 
     if (shootWaitingToBeEmmited) {
@@ -162,14 +173,18 @@ eventLoop.add((time: number) => {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    const playerFigure = moving
+        ? (forward ? shipForwardFigure : shipBackwardsFigure)
+        : shipStandingFigure;
+
     for (const entity of entities) {
         if (entity.type === 'player') {
             // @todo João, avaliar essa solução, visualmente está correto, porém acredito que a função `renderFigureInside` apesar de funcionar
             // trás uma complecidade desnecessária, acho que seria interessante nessa etapa apenas acumular as figuras que devem ser
             // desenhadas e em um próximo loop fazer a renderização de fato.
             // drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), primaryWhite);
-            renderFigureInside(entity, polygon, ctx, (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => {
-                drawPolygon(ctx, makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), primaryWhite);
+            renderFigureInside(entity, [], ctx, (ctx: CanvasRenderingContext2D, _: readonly Vector2[], position: Vector2, entity: Entity) => {
+                drawComplexShape(ctx, playerFigure, position, entity.scale, entity.angle, primaryWhite);
             });
         } else if (entity.type === 'shoot') {
             const startPosition = {
