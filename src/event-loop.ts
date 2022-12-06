@@ -29,17 +29,19 @@ export class EventLoop {
 
     private handleTick = (timestamp: number) => {
         console.assert(typeof timestamp === 'number', 'Deveria ser um número (garantindo que não é undefined)');
-        
+
+        if (!this.running) return;
+
         if (this.lastTimestamp === 0) {
             this.lastTimestamp = timestamp;
             requestAnimationFrame(this.handleTick);
             return;
         }
 
-        const deltaTime = this.lastTimestamp ? (timestamp - this.lastTimestamp) / 1000 : 0;
-        this.lastTimestamp = timestamp;
-
         try {
+            const deltaTime = this.lastTimestamp ? (timestamp - this.lastTimestamp) / 1000 : 0;
+            this.lastTimestamp = timestamp;
+
             for (const handler of this.handlers) {
                 handler(timestamp, deltaTime);
             }
@@ -49,6 +51,7 @@ export class EventLoop {
             }
         } catch (error) {
             console.error(error);
+            this.running = false;
         }
     }
 }
