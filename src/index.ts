@@ -67,12 +67,12 @@ keyBoardInput.addListener('keyup. ', () => {
     shootWaitingToBeEmmited = true;
 }); 
 
-eventLoop.add((time: number) => {
+eventLoop.add((timestamp: number, deltaTime: number) => {
     if (keyBoardInput.isKeyPressed('d')) {
-        entityPlayer.angle += -0.04
+        entityPlayer.angle += -0.04 * deltaTime * 60;
     }
     if (keyBoardInput.isKeyPressed('a')) {
-        entityPlayer.angle += 0.04
+        entityPlayer.angle += 0.04 * deltaTime * 60;
     }
     
     if (keyBoardInput.areBothKeysPressed('w', 's')) {
@@ -142,15 +142,15 @@ eventLoop.add((time: number) => {
     entities.push(...allFragments);
 });
 
-eventLoop.add((time: number) => {
+eventLoop.add((timestamp: number, deltaTime: number) => {
     for (const entity of entities) {
         // computando velocidade
-        entity.velocity.x += entity.acceleration.x;
-        entity.velocity.y += entity.acceleration.y;
+        entity.velocity.x += entity.acceleration.x * deltaTime * 60;
+        entity.velocity.y += entity.acceleration.y * deltaTime * 60;
 
         // computando nova posição
-        entity.position.x += entity.velocity.x;
-        entity.position.y += entity.velocity.y;
+        entity.position.x += entity.velocity.x * deltaTime * 60;
+        entity.position.y += entity.velocity.y * deltaTime * 60;
 
         // limitando o espaço e fazendo o efeito de "sair do outro lado da tela"
         const xAbs = Math.abs(entity.position.x)
@@ -164,7 +164,7 @@ eventLoop.add((time: number) => {
             entity.position.y = (yAbs - 2 * diff) * (entity.position.y / yAbs * -1);
         }
 
-        entity.angle += entity.angularVelocity;
+        entity.angle += entity.angularVelocity * deltaTime * 60;
     }
 });
 
