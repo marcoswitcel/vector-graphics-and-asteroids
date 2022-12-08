@@ -3,11 +3,21 @@ export class EventLoop {
         this.running = false;
         this.handlerId = 0;
         this.handlers = new Set();
-        this.handleTick = (time) => {
-            console.assert(typeof time === 'number');
+        this.lastTimestamp = 0;
+        this.handleTick = (timestamp) => {
+            console.assert(typeof timestamp === 'number', 'Deveria ser um número (garantindo que não é undefined)');
+            if (!this.running)
+                return;
+            if (this.lastTimestamp === 0) {
+                this.lastTimestamp = timestamp;
+                requestAnimationFrame(this.handleTick);
+                return;
+            }
             try {
+                const deltaTime = this.lastTimestamp ? (timestamp - this.lastTimestamp) / 1000 : 0;
+                this.lastTimestamp = timestamp;
                 for (const handler of this.handlers) {
-                    handler(time);
+                    handler(timestamp, deltaTime);
                 }
                 if (this.running) {
                     requestAnimationFrame(this.handleTick);
@@ -15,6 +25,7 @@ export class EventLoop {
             }
             catch (error) {
                 console.error(error);
+                this.running = false;
             }
         };
     }
