@@ -18,7 +18,7 @@ const polygon: Vector2[] = [
 ];
 let moving = false;
 let forward = false;
-const playerAcceleration = { x: 0, y: 0.0001 };
+const playerAcceleration = { x: 0, y: 0.45 };
 const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.09, 0.08);
 const shipStandingFigure = makeShipStandingFigure();
 const shipForwardFigure = makeShipForwardFigure();
@@ -28,11 +28,11 @@ const asteroids = Array(3).fill(0).map(() => {
     const y = Math.random() * 2 - 1;
     const scale = 0.15 + Math.random() * 0.1;
     const hitRadius = scale * 1.33;
-    const defaultVelocity = { x: -0.005, y: -0.009 };
+    const defaultVelocity = { x: -0.3, y: -0.54 };
     defaultVelocity.x *= Math.random() > 0.5 ? -1 : 1;
     defaultVelocity.y *= Math.random() > 0.5 ? -1 : 1;
 
-    const entity = new Entity({ x, y }, defaultVelocity, { x: 0, y: 0 }, 0, 'asteroids', hitRadius, scale, -0.01);
+    const entity = new Entity({ x, y }, defaultVelocity, { x: 0, y: 0 }, 0, 'asteroids', hitRadius, scale, -0.6);
     entity.components[fragmentationAllowed] = 4;
     return entity;
 });
@@ -50,7 +50,7 @@ let debugHitRadius = false;
 const emmitShoot = (player: Entity, entities: Entity[]) => {
     const radius = rotatePoint({ x: 0, y: 0.03 }, entityPlayer.angle);
     const position = { x: player.position.x + radius.x, y: player.position.y + radius.y };
-    const velocity = rotatePoint({ x: 0, y: 0.02 }, entityPlayer.angle);
+    const velocity = rotatePoint({ x: 0, y: 1.2 }, entityPlayer.angle);
     const shootEntity = new Entity(position, velocity, { x: 0, y: 0 }, player.angle, 'shoot');
     shootEntity.components[createdAtTimestamp] = Date.now();
     entities.push(shootEntity);
@@ -67,12 +67,13 @@ keyBoardInput.addListener('keyup. ', () => {
     shootWaitingToBeEmmited = true;
 }); 
 
-eventLoop.add((time: number) => {
+eventLoop.add((timestamp: number, deltaTime: number) => {
+    const angularVelocitySpaceShipTurn = 2.4;
     if (keyBoardInput.isKeyPressed('d')) {
-        entityPlayer.angle += -0.04
+        entityPlayer.angle += -angularVelocitySpaceShipTurn * deltaTime;
     }
     if (keyBoardInput.isKeyPressed('a')) {
-        entityPlayer.angle += 0.04
+        entityPlayer.angle += angularVelocitySpaceShipTurn * deltaTime;
     }
     
     if (keyBoardInput.areBothKeysPressed('w', 's')) {
@@ -142,15 +143,15 @@ eventLoop.add((time: number) => {
     entities.push(...allFragments);
 });
 
-eventLoop.add((time: number) => {
+eventLoop.add((timestamp: number, deltaTime: number) => {
     for (const entity of entities) {
         // computando velocidade
-        entity.velocity.x += entity.acceleration.x;
-        entity.velocity.y += entity.acceleration.y;
+        entity.velocity.x += entity.acceleration.x * deltaTime;
+        entity.velocity.y += entity.acceleration.y * deltaTime;
 
         // computando nova posição
-        entity.position.x += entity.velocity.x;
-        entity.position.y += entity.velocity.y;
+        entity.position.x += entity.velocity.x * deltaTime;
+        entity.position.y += entity.velocity.y * deltaTime;
 
         // limitando o espaço e fazendo o efeito de "sair do outro lado da tela"
         const xAbs = Math.abs(entity.position.x)
@@ -164,7 +165,7 @@ eventLoop.add((time: number) => {
             entity.position.y = (yAbs - 2 * diff) * (entity.position.y / yAbs * -1);
         }
 
-        entity.angle += entity.angularVelocity;
+        entity.angle += entity.angularVelocity * deltaTime;
     }
 });
 
@@ -188,12 +189,12 @@ eventLoop.add((time: number) => {
             });
         } else if (entity.type === 'shoot') {
             const startPosition = {
-                x: entity.position.x + entity.velocity.x * -0.75,
-                y: entity.position.y + entity.velocity.y * -0.75,
+                x: entity.position.x + entity.velocity.x * -0.0075,
+                y: entity.position.y + entity.velocity.y * -0.0075,
             };
             const endPosition = {
-                x: entity.position.x + entity.velocity.x * 0.75,
-                y: entity.position.y + entity.velocity.y * 0.75,
+                x: entity.position.x + entity.velocity.x * 0.0075,
+                y: entity.position.y + entity.velocity.y * 0.0075,
             };
             drawLine(ctx, startPosition, endPosition, primaryWhite);
         } else {
@@ -230,8 +231,8 @@ eventLoop.add((time: number) => {
     
     for (const entity of entities) {
         const endPosition = {
-            x: entity.position.x + entity.acceleration.x * 2000,
-            y: entity.position.y + entity.acceleration.y * 2000,
+            x: entity.position.x + entity.acceleration.x,
+            y: entity.position.y + entity.acceleration.y,
         };
         drawLine(ctx, entity.position, endPosition);
     }

@@ -1,9 +1,12 @@
 
+type EventHandler = (timestamp: number, deltaTime: number) => void;
+
 export class EventLoop {
 
     private running: boolean = false;
     private handlerId: number = 0;
-    private handlers: Set<(time: number) => void> = new Set();
+    private handlers: Set<EventHandler> = new Set();
+    private lastTimestamp: number = 0;
 
     public start() {
         if (this.running) return;
@@ -20,16 +23,27 @@ export class EventLoop {
         }
     }
 
-    public add(handler: (time: number) => void) {
+    public add(handler: EventHandler) {
         this.handlers.add(handler);
     }
 
-    private handleTick = (time: number) => {
-        console.assert(typeof time === 'number');
+    private handleTick = (timestamp: number) => {
+        console.assert(typeof timestamp === 'number', 'Deveria ser um número (garantindo que não é undefined)');
+
+        if (!this.running) return;
+
+        if (this.lastTimestamp === 0) {
+            this.lastTimestamp = timestamp;
+            requestAnimationFrame(this.handleTick);
+            return;
+        }
 
         try {
+            const deltaTime = this.lastTimestamp ? (timestamp - this.lastTimestamp) / 1000 : 0;
+            this.lastTimestamp = timestamp;
+
             for (const handler of this.handlers) {
-                handler(time);
+                handler(timestamp, deltaTime);
             }
             
             if (this.running) {
@@ -37,6 +51,7 @@ export class EventLoop {
             }
         } catch (error) {
             console.error(error);
+            this.running = false;
         }
     }
 }
