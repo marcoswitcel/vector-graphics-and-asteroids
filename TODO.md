@@ -11,12 +11,12 @@
 - [X] Implementar suporte a momento angular nas entidades. Assim poderei descrever a rotação de cada entidade separadamente.
 - [X] Montar uma pequena cena com  asteroides de diversos tamanhos (diversas figuras de asteroides também), se possível clicável e com os asteroides se dividindo em partes menores.
 - [X] Criar e implementar o efeito/algoritmo de fragmentação dos asteroides.
+- [X] Ajustar o tempo do jogo para não ser influenciado pela taxa de refresh do monitor. Calcular deltatime e usá-lo na hora de computar as animações.
 - [ ] Criar e implementar as funcionalidades e efeitos envolvidos em converter a forma da nave em linhas e criar entidades para que cada linha possa sair flutuando após a fragmentação da nave, ou fragmentação do asteroide que não pode mais ser partidos.  
 - [ ] Implementar e organizar um sistema que permita gerenciar as entidades do jogo/simulação.
 - [ ] Implementar/estudar melhor forma de implementar a renderização de animações e figuras compostas de várias formas animadas.
 - [ ] Projetar a nave, animar as chamas da nave. Deixar uma pequena cena com a nave pilotável
 - [ ] Melhorar método de renderização para suportar de forma simples e organizada a renderização das entidades que estão atravessando as bordas. Renderizar as partes da entidade em seu devidos lados da tela.
-- [ ] Ajustar o tempo do jogo para não ser influenciado pela taxa de refresh do monitor. Calcular deltatime e usá-lo na hora de computar as animaçõs.
 
 
 ## Ideias para o futuro
