@@ -17,10 +17,10 @@
 - [ ] Implementar/estudar melhor forma de implementar a renderização de animações e figuras compostas de várias formas animadas.
 - [ ] Projetar a nave, animar as chamas da nave. Deixar uma pequena cena com a nave pilotável
 - [ ] Melhorar método de renderização para suportar de forma simples e organizada a renderização das entidades que estão atravessando as bordas. Renderizar as partes da entidade em seu devidos lados da tela.
+- [ ] estudar e implentar um sistema de som que funcione junto com a simulação, entender o que é necessário e integrá-lo ao sistema de entidades, implementar algum tipo de catálogo de áudios.
 
 
 ## Ideias para o futuro
 
 - [ ] Implementar o efeito de iluminação parecido com o dos arcades para o processo de renderização dos gráficos vetoriais.
-- [ ] sistema de som e sons para a simulação
 - [ ] Achar algum meio para distribuir os asteroides de forma "randômica"
