@@ -11,9 +11,7 @@ Para fins de referência e documentação.
 * NodeJS (v16.14.2): [https://nodejs.org/en/) v16](https://nodejs.org/en/) 
 * Typescript (Version 4.7.4): [https://www.npmjs.com/package/typescript](https://www.npmjs.com/package/typescript) 
 
-Para testar a aplicação dois comandos são fundamentais.
-
-`npm run build`, que faz o build de produção e `npm run dev` que deixa o compilador do TypeScript observando edições no source code.
+Para testar a aplicação dois comandos são fundamentais: `npm run build`, que faz o build de produção e `npm run dev` que deixa o compilador do TypeScript observando edições no source code.
 
 ```bash
 # Gera o build de produção
