@@ -2,7 +2,7 @@
 
 Link para testar o código: [https://marcoswitcel.github.io/vector-graphics-and-asteroids/public/](https://marcoswitcel.github.io/vector-graphics-and-asteroids/public/)
 
-## Ambiente usado
+## Ambiente e ferramentas usadas no desenvolvimento
 
 ### Ferramentas de linha de comando e SDK's
 
