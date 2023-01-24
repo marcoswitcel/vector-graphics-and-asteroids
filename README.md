@@ -23,7 +23,7 @@ npm run dev
 
 ### IDE
 
-Durante o desenvolvimento utilizei a IDE [Visual Studio Code](https://code.visualstudio.com/) com a extensão [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer). O [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) atuou com servidor HTTP e mecanismo de recarregamento automático para não precisar fazer refresh manual, ele completentou o comando `npm run dev` que realiza observa modificações nos arquivos e rebuilda quando necessário.
+Durante o desenvolvimento utilizei a IDE [Visual Studio Code](https://code.visualstudio.com/) com a extensão [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer). O [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) atuou com servidor HTTP e mecanismo de recarregamento automático para não precisar fazer refresh manual, ele complementou o comando `npm run dev` que observa modificações nos arquivos e rebuilda quando necessário.
 
 ## Referências
 
