@@ -181,7 +181,7 @@ eventLoop.add((time: number) => {
     for (const entity of entities) {
         if (entity.type === 'player') {
             // @todo João, avaliar essa solução, visualmente está correto, porém acredito que a função `renderFigureInside` apesar de funcionar
-            // trás uma complecidade desnecessária, acho que seria interessante nessa etapa apenas acumular as figuras que devem ser
+            // trás uma complexidade desnecessária, acho que seria interessante nessa etapa apenas acumular as figuras que devem ser
             // desenhadas e em um próximo loop fazer a renderização de fato.
             // drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), primaryWhite);
             renderFigureInside(entity, [], ctx, (ctx: CanvasRenderingContext2D, _: readonly Vector2[], position: Vector2, entity: Entity) => {
@@ -199,7 +199,7 @@ eventLoop.add((time: number) => {
             drawLine(ctx, startPosition, endPosition, primaryWhite);
         } else {
             // @todo João, avaliar essa solução, visualmente está correto, porém acredito que a função `renderFigureInside` apesar de funcionar
-            // trás uma complecidade desnecessária, acho que seria interessante nessa etapa apenas acumular as figuras que devem ser
+            // trás uma complexidade desnecessária, acho que seria interessante nessa etapa apenas acumular as figuras que devem ser
             // desenhadas e em um próximo loop fazer a renderização de fato.
             // drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), entity.scale), entity.angle)), secondaryWhite);
             renderFigureInside(entity, makeAsteroid(), ctx, (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => {

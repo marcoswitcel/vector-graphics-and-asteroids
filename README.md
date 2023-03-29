@@ -8,7 +8,7 @@ Link para testar o código: [https://marcoswitcel.github.io/vector-graphics-and-
 
 Para fins de referência e documentação.
 
-* NodeJS (v16.14.2): [https://nodejs.org/en/) v16](https://nodejs.org/en/) 
+* NodeJS (v16.14.2): [https://nodejs.org/en/](https://nodejs.org/en/) 
 * Typescript (Version 4.7.4): [https://www.npmjs.com/package/typescript](https://www.npmjs.com/package/typescript) 
 
 Para testar a aplicação dois comandos são fundamentais: `npm run build`, que faz o build de produção e `npm run dev` que deixa o compilador do TypeScript observando edições no source code.

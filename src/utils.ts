@@ -59,6 +59,8 @@ export function fragmentAsteroid(entity: Entity, numberOfFragments = 4): Entity[
 }
 
 /**
+ * Função que renderiza a figura de forma espelhada em todas as posições necessárias para parecer
+ * que a figura está atravessando as bordas e aparecendo do outro lado.
  * @todo João, avaliar se faz sentido fazer dessa forma. Acredito que isso agregue complexidade.
  */
 export function renderFigureInside(entity: Entity, figure: Vector2[], ctx: CanvasRenderingContext2D, drawFunction: (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => void) {
