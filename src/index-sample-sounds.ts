@@ -21,10 +21,35 @@
 console.log('pronto para começar!!!');
 
 const audio = new Audio('./resource/audio/Cartoon Metal Thunk.mp3');
+const audio2 = new Audio('./resource/audio/Wooden Train Whistle.mp3');
+
+
+Promise.all([audio, audio2].map(a => isPlayable(a)))
+    .then(array => array.forEach(a => console.log(a.src)))
 
 window.addEventListener('load', () => {
     window.addEventListener('mousedown', () => {
-        audio.play()
+        console.log('playing')
+        audio.play();
+        audio2.play();
+        const newAudio = audio.cloneNode(true) as HTMLAudioElement;
+        setTimeout(() => newAudio.play(), 500);
+        // const newAudioManual = new Audio('./resource/audio/Cartoon Metal Thunk.mp3');
+        // setTimeout(() => newAudioManual.play(), 500);
     })
 })
+
+/**
+ * 
+ * @param audio elemento contendo o áudio fonte
+ * @param fullyLoaded 
+ * @returns 
+ */
+function isPlayable(audio : HTMLAudioElement, fullyLoaded = true) : Promise<HTMLAudioElement> {
+    const doneEvent = fullyLoaded ? 'canplaythough' : 'canplay';
+    return new Promise((resolve, reject) => {
+        audio.addEventListener(doneEvent, () => resolve(audio));
+        audio.addEventListener('error', () => reject(audio));
+    });
+}
 
