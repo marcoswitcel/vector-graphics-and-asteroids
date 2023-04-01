@@ -18,4 +18,13 @@
  * Coisas que descartei inicialmente: son espacial (2d), 
  */
 
-console.log('pronto para começar!!');
+console.log('pronto para começar!!!');
+
+const audio = new Audio('./resource/audio/Cartoon Metal Thunk.mp3');
+
+window.addEventListener('load', () => {
+    window.addEventListener('mousedown', () => {
+        audio.play()
+    })
+})
+
