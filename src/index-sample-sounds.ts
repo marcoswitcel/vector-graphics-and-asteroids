@@ -53,3 +53,46 @@ function isPlayable(audio : HTMLAudioElement, fullyLoaded = true) : Promise<HTML
     });
 }
 
+class SoundResourceEntry {
+    resourceLocation: string;
+    readyToPlay: boolean = false;
+    data: HTMLAudioElement | null = null;
+
+    constructor(resourceLocation: string, autoStart: boolean = false) {
+        this.resourceLocation = resourceLocation;
+        if (autoStart) {
+            this.startLoading();
+        }
+    }
+
+    public async startLoading(): Promise<{ name: string, success: boolean }> {
+        this.data = new Audio(this.resourceLocation);
+        try {
+            await isPlayable(this.data)
+            this.readyToPlay = true;
+            return { name: this.resourceLocation, success: true };
+        } catch (error) {
+            this.readyToPlay = false;
+            return { name: this.resourceLocation, success: false };
+        }
+    }
+}
+
+class SoundResourceManager {
+    public autoStartDownload: boolean = false;
+
+    private entries: Map<string, SoundResourceEntry> = new Map;
+
+    public add(resourceName: string, resourceLocation: string) {
+        if (!this.entries.has(resourceName)) {
+            const soundResourceEntry = new SoundResourceEntry(resourceLocation, this.autoStartDownload);
+            this.entries.set(resourceName, soundResourceEntry);
+        }
+    }
+
+    public loadAll() {
+        this.entries.forEach((entry) => {
+            entry.startLoading()
+        });
+    }
+}
