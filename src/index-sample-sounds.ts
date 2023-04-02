@@ -40,7 +40,7 @@ window.addEventListener('load', () => {
 })
 
 /**
- * 
+ * Função que criar uma promise para trabalhar com o áudio carregado com `HTMLAudioElement`
  * @param audio elemento contendo o áudio fonte
  * @param fullyLoaded 
  * @returns 
