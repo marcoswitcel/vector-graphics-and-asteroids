@@ -47,6 +47,7 @@ class SoundResourceEntry {
     }
 
     public async startLoading(): Promise<{ name: string, success: boolean }> {
+        // @todo joão, implementar um mecanismo para saber quando já está carregando
         this.data = new Audio(this.resourceLocation);
         try {
             await isPlayable(this.data)
