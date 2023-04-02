@@ -27,7 +27,7 @@ console.log('pronto para começar!!!');
  * @returns 
  */
 function isPlayable(audio : HTMLAudioElement, fullyLoaded = true) : Promise<HTMLAudioElement> {
-    const doneEvent = fullyLoaded ? 'canplaythough' : 'canplay';
+    const doneEvent = fullyLoaded ? 'canplaythrough' : 'canplay';
     return new Promise((resolve, reject) => {
         audio.addEventListener(doneEvent, () => resolve(audio));
         audio.addEventListener('error', () => reject(audio));
@@ -73,8 +73,41 @@ class SoundResourceManager {
 
     public loadAll() {
         this.entries.forEach((entry) => {
-            entry.startLoading()
+            entry.startLoading();
         });
+    }
+}
+
+class SoundMixer {
+
+    private soundResourceManager: SoundResourceManager;
+    
+    constructor(soundResourceManager?: SoundResourceManager) {
+        if (soundResourceManager) {
+            this.soundResourceManager = soundResourceManager;
+        } else {
+            this.soundResourceManager = new SoundResourceManager;
+        }
+    }
+
+    /**
+     * Função que inicia a execução do som, talvez deva expandir para receber um pedido mais específico,
+     * tipo receber o volume e a posição do áudio e também deveria retornar um identificador para acompanhar
+     * os status do som
+     * @param name nome do sons a ser tocado
+     */
+    public play(name: string) {
+        if (this.soundResourceManager.entries.has(name)) {
+            const soundResEntry = this.soundResourceManager.entries.get(name) as SoundResourceEntry;
+            if (soundResEntry.readyToPlay) {
+                const audioElement = soundResEntry.data?.cloneNode(true) as HTMLAudioElement;
+                audioElement.play();
+            } else {
+                console.warn(`O som registrado para o nome: ${name} não está pronto para ser tocado, essa requisição será ignorada`);    
+            }
+        } else {
+            console.warn(`Não há som registrado para o nome: ${name}`);
+        }
     }
 }
 
@@ -85,10 +118,13 @@ soundResourceManager.add('wooden', './resource/audio/Wooden Train Whistle.mp3');
 
 soundResourceManager.loadAll();
 
+const soundMixer = new SoundMixer(soundResourceManager);
+
 window.addEventListener('load', () => {
     window.addEventListener('mousedown', () => {
         console.log('playing')
-        soundResourceManager.entries.get('cartoon')?.data?.play()
+        soundMixer.play('cartoon');
+        setTimeout(() => soundMixer.play('wooden'), 500);
         // const newAudio = audio.cloneNode(true) as HTMLAudioElement;
         // setTimeout(() => newAudio.play(), 500);
         // const newAudioManual = new Audio('./resource/audio/Cartoon Metal Thunk.mp3');
