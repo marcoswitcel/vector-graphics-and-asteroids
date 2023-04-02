@@ -20,25 +20,6 @@
 
 console.log('pronto para começar!!!');
 
-const audio = new Audio('./resource/audio/Cartoon Metal Thunk.mp3');
-const audio2 = new Audio('./resource/audio/Wooden Train Whistle.mp3');
-
-
-Promise.all([audio, audio2].map(a => isPlayable(a)))
-    .then(array => array.forEach(a => console.log(a.src)))
-
-window.addEventListener('load', () => {
-    window.addEventListener('mousedown', () => {
-        console.log('playing')
-        audio.play();
-        audio2.play();
-        const newAudio = audio.cloneNode(true) as HTMLAudioElement;
-        setTimeout(() => newAudio.play(), 500);
-        // const newAudioManual = new Audio('./resource/audio/Cartoon Metal Thunk.mp3');
-        // setTimeout(() => newAudioManual.play(), 500);
-    })
-})
-
 /**
  * Função que criar uma promise para trabalhar com o áudio carregado com `HTMLAudioElement`
  * @param audio elemento contendo o áudio fonte
@@ -81,7 +62,7 @@ class SoundResourceEntry {
 class SoundResourceManager {
     public autoStartDownload: boolean = false;
 
-    private entries: Map<string, SoundResourceEntry> = new Map;
+    public entries: Map<string, SoundResourceEntry> = new Map;
 
     public add(resourceName: string, resourceLocation: string) {
         if (!this.entries.has(resourceName)) {
@@ -96,3 +77,21 @@ class SoundResourceManager {
         });
     }
 }
+
+const soundResourceManager = new SoundResourceManager;
+
+soundResourceManager.add('cartoon', './resource/audio/Cartoon Metal Thunk.mp3');
+soundResourceManager.add('wooden', './resource/audio/Wooden Train Whistle.mp3');
+
+soundResourceManager.loadAll();
+
+window.addEventListener('load', () => {
+    window.addEventListener('mousedown', () => {
+        console.log('playing')
+        soundResourceManager.entries.get('cartoon')?.data?.play()
+        // const newAudio = audio.cloneNode(true) as HTMLAudioElement;
+        // setTimeout(() => newAudio.play(), 500);
+        // const newAudioManual = new Audio('./resource/audio/Cartoon Metal Thunk.mp3');
+        // setTimeout(() => newAudioManual.play(), 500);
+    })
+})
