@@ -37,6 +37,7 @@ function isPlayable(audio : HTMLAudioElement, fullyLoaded = true) : Promise<HTML
 class SoundResourceEntry {
     resourceLocation: string;
     readyToPlay: boolean = false;
+    errorLoading: boolean = false;
     data: HTMLAudioElement | null = null;
 
     constructor(resourceLocation: string, autoStart: boolean = false) {
@@ -46,15 +47,32 @@ class SoundResourceEntry {
         }
     }
 
+    /**
+     * Função que inicia monta o `HTMLAudioElement` e inicia o download caso ele não
+     * tenha sido iniciado ainda. Essa função também oferece visibilidade do status do carregamento.
+     * @returns Um objeto com o nome e o status do carregamento, sucesso ou não
+     */
     public async startLoading(): Promise<{ name: string, success: boolean }> {
-        // @todo joão, implementar um mecanismo para saber quando já está carregando
-        this.data = new Audio(this.resourceLocation);
+        if (!this.data) {
+            this.data = new Audio(this.resourceLocation);
+        }
+
+        if (this.readyToPlay) {
+            return { name: this.resourceLocation, success: true };
+        }
+
+        if (this.errorLoading) {
+            return { name: this.resourceLocation, success: false };
+        }
+
         try {
             await isPlayable(this.data)
             this.readyToPlay = true;
+            this.errorLoading = false;
             return { name: this.resourceLocation, success: true };
         } catch (error) {
             this.readyToPlay = false;
+            this.errorLoading = true;
             return { name: this.resourceLocation, success: false };
         }
     }
