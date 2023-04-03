@@ -92,7 +92,8 @@ class SoundMixer {
     }
 
     /**
-     * Função que inicia a execução do som, talvez deva expandir para receber um pedido mais específico,
+     * Função que inicia a execução do som
+     * @todo João, talvez deva expandir para receber um pedido mais específico,
      * tipo receber o volume e a posição do áudio e também deveria retornar um identificador para acompanhar
      * os status do som
      * @param name nome do sons a ser tocado
