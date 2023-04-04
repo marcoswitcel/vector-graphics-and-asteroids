@@ -115,12 +115,14 @@ class SoundMixer {
      * tipo receber o volume e a posição do áudio e também deveria retornar um identificador para acompanhar
      * os status do som
      * @param name nome do sons a ser tocado
+     * @param loop som deve ser tocado em loop
      */
-    public play(name: string) {
+    public play(name: string, loop: boolean = false) {
         if (this.soundResourceManager.entries.has(name)) {
             const soundResEntry = this.soundResourceManager.entries.get(name) as SoundResourceEntry;
             if (soundResEntry.readyToPlay) {
                 const audioElement = soundResEntry.data?.cloneNode(true) as HTMLAudioElement;
+                audioElement.loop = loop;
                 audioElement.play();
             } else {
                 console.warn(`O som registrado para o nome: ${name} não está pronto para ser tocado, essa requisição será ignorada`);    
