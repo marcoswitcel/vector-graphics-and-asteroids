@@ -99,7 +99,13 @@ class SoundResourceManager {
 
 class SoundMixer {
 
+    private globalVolume: number = 1;
     private soundResourceManager: SoundResourceManager;
+    /**
+     * @todo João, inicialmente essa propriedade é um set, porém, acredito que precise de um tipo dedicado
+     * para armazenar coisas como volume individual dos sons sendo tocados e estados
+     */
+    private playingSounds: Set<HTMLAudioElement> = new Set;
     
     constructor(soundResourceManager?: SoundResourceManager) {
         if (soundResourceManager) {
@@ -123,7 +129,10 @@ class SoundMixer {
             if (soundResEntry.readyToPlay) {
                 const audioElement = soundResEntry.data?.cloneNode(true) as HTMLAudioElement;
                 audioElement.loop = loop;
+                audioElement.volume = this.globalVolume;
                 audioElement.play();
+
+                this.playingSounds.add(audioElement);
             } else {
                 console.warn(`O som registrado para o nome: ${name} não está pronto para ser tocado, essa requisição será ignorada`);    
             }
@@ -131,6 +140,22 @@ class SoundMixer {
             console.warn(`Não há som registrado para o nome: ${name}`);
         }
     }
+
+    /**
+     * Método que seta o volume global e aplica em todos os áudios tocando
+     * @param volume valor entre 0 e 1
+     */
+    public setVolume(volume: number) {
+        this.globalVolume = between(volume, 0, 1);
+
+        this.playingSounds.forEach((audioElement) => {
+            audioElement.volume = this.globalVolume;
+        });
+    }
+}
+
+function between(value: number, min: number, max: number) {
+    return Math.max(Math.min(value, max), min)
 }
 
 const soundResourceManager = new SoundResourceManager;
