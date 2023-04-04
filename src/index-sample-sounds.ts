@@ -167,6 +167,10 @@ soundResourceManager.loadAll();
 
 const soundMixer = new SoundMixer(soundResourceManager);
 
+/**
+ * @todo João, acredito que por um botão iniciar e um controlador de volume em formato de
+ * input seria legal.
+ */
 window.addEventListener('load', () => {
     window.addEventListener('mousedown', () => {
         console.log('playing')
