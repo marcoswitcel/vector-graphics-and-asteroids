@@ -168,17 +168,38 @@ soundResourceManager.loadAll();
 const soundMixer = new SoundMixer(soundResourceManager);
 
 /**
- * @todo João, acredito que por um botão iniciar e um controlador de volume em formato de
- * input seria legal.
+ * @todo João, acredito que implementar uma forma de traquear os sons executando a partir de quem requisita o som seria legal
  */
-window.addEventListener('load', () => {
-    window.addEventListener('mousedown', () => {
-        console.log('playing')
-        soundMixer.play('cartoon');
-        setTimeout(() => soundMixer.play('wooden'), 500);
-        // const newAudio = audio.cloneNode(true) as HTMLAudioElement;
-        // setTimeout(() => newAudio.play(), 500);
-        // const newAudioManual = new Audio('./resource/audio/Cartoon Metal Thunk.mp3');
-        // setTimeout(() => newAudioManual.play(), 500);
-    })
-})
+
+const playCartoonButtonElement = document.getElementById('cartoonMetalThunk');
+const playWoodenButtonElement = document.getElementById('woodenTrainWhistle');
+const globalVolumeRangeElement = document.getElementById('globalVolume');
+const displayVolumeRangeElement = document.getElementById('displayVolume');
+
+
+if (!playCartoonButtonElement || !playWoodenButtonElement || !globalVolumeRangeElement || !displayVolumeRangeElement) throw "Elemento faltando no HTML";
+
+const updateDisplayVolume = () => {
+    if (globalVolumeRangeElement instanceof HTMLInputElement) {
+        displayVolumeRangeElement.innerText = Number(+globalVolumeRangeElement.value * 100).toFixed(2);
+    }
+}
+
+playCartoonButtonElement.addEventListener('click', () => {
+    console.log('playing');
+    soundMixer.play('cartoon');
+});
+
+playWoodenButtonElement.addEventListener('click', () => {
+    console.log('playing');
+    soundMixer.play('wooden');
+});
+
+globalVolumeRangeElement.addEventListener('input', () => {
+    if (globalVolumeRangeElement instanceof HTMLInputElement) {
+        updateDisplayVolume();
+        soundMixer.setVolume(+globalVolumeRangeElement.value);
+    }
+});
+
+updateDisplayVolume();

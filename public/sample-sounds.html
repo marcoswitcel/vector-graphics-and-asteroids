@@ -5,8 +5,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gráficos Vetoriais</title>
+    <style>
+
+    </style>
 </head>
 <body>
     <script type="module" src="./dist/index-sample-sounds.js"></script>
+    <div class="container">
+        <div class="controls">
+            <button id="cartoonMetalThunk" type="button">Tocar: Carton Metal Thunk</button>
+            <button id="woodenTrainWhistle" type="button">Tocar: Wooden Train Whistle</button>
+            <label>
+                Volume global: <span id="displayVolume"></span>
+                <input type="range" name="globalVolume" id="globalVolume" min="0" max="1" step="0.05">
+            </label>
+        </div>
+        <div class="list" style="display: none;">
+            <ul>
+                <li>
+                    tocando: nome
+                    <div class="progress"></div>
+                </li>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
