@@ -216,6 +216,10 @@ class SoundMixer {
     public getVolume() {
         return this.globalVolume;
     }
+
+    public getPlayingSoundsIter(): IterableIterator<SoundHandler> {
+        return this.playingSounds[Symbol.iterator]();
+    }
 }
 
 function between(value: number, min: number, max: number) {
@@ -267,3 +271,31 @@ globalVolumeRangeElement.addEventListener('input', () => {
 });
 
 updateDisplayVolume();
+
+/**
+ * @todo João, código bem mal organizado e acredito que ineficiente, reorganizar e otimizar
+ */
+const map: Map<SoundHandler, HTMLLIElement> = new Map();
+const updateList = () => {
+    for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
+        if (map.has(soundHandler)) {
+            const liElement = map.get(soundHandler) as HTMLLIElement;
+            liElement.innerText = `source: ${soundHandler.audioElement.src}, ${soundHandler.currentTime} / ${soundHandler.duration}`;
+        } else {
+            const liElement = document.createElement('li');
+            map.set(soundHandler, liElement);
+            liElement.innerText = `source: ${soundHandler.audioElement.src}, ${soundHandler.currentTime} / ${soundHandler.duration}`;
+            document.getElementById('playingSoundsList')?.appendChild(liElement);
+        }
+    }
+};
+
+setInterval(updateList, 100);
+
+// @todo João, testando mudanças no som ao longo da execução
+// let index = 0;
+// requestAnimationFrame(function updateSound(time) {
+//     console.log(time % 1000 / 1000);
+//     soundMixer.setVolume(time % 2000 / 2000);
+//     requestAnimationFrame(updateSound);
+// })
