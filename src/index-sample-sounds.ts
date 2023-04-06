@@ -129,6 +129,7 @@ class SoundMixer {
             if (soundResEntry.readyToPlay) {
                 const audioElement = soundResEntry.data?.cloneNode(true) as HTMLAudioElement;
                 audioElement.loop = loop;
+                audioElement.controls = false;
                 audioElement.volume = this.globalVolume;
                 audioElement.play();
 
