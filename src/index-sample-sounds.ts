@@ -97,6 +97,67 @@ class SoundResourceManager {
     }
 }
 
+enum SoundHandlerState {
+    NOT_STARTED,
+    PLAYING,
+    STOPED,
+    ENDED,
+}
+
+class SoundHandler {
+    public audioElement: HTMLAudioElement;
+    private volume: number = 1;
+    private state: SoundHandlerState = SoundHandlerState.NOT_STARTED;
+    private currentMixer: SoundMixer;
+    private loop: boolean = false;
+
+    constructor(audioElement: HTMLAudioElement, currentMixer: SoundMixer, loop: boolean = false, volume: number = 1, state: SoundHandlerState = SoundHandlerState.NOT_STARTED) {
+        this.audioElement = audioElement;
+        this.currentMixer = currentMixer;
+        this.setVolume(volume);
+        this.state = state;
+        this.loop = loop;
+
+        this.updateAudioElementAttributes();
+    }
+
+    private updateAudioElementAttributes() {
+        this.audioElement.loop = this.loop;
+        this.audioElement.controls = false;
+        this.audioElement.volume = this.currentMixer.getVolume() * this.volume;
+    }
+
+    public play() {
+        this.audioElement.play();
+    }
+
+    public stop() {
+        this.audioElement.pause();
+    }
+
+    public getVolume(): number {
+        return this.volume;
+    }
+
+    public setVolume(volume: number): void {
+        this.volume = between(volume, 0, 1);
+
+        this.audioElement.volume = this.currentMixer.getVolume() * this.volume;
+    }
+
+    public globalVolumeChanged() {
+        this.audioElement.volume = this.currentMixer.getVolume() * this.volume;
+    }
+
+    public get duration(): number {
+        return this.audioElement.duration;
+    }
+
+    public get currentTime(): number {
+        return this.audioElement.currentTime;
+    }
+}
+
 class SoundMixer {
 
     private globalVolume: number = 1;
@@ -105,7 +166,7 @@ class SoundMixer {
      * @todo João, inicialmente essa propriedade é um set, porém, acredito que precise de um tipo dedicado
      * para armazenar coisas como volume individual dos sons sendo tocados e estados
      */
-    private playingSounds: Set<HTMLAudioElement> = new Set;
+    private playingSounds: Set<SoundHandler> = new Set;
     
     constructor(soundResourceManager?: SoundResourceManager) {
         if (soundResourceManager) {
@@ -128,12 +189,10 @@ class SoundMixer {
             const soundResEntry = this.soundResourceManager.entries.get(name) as SoundResourceEntry;
             if (soundResEntry.readyToPlay) {
                 const audioElement = soundResEntry.data?.cloneNode(true) as HTMLAudioElement;
-                audioElement.loop = loop;
-                audioElement.controls = false;
-                audioElement.volume = this.globalVolume;
-                audioElement.play();
+                const soundHandler = new SoundHandler(audioElement, this, loop, 1);
+                soundHandler.play()
 
-                this.playingSounds.add(audioElement);
+                this.playingSounds.add(soundHandler);
             } else {
                 console.warn(`O som registrado para o nome: ${name} não está pronto para ser tocado, essa requisição será ignorada`);    
             }
@@ -149,9 +208,13 @@ class SoundMixer {
     public setVolume(volume: number) {
         this.globalVolume = between(volume, 0, 1);
 
-        this.playingSounds.forEach((audioElement) => {
-            audioElement.volume = this.globalVolume;
+        this.playingSounds.forEach((soundHandler) => {
+            soundHandler.globalVolumeChanged();
         });
+    }
+
+    public getVolume() {
+        return this.globalVolume;
     }
 }
 
