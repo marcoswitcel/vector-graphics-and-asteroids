@@ -327,8 +327,8 @@ const updateList = () => {
             }
         }
 
-        soundMixer.clear();
     }
+    soundMixer.clear();
 };
 
 setInterval(updateList, 100);
