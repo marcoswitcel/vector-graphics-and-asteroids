@@ -275,9 +275,10 @@ const playCartoonButtonElement = document.getElementById('cartoonMetalThunk');
 const playWoodenButtonElement = document.getElementById('woodenTrainWhistle');
 const globalVolumeRangeElement = document.getElementById('globalVolume');
 const displayVolumeRangeElement = document.getElementById('displayVolume');
+const playingSoundsListElement = document.getElementById('playingSoundsList');
 
 
-if (!playCartoonButtonElement || !playWoodenButtonElement || !globalVolumeRangeElement || !displayVolumeRangeElement) throw "Elemento faltando no HTML";
+if (!playCartoonButtonElement || !playWoodenButtonElement || !globalVolumeRangeElement || !displayVolumeRangeElement || !playingSoundsListElement) throw "Elemento faltando no HTML";
 
 const updateDisplayVolume = () => {
     if (globalVolumeRangeElement instanceof HTMLInputElement) {
@@ -310,23 +311,25 @@ updateDisplayVolume();
 const map: Map<SoundHandler, ListItemComponent> = new Map();
 const updateList = () => {
     for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
-        const liElement = map.get(soundHandler)
+        const liElement = map.get(soundHandler);
+
+        if (soundHandler.status === SoundHandlerState.ENDED) {
+            if (liElement) {
+                map.delete(soundHandler);
+                playingSoundsListElement.removeChild(liElement.rootElement);
+            }
+            continue;
+        }
+
         if (liElement) {
             liElement.updateElements();
         } else {
             const listItemComponent = new ListItemComponent(soundHandler);
             map.set(soundHandler, listItemComponent);
-            document.getElementById('playingSoundsList')?.appendChild(listItemComponent.rootElement);
+            playingSoundsListElement.appendChild(listItemComponent.rootElement);
         }
-        if (soundHandler.status === SoundHandlerState.ENDED) {
-            if (map.has(soundHandler)) {
-                const liElement = map.get(soundHandler) as ListItemComponent;
-                map.delete(soundHandler);
-                document.getElementById('playingSoundsList')?.removeChild(liElement.rootElement);
-            }
-        }
-
     }
+
     soundMixer.clear();
 };
 
