@@ -18,8 +18,6 @@
  * Coisas que descartei inicialmente: son espacial (2d), 
  */
 
-console.log('pronto para começar!!!');
-
 /**
  * Função que criar uma promise para trabalhar com o áudio carregado com `HTMLAudioElement`
  * @param audio elemento contendo o áudio fonte
@@ -291,12 +289,10 @@ const updateDisplayVolume = () => {
 }
 
 playCartoonButtonElement.addEventListener('click', () => {
-    console.log('playing');
     soundMixer.play('cartoon');
 });
 
 playWoodenButtonElement.addEventListener('click', () => {
-    console.log('playing');
     soundMixer.play('wooden');
 });
 
