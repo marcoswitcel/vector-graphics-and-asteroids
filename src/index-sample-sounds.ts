@@ -243,6 +243,10 @@ class SoundMixer {
         return this.playingSounds[Symbol.iterator]();
     }
 
+    /**
+     * @todo João, melhorar esse processo de descarte dos handlers para incluir o processo de descarte de `HTMLAudioElements`
+     * como sugerido nesse link: https://stackoverflow.com/questions/8864617/how-do-i-remove-properly-html5-audio-without-appending-to-dom
+     */
     public clear(): void {
         const playingSounds: Set<SoundHandler> = new Set();
         for (const it of this.playingSounds) {
