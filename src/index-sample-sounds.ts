@@ -307,29 +307,50 @@ updateDisplayVolume();
 /**
  * @todo João, código bem mal organizado e acredito que ineficiente, reorganizar e otimizar
  */
-const map: Map<SoundHandler, HTMLLIElement> = new Map();
+const map: Map<SoundHandler, ListItemComponent> = new Map();
 const updateList = () => {
     for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
-        if (map.has(soundHandler)) {
-            const liElement = map.get(soundHandler) as HTMLLIElement;
-            liElement.innerText = `source: ${soundHandler.audioElement.src}, ${soundHandler.currentTime} / ${soundHandler.duration}`;
+        const liElement = map.get(soundHandler)
+        if (liElement) {
+            liElement.updateElements();
         } else {
-            const liElement = document.createElement('li');
-            map.set(soundHandler, liElement);
-            liElement.innerText = `source: ${soundHandler.audioElement.src}, ${soundHandler.currentTime} / ${soundHandler.duration}`;
-            document.getElementById('playingSoundsList')?.appendChild(liElement);
+            const listItemComponent = new ListItemComponent(soundHandler);
+            map.set(soundHandler, listItemComponent);
+            document.getElementById('playingSoundsList')?.appendChild(listItemComponent.rootElement);
         }
         if (soundHandler.status === SoundHandlerState.ENDED) {
             if (map.has(soundHandler)) {
-                const liElement = map.get(soundHandler) as HTMLLIElement;
+                const liElement = map.get(soundHandler) as ListItemComponent;
                 map.delete(soundHandler);
-                document.getElementById('playingSoundsList')?.removeChild(liElement);
+                document.getElementById('playingSoundsList')?.removeChild(liElement.rootElement);
             }
         }
 
     }
     soundMixer.clear();
 };
+
+class ListItemComponent {
+
+    public rootElement: HTMLElement;
+
+    private soundHandler: SoundHandler;
+
+    constructor(soundHandler: SoundHandler) {
+        this.soundHandler = soundHandler;
+        this.rootElement = this.buildElements();
+        this.updateElements();
+    }
+
+    private buildElements(): HTMLElement {
+        const liElement = document.createElement('li');
+        return liElement;
+    }
+
+    public updateElements() {
+        this.rootElement.innerText = `source: ${this.soundHandler.audioElement.src}, ${this.soundHandler.currentTime} / ${this.soundHandler.duration}`;
+    } 
+}
 
 setInterval(updateList, 100);
 
