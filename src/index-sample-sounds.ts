@@ -383,7 +383,7 @@ class ListItemComponent {
     } 
 }
 
-setInterval(updateList, 100);
+setInterval(updateList, 60);
 
 // @todo João, testando mudanças no som ao longo da execução
 // let index = 0;
