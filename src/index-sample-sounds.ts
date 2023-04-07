@@ -119,6 +119,7 @@ class SoundHandler {
         this.loop = loop;
 
         this.updateAudioElementAttributes();
+        this.setupListeners();
     }
 
     private updateAudioElementAttributes() {
@@ -127,11 +128,21 @@ class SoundHandler {
         this.audioElement.volume = this.currentMixer.getVolume() * this.volume;
     }
 
+    private setupListeners() {
+        if (!this.loop) {
+            this.audioElement.addEventListener('ended', () => {
+                this.state = SoundHandlerState.ENDED;
+            });
+        }
+    }
+
     public play() {
+        this.state = SoundHandlerState.PLAYING;
         this.audioElement.play();
     }
 
     public stop() {
+        this.state = SoundHandlerState.STOPED;
         this.audioElement.pause();
     }
 
@@ -155,6 +166,17 @@ class SoundHandler {
 
     public get currentTime(): number {
         return this.audioElement.currentTime;
+    }
+
+    public get status(): SoundHandlerState {
+        switch (this.state) {
+            case SoundHandlerState.NOT_STARTED: return SoundHandlerState.NOT_STARTED;
+            case SoundHandlerState.PLAYING: return SoundHandlerState.NOT_STARTED;
+            case SoundHandlerState.ENDED: return SoundHandlerState.ENDED;
+            case SoundHandlerState.STOPED: return SoundHandlerState.STOPED;
+        }
+        console.warn('Estado inválido, retornando ENDED');
+        return SoundHandlerState.ENDED;
     }
 }
 
@@ -219,6 +241,16 @@ class SoundMixer {
 
     public getPlayingSoundsIter(): IterableIterator<SoundHandler> {
         return this.playingSounds[Symbol.iterator]();
+    }
+
+    public clear(): void {
+        const playingSounds: Set<SoundHandler> = new Set();
+        for (const it of this.playingSounds) {
+            if (it.status !== SoundHandlerState.ENDED) {
+                playingSounds.add(it);
+            }
+        }
+        this.playingSounds = playingSounds;
     }
 }
 
@@ -287,6 +319,15 @@ const updateList = () => {
             liElement.innerText = `source: ${soundHandler.audioElement.src}, ${soundHandler.currentTime} / ${soundHandler.duration}`;
             document.getElementById('playingSoundsList')?.appendChild(liElement);
         }
+        if (soundHandler.status === SoundHandlerState.ENDED) {
+            if (map.has(soundHandler)) {
+                const liElement = map.get(soundHandler) as HTMLLIElement;
+                map.delete(soundHandler);
+                document.getElementById('playingSoundsList')?.removeChild(liElement);
+            }
+        }
+
+        soundMixer.clear();
     }
 };
 
