@@ -6,7 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gráficos Vetoriais</title>
     <style>
-
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: auto;
+        }
+        .list {
+            padding: 0;
+        }
+        .list li {
+            padding: 1em;
+            list-style: none;
+            border-radius: 1em;
+            box-shadow: 0 0 5px rgba(0, 0, 0, .1);
+            margin-bottom: 1em;
+        }
+        .list span {
+            display: block;
+        }
+        .progress {
+            background-color: greenyellow;
+            height: 1em;
+            border-radius: 0.1em;
+        }
     </style>
 </head>
 <body>
@@ -20,18 +42,7 @@
                 <input type="range" name="globalVolume" id="globalVolume" min="0" max="1" step="0.05">
             </label>
         </div>
-        <div class="list" style="display: none;">
-            <ul>
-                <li>
-                    tocando: nome
-                    <div class="progress"></div>
-                </li>
-            </ul>
-        </div>
-        <div class="list" id="playingSoundsList">
-            <ul>
-            </ul>
-        </div>
+        <ul class="list" id="playingSoundsList"></ul>
     </div>
 </body>
 </html>

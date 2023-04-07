@@ -337,6 +337,9 @@ class ListItemComponent {
 
     public rootElement: HTMLElement;
 
+    private spanNameElement!: HTMLElement;
+    private spanTimeElement!: HTMLElement;
+    private progressTimeElement!: HTMLElement;
     private soundHandler: SoundHandler;
 
     constructor(soundHandler: SoundHandler) {
@@ -346,12 +349,33 @@ class ListItemComponent {
     }
 
     private buildElements(): HTMLElement {
-        const liElement = document.createElement('li');
-        return liElement;
+        const rootLiElement = document.createElement('li');
+
+        this.spanNameElement = document.createElement('span');
+        this.spanTimeElement = document.createElement('span');
+        this.progressTimeElement = document.createElement('div');
+
+        this.progressTimeElement.classList.add('progress');
+
+        rootLiElement.appendChild(this.spanNameElement);
+        rootLiElement.appendChild(this.spanTimeElement);
+        rootLiElement.appendChild(this.progressTimeElement);
+
+        return rootLiElement;
     }
 
     public updateElements() {
-        this.rootElement.innerText = `source: ${this.soundHandler.audioElement.src}, ${this.soundHandler.currentTime} / ${this.soundHandler.duration}`;
+        const url = new URL(this.soundHandler.audioElement.src);
+        let filename = url.pathname;
+        try {
+            filename = decodeURI(filename);
+            filename = filename.split('/').filter(part => part.includes('.mp3')).join('');
+        } catch (error) {}
+
+        this.spanNameElement.innerText = `Tocando: ${filename}`;
+        const percentage = (this.soundHandler.currentTime / this.soundHandler.duration * 100);
+        this.spanTimeElement.innerText = `${this.soundHandler.currentTime.toFixed(2)} / ${this.soundHandler.duration.toFixed(2)} (${percentage.toFixed(2)}%)`;
+        this.progressTimeElement.style.width = percentage + '%'
     } 
 }
 
