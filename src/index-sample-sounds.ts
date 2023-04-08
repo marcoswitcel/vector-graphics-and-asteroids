@@ -238,6 +238,10 @@ class SoundMixer {
         if (this.soundResourceManager.entries.has(name)) {
             const soundResEntry = this.soundResourceManager.entries.get(name) as SoundResourceEntry;
             if (soundResEntry.readyToPlay) {
+                /**
+                 * @note Talvez clonar seja uma operação muito pesada devo trocar
+                 * para um pool de `HTMLAudioElement`, mas não farei isso ainda.
+                 */
                 const audioElement = soundResEntry.data?.cloneNode(true) as HTMLAudioElement;
                 const soundHandler = new SoundHandler(audioElement, this, loop, 1);
                 soundHandler.play();
