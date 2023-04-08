@@ -100,6 +100,15 @@ class SoundResourceManager {
     }
 }
 
+const assertNotNull = (value: any, name?: string):  void | never => {
+    if (value === null) {
+        if (name) {
+            throw new TypeError(`A variável ${name} não pode receber null`);
+        }
+        throw new TypeError('Null não permitido');
+    }
+}
+
 enum SoundHandlerState {
     NOT_STARTED,
     PLAYING,
@@ -109,7 +118,8 @@ enum SoundHandlerState {
 }
 
 class SoundHandler {
-    public audioElement: HTMLAudioElement;
+
+    private audioElement: HTMLAudioElement;
     private volume: number = 1;
     private state: SoundHandlerState = SoundHandlerState.NOT_STARTED;
     private currentMixer: SoundMixer;
@@ -181,6 +191,14 @@ class SoundHandler {
         }
         console.warn('Estado inválido, retornando ENDED');
         return SoundHandlerState.ENDED;
+    }
+
+    /**
+     * Caminho do recurso gerenciado por esse handler
+     * @readonly
+     */
+    public get src(): string {
+        return this.audioElement.src;
     }
 
     public releaseResources() {
@@ -379,7 +397,7 @@ class ListItemComponent {
     }
 
     public updateElements() {
-        const url = new URL(this.soundHandler.audioElement.src);
+        const url = new URL(this.soundHandler.src);
         let filename = url.pathname;
         try {
             filename = decodeURI(filename);
