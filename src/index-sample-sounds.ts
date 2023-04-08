@@ -347,18 +347,18 @@ updateDisplayVolume();
 const map: Map<SoundHandler, ListItemComponent> = new Map();
 const updateList = () => {
     for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
-        const liElement = map.get(soundHandler);
+        const listItemComponent = map.get(soundHandler);
 
         if (soundHandler.status === SoundHandlerState.ENDED) {
-            if (liElement) {
+            if (listItemComponent) {
                 map.delete(soundHandler);
-                playingSoundsListElement.removeChild(liElement.rootElement);
+                playingSoundsListElement.removeChild(listItemComponent.rootElement);
             }
             continue;
         }
 
-        if (liElement) {
-            liElement.updateElements();
+        if (listItemComponent) {
+            listItemComponent.updateElements();
         } else {
             const listItemComponent = new ListItemComponent(soundHandler);
             map.set(soundHandler, listItemComponent);
