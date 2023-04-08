@@ -369,6 +369,64 @@ const updateList = () => {
     soundMixer.clear();
 };
 
+class RangeInputComponent {
+    
+    public rootElement: HTMLElement;
+
+    private spanLabelElement!: HTMLElement;
+    private inputElement!: HTMLInputElement;
+    private label: string;
+    private name: string;
+    private defaulValue: number;
+    private min: number;
+    private max: number;
+    private step: number;
+    private callbackonChange?: (value: number) => void;
+
+    constructor(label: string, name: string, defaulValue = 0, min: number, max: number, step: number, callbackonChange?: (value: number) => void) {
+        this.label = label;
+        this.name = name;
+        this.defaulValue = defaulValue;
+        this.min = min;
+        this.max = max;
+        this.step = step;
+        this.callbackonChange = callbackonChange;
+        this.rootElement = this.buildElements();
+        this.updateElements();
+    }
+
+    private buildElements(): HTMLElement {
+        const rootLabelElement = document.createElement('label');
+
+        this.spanLabelElement = document.createElement('span');
+        this.inputElement = document.createElement('input');
+
+        this.inputElement.setAttribute('min', this.min.toString());
+        this.inputElement.setAttribute('max', this.max.toString());
+        this.inputElement.setAttribute('step', this.step.toString());
+        this.inputElement.setAttribute('name', this.name);
+        this.inputElement.setAttribute('value', this.defaulValue.toString());
+        this.inputElement.setAttribute('type', 'range');
+
+        if (this.callbackonChange) {
+            this.inputElement.addEventListener('input', (event) => {
+                if (this.callbackonChange) {
+                    this.callbackonChange(parseFloat(this.inputElement.value));
+                }
+            });
+        }
+
+        rootLabelElement.appendChild(this.spanLabelElement);
+        rootLabelElement.appendChild(this.inputElement);
+
+        return rootLabelElement;
+    }
+
+    public updateElements() {
+        this.spanLabelElement.innerText = `${this.label}: ${this.inputElement.value}`;
+    } 
+}
+
 class ListItemComponent {
 
     public rootElement: HTMLElement;
@@ -376,6 +434,7 @@ class ListItemComponent {
     private spanNameElement!: HTMLElement;
     private spanTimeElement!: HTMLElement;
     private progressTimeElement!: HTMLElement;
+    private volumeInputComponent!: RangeInputComponent;
     private soundHandler: SoundHandler;
 
     constructor(soundHandler: SoundHandler) {
@@ -390,11 +449,15 @@ class ListItemComponent {
         this.spanNameElement = document.createElement('span');
         this.spanTimeElement = document.createElement('span');
         this.progressTimeElement = document.createElement('div');
+        this.volumeInputComponent = new RangeInputComponent('Volume', 'volume', 100, 0, 100, 1, (value: number) => {
+            this.soundHandler.setVolume(value / 100);
+        });
 
         this.progressTimeElement.classList.add('progress');
 
         rootLiElement.appendChild(this.spanNameElement);
         rootLiElement.appendChild(this.spanTimeElement);
+        rootLiElement.appendChild(this.volumeInputComponent.rootElement);
         rootLiElement.appendChild(this.progressTimeElement);
 
         return rootLiElement;
@@ -411,7 +474,8 @@ class ListItemComponent {
         this.spanNameElement.innerText = `Tocando: ${filename}`;
         const percentage = (this.soundHandler.currentTime / this.soundHandler.duration * 100);
         this.spanTimeElement.innerText = `${this.soundHandler.currentTime.toFixed(2)} / ${this.soundHandler.duration.toFixed(2)} (${percentage.toFixed(2)}%)`;
-        this.progressTimeElement.style.width = percentage + '%'
+        this.progressTimeElement.style.width = percentage + '%';
+        this.volumeInputComponent.updateElements();
     } 
 }
 
