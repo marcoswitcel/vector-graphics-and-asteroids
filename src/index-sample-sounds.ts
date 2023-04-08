@@ -105,6 +105,7 @@ enum SoundHandlerState {
     PLAYING,
     STOPED,
     ENDED,
+    RELEASED,
 }
 
 class SoundHandler {
@@ -181,6 +182,12 @@ class SoundHandler {
         console.warn('Estado inválido, retornando ENDED');
         return SoundHandlerState.ENDED;
     }
+
+    public releaseResources() {
+        const audioElement = this.audioElement;
+        audioElement.srcObject = null;
+        this.state = SoundHandlerState.RELEASED;
+    }
 }
 
 class SoundMixer {
@@ -215,7 +222,7 @@ class SoundMixer {
             if (soundResEntry.readyToPlay) {
                 const audioElement = soundResEntry.data?.cloneNode(true) as HTMLAudioElement;
                 const soundHandler = new SoundHandler(audioElement, this, loop, 1);
-                soundHandler.play()
+                soundHandler.play();
 
                 this.playingSounds.add(soundHandler);
             } else {
@@ -255,6 +262,8 @@ class SoundMixer {
         for (const it of this.playingSounds) {
             if (it.status !== SoundHandlerState.ENDED) {
                 playingSounds.add(it);
+            } else {
+                it.releaseResources();
             }
         }
         this.playingSounds = playingSounds;
