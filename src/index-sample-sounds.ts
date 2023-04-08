@@ -9,17 +9,21 @@
 /**
  * Específicos
  * @todo encontrar áudios para os tiros e explosões
- * @todo implementar um sistema capaz de rodar múltiplos sons simultâneamentes e multiplas vezes e simulaneamente o mesmo som, que atinja
- * o objetivo de ser de fácil implementação no sistema de entidades rodando na simulação
- * principal.
- * @todo implementar um controle de volume que funcione por instância de som e talvez um volume global (isso é um mixer que faz?)
- * @todo caso necessário lidar com assets de som, analisar implementar um gestor de recursos.
+ * @todo implementar um sistema capaz de rodar múltiplos sons simultâneamentes 
+ * e multiplas vezes e simultâneamentes o mesmo som, que atinja
+ * o objetivo de ser de fácil implementação no sistema de entidades rodando na
+ * simulação principal.
+ * @todo implementar um controle de volume que funcione por instância de som e
+ * talvez um volume global (isso é um mixer que faz?)
+ * @todo caso necessário lidar com assets de som, analisar implementar um gestor
+ * de recursos.
  * 
  * Coisas que descartei inicialmente: son espacial (2d), 
  */
 
 /**
- * Função que criar uma promise para trabalhar com o áudio carregado com `HTMLAudioElement`
+ * Função que criar uma promise para trabalhar com o áudio carregado com
+ * `HTMLAudioElement`
  * @param audio elemento contendo o áudio fonte
  * @param fullyLoaded 
  * @returns 
@@ -47,7 +51,8 @@ class SoundResourceEntry {
 
     /**
      * Função que inicia monta o `HTMLAudioElement` e inicia o download caso ele não
-     * tenha sido iniciado ainda. Essa função também oferece visibilidade do status do carregamento.
+     * tenha sido iniciado ainda. Essa função também oferece visibilidade do status
+     * do carregamento.
      * @returns Um objeto com o nome e o status do carregamento, sucesso ou não
      */
     public async startLoading(): Promise<{ name: string, success: boolean }> {
