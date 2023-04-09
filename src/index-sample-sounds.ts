@@ -109,7 +109,7 @@ const assertNotNull = (value: any, name?: string):  void | never => {
     }
 }
 
-enum SoundHandlerState {
+enum SoundHandleState {
     NOT_STARTED,
     PLAYING,
     STOPED,
@@ -117,15 +117,15 @@ enum SoundHandlerState {
     RELEASED,
 }
 
-class SoundHandler {
+class SoundHandle {
 
     private audioElement: HTMLAudioElement;
     private volume: number = 1;
-    private state: SoundHandlerState = SoundHandlerState.NOT_STARTED;
+    private state: SoundHandleState = SoundHandleState.NOT_STARTED;
     private currentMixer: SoundMixer;
     private loop: boolean = false;
 
-    constructor(audioElement: HTMLAudioElement, currentMixer: SoundMixer, loop: boolean = false, volume: number = 1, state: SoundHandlerState = SoundHandlerState.NOT_STARTED) {
+    constructor(audioElement: HTMLAudioElement, currentMixer: SoundMixer, loop: boolean = false, volume: number = 1, state: SoundHandleState = SoundHandleState.NOT_STARTED) {
         this.audioElement = audioElement;
         this.currentMixer = currentMixer;
         this.setVolume(volume);
@@ -145,18 +145,18 @@ class SoundHandler {
     private setupListeners() {
         if (!this.loop) {
             this.audioElement.addEventListener('ended', () => {
-                this.state = SoundHandlerState.ENDED;
+                this.state = SoundHandleState.ENDED;
             });
         }
     }
 
     public play() {
-        this.state = SoundHandlerState.PLAYING;
+        this.state = SoundHandleState.PLAYING;
         this.audioElement.play();
     }
 
     public stop() {
-        this.state = SoundHandlerState.STOPED;
+        this.state = SoundHandleState.STOPED;
         this.audioElement.pause();
     }
 
@@ -182,15 +182,15 @@ class SoundHandler {
         return this.audioElement.currentTime;
     }
 
-    public get status(): SoundHandlerState {
+    public get status(): SoundHandleState {
         switch (this.state) {
-            case SoundHandlerState.NOT_STARTED: return SoundHandlerState.NOT_STARTED;
-            case SoundHandlerState.PLAYING: return SoundHandlerState.NOT_STARTED;
-            case SoundHandlerState.ENDED: return SoundHandlerState.ENDED;
-            case SoundHandlerState.STOPED: return SoundHandlerState.STOPED;
+            case SoundHandleState.NOT_STARTED: return SoundHandleState.NOT_STARTED;
+            case SoundHandleState.PLAYING: return SoundHandleState.NOT_STARTED;
+            case SoundHandleState.ENDED: return SoundHandleState.ENDED;
+            case SoundHandleState.STOPED: return SoundHandleState.STOPED;
         }
         console.warn('Estado inválido, retornando ENDED');
-        return SoundHandlerState.ENDED;
+        return SoundHandleState.ENDED;
     }
 
     /**
@@ -204,7 +204,7 @@ class SoundHandler {
     public releaseResources() {
         const audioElement = this.audioElement;
         audioElement.srcObject = null;
-        this.state = SoundHandlerState.RELEASED;
+        this.state = SoundHandleState.RELEASED;
     }
 }
 
@@ -216,7 +216,7 @@ class SoundMixer {
      * @todo João, inicialmente essa propriedade é um set, porém, acredito que precise de um tipo dedicado
      * para armazenar coisas como volume individual dos sons sendo tocados e estados
      */
-    private playingSounds: Set<SoundHandler> = new Set;
+    private playingSounds: Set<SoundHandle> = new Set;
     
     constructor(soundResourceManager?: SoundResourceManager) {
         if (soundResourceManager) {
@@ -243,10 +243,10 @@ class SoundMixer {
                  * para um pool de `HTMLAudioElement`, mas não farei isso ainda.
                  */
                 const audioElement = soundResEntry.data?.cloneNode(true) as HTMLAudioElement;
-                const soundHandler = new SoundHandler(audioElement, this, loop, 1);
-                soundHandler.play();
+                const soundHandle = new SoundHandle(audioElement, this, loop, 1);
+                soundHandle.play();
 
-                this.playingSounds.add(soundHandler);
+                this.playingSounds.add(soundHandle);
             } else {
                 console.warn(`O som registrado para o nome: ${name} não está pronto para ser tocado, essa requisição será ignorada`);    
             }
@@ -262,8 +262,8 @@ class SoundMixer {
     public setVolume(volume: number) {
         this.globalVolume = between(volume, 0, 1);
 
-        this.playingSounds.forEach((soundHandler) => {
-            soundHandler.globalVolumeChanged();
+        this.playingSounds.forEach((soundHandle) => {
+            soundHandle.globalVolumeChanged();
         });
     }
 
@@ -271,7 +271,7 @@ class SoundMixer {
         return this.globalVolume;
     }
 
-    public getPlayingSoundsIter(): IterableIterator<SoundHandler> {
+    public getPlayingSoundsIter(): IterableIterator<SoundHandle> {
         return this.playingSounds[Symbol.iterator]();
     }
 
@@ -280,9 +280,9 @@ class SoundMixer {
      * como sugerido nesse link: https://stackoverflow.com/questions/8864617/how-do-i-remove-properly-html5-audio-without-appending-to-dom
      */
     public clear(): void {
-        const playingSounds: Set<SoundHandler> = new Set();
+        const playingSounds: Set<SoundHandle> = new Set();
         for (const it of this.playingSounds) {
-            if (it.status !== SoundHandlerState.ENDED) {
+            if (it.status !== SoundHandleState.ENDED) {
                 playingSounds.add(it);
             } else {
                 it.releaseResources();
@@ -344,14 +344,14 @@ updateDisplayVolume();
 /**
  * @todo João, código bem mal organizado e acredito que ineficiente, reorganizar e otimizar
  */
-const map: Map<SoundHandler, ListItemComponent> = new Map();
+const map: Map<SoundHandle, ListItemComponent> = new Map();
 const updateList = () => {
-    for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
-        const listItemComponent = map.get(soundHandler);
+    for (const soundHandle of soundMixer.getPlayingSoundsIter()) {
+        const listItemComponent = map.get(soundHandle);
 
-        if (soundHandler.status === SoundHandlerState.ENDED) {
+        if (soundHandle.status === SoundHandleState.ENDED) {
             if (listItemComponent) {
-                map.delete(soundHandler);
+                map.delete(soundHandle);
                 playingSoundsListElement.removeChild(listItemComponent.rootElement);
             }
             continue;
@@ -360,8 +360,8 @@ const updateList = () => {
         if (listItemComponent) {
             listItemComponent.updateElements();
         } else {
-            const listItemComponent = new ListItemComponent(soundHandler);
-            map.set(soundHandler, listItemComponent);
+            const listItemComponent = new ListItemComponent(soundHandle);
+            map.set(soundHandle, listItemComponent);
             playingSoundsListElement.appendChild(listItemComponent.rootElement);
         }
     }
@@ -435,10 +435,10 @@ class ListItemComponent {
     private spanTimeElement!: HTMLElement;
     private progressTimeElement!: HTMLElement;
     private volumeInputComponent!: RangeInputComponent;
-    private soundHandler: SoundHandler;
+    private soundHandle: SoundHandle;
 
-    constructor(soundHandler: SoundHandler) {
-        this.soundHandler = soundHandler;
+    constructor(soundHandle: SoundHandle) {
+        this.soundHandle = soundHandle;
         this.rootElement = this.buildElements();
         this.updateElements();
     }
@@ -450,7 +450,7 @@ class ListItemComponent {
         this.spanTimeElement = document.createElement('span');
         this.progressTimeElement = document.createElement('div');
         this.volumeInputComponent = new RangeInputComponent('Volume', 'volume', 100, 0, 100, 1, (value: number) => {
-            this.soundHandler.setVolume(value / 100);
+            this.soundHandle.setVolume(value / 100);
         });
 
         this.progressTimeElement.classList.add('progress');
@@ -464,7 +464,7 @@ class ListItemComponent {
     }
 
     public updateElements() {
-        const url = new URL(this.soundHandler.src);
+        const url = new URL(this.soundHandle.src);
         let filename = url.pathname;
         try {
             filename = decodeURI(filename);
@@ -472,8 +472,8 @@ class ListItemComponent {
         } catch (error) {}
 
         this.spanNameElement.innerText = `Tocando: ${filename}`;
-        const percentage = (this.soundHandler.currentTime / this.soundHandler.duration * 100);
-        this.spanTimeElement.innerText = `${this.soundHandler.currentTime.toFixed(2)} / ${this.soundHandler.duration.toFixed(2)} (${percentage.toFixed(2)}%)`;
+        const percentage = (this.soundHandle.currentTime / this.soundHandle.duration * 100);
+        this.spanTimeElement.innerText = `${this.soundHandle.currentTime.toFixed(2)} / ${this.soundHandle.duration.toFixed(2)} (${percentage.toFixed(2)}%)`;
         this.progressTimeElement.style.width = percentage + '%';
         this.volumeInputComponent.updateElements();
     } 
