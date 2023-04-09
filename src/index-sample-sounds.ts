@@ -185,9 +185,10 @@ class SoundHandle {
     public get status(): SoundHandleState {
         switch (this.state) {
             case SoundHandleState.NOT_STARTED: return SoundHandleState.NOT_STARTED;
-            case SoundHandleState.PLAYING: return SoundHandleState.NOT_STARTED;
+            case SoundHandleState.PLAYING: return SoundHandleState.PLAYING;
             case SoundHandleState.ENDED: return SoundHandleState.ENDED;
             case SoundHandleState.STOPED: return SoundHandleState.STOPED;
+            case SoundHandleState.RELEASED: return SoundHandleState.RELEASED;
         }
         console.warn('Estado inválido, retornando ENDED');
         return SoundHandleState.ENDED;
@@ -435,6 +436,7 @@ class ListItemComponent {
     private spanTimeElement!: HTMLElement;
     private progressTimeElement!: HTMLElement;
     private volumeInputComponent!: RangeInputComponent;
+    private playButtonElement!: HTMLButtonElement;
     private soundHandle: SoundHandle;
 
     constructor(soundHandle: SoundHandle) {
@@ -449,14 +451,24 @@ class ListItemComponent {
         this.spanNameElement = document.createElement('span');
         this.spanTimeElement = document.createElement('span');
         this.progressTimeElement = document.createElement('div');
+        this.playButtonElement = document.createElement('button');
         this.volumeInputComponent = new RangeInputComponent('Volume', 'volume', 100, 0, 100, 1, (value: number) => {
             this.soundHandle.setVolume(value / 100);
         });
 
         this.progressTimeElement.classList.add('progress');
+        this.playButtonElement.setAttribute('type', 'button');
+        this.playButtonElement.addEventListener('click', () => {
+            switch (this.soundHandle.status) {
+                case SoundHandleState.PLAYING: this.soundHandle.stop(); break;
+                case SoundHandleState.STOPED: this.soundHandle.play(); break;
+                default: console.warn(`O listener do botão de play foi acionado com um SoundHandle.status inválido: ${SoundHandleState[this.soundHandle.status]}`)
+            }
+        });
 
         rootLiElement.appendChild(this.spanNameElement);
         rootLiElement.appendChild(this.spanTimeElement);
+        rootLiElement.appendChild(this.playButtonElement);
         rootLiElement.appendChild(this.volumeInputComponent.rootElement);
         rootLiElement.appendChild(this.progressTimeElement);
 
@@ -476,6 +488,7 @@ class ListItemComponent {
         this.spanTimeElement.innerText = `${this.soundHandle.currentTime.toFixed(2)} / ${this.soundHandle.duration.toFixed(2)} (${percentage.toFixed(2)}%)`;
         this.progressTimeElement.style.width = percentage + '%';
         this.volumeInputComponent.updateElements();
+        this.playButtonElement.innerText = (this.soundHandle.status === SoundHandleState.PLAYING) ? 'Pausar' : 'Tocar';
     } 
 }
 
