@@ -10,13 +10,13 @@
  * Específicos
  * @todo encontrar áudios para os tiros e explosões
  * @todo implementar um sistema capaz de rodar múltiplos sons simultâneamentes 
- * e multiplas vezes e simultâneamentes o mesmo som, que atinja
- * o objetivo de ser de fácil implementação no sistema de entidades rodando na
- * simulação principal.
+ * e multiplas vezes e simultâneamentes o mesmo som                                     -- OK
+ * @todo atingir o objetivo de ser de fácil implementação no sistema de entidades
+ * rodando na simulação principal.
  * @todo implementar um controle de volume que funcione por instância de som e
- * talvez um volume global (isso é um mixer que faz?)
+ * talvez um volume global (isso é um mixer que faz?)                                   -- OK
  * @todo caso necessário lidar com assets de som, analisar implementar um gestor
- * de recursos.
+ * de recursos.                                                                         -- OK
  * 
  * Coisas que descartei inicialmente: son espacial (2d), 
  */
@@ -213,10 +213,6 @@ class SoundMixer {
 
     private globalVolume: number = 1;
     private soundResourceManager: SoundResourceManager;
-    /**
-     * @todo João, inicialmente essa propriedade é um set, porém, acredito que precise de um tipo dedicado
-     * para armazenar coisas como volume individual dos sons sendo tocados e estados
-     */
     private playingSounds: Set<SoundHandle> = new Set;
     
     constructor(soundResourceManager?: SoundResourceManager) {
@@ -278,7 +274,8 @@ class SoundMixer {
 
     /**
      * @todo João, melhorar esse processo de descarte dos handlers para incluir o processo de descarte de `HTMLAudioElements`
-     * como sugerido nesse link: https://stackoverflow.com/questions/8864617/how-do-i-remove-properly-html5-audio-without-appending-to-dom
+     * como sugerido nesse link: https://stackoverflow.com/questions/8864617/how-do-i-remove-properly-html5-audio-without-appending-to-dom -- OK
+     * @todo João, ainda sinto que esse processo não está claro ou seguro, não sem bem qual o problema, reanalsiar
      */
     public clear(): void {
         const playingSounds: Set<SoundHandle> = new Set();
@@ -308,6 +305,8 @@ const soundMixer = new SoundMixer(soundResourceManager);
 
 /**
  * @todo João, acredito que implementar uma forma de traquear os sons executando a partir de quem requisita o som seria legal
+ * Reposta: Talvez o SoundHandle possar atender esse papel, mas acredito que para isso
+ * seria necessário revisar os métodos e deixá-lo mais seguro para uso externo do SoundMixer
  */
 
 const playCartoonButtonElement = document.getElementById('cartoonMetalThunk');
@@ -494,7 +493,8 @@ class ListItemComponent {
 
 setInterval(updateList, 60);
 
-// @todo João, testando mudanças no som ao longo da execução
+// @todo João, testando mudanças no som ao longo da execução, notei alguns artefactos mudando pelo range,
+// podem ser em decorrência de múltiplos eventos em sequencia
 // let index = 0;
 // requestAnimationFrame(function updateSound(time) {
 //     console.log(time % 1000 / 1000);
