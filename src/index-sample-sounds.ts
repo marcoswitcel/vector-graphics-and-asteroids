@@ -436,6 +436,7 @@ class ListItemComponent {
     private progressTimeElement!: HTMLElement;
     private volumeInputComponent!: RangeInputComponent;
     private playButtonElement!: HTMLButtonElement;
+    private iconButtonElement!: HTMLElement;
     private soundHandle: SoundHandle;
 
     constructor(soundHandle: SoundHandle) {
@@ -446,11 +447,13 @@ class ListItemComponent {
 
     private buildElements(): HTMLElement {
         const rootLiElement = document.createElement('li');
+        rootLiElement.classList.add('list-item-component');
 
         this.spanNameElement = document.createElement('span');
         this.spanTimeElement = document.createElement('span');
         this.progressTimeElement = document.createElement('div');
         this.playButtonElement = document.createElement('button');
+        this.iconButtonElement = document.createElement('i');
         this.volumeInputComponent = new RangeInputComponent('Volume', 'volume', 100, 0, 100, 1, (value: number) => {
             this.soundHandle.setVolume(value / 100);
         });
@@ -464,9 +467,11 @@ class ListItemComponent {
                 default: console.warn(`O listener do botão de play foi acionado com um SoundHandle.status inválido: ${SoundHandleState[this.soundHandle.status]}`)
             }
         });
+        this.iconButtonElement.classList.add('material-icons');
 
         rootLiElement.appendChild(this.spanNameElement);
         rootLiElement.appendChild(this.spanTimeElement);
+        this.playButtonElement.appendChild(this.iconButtonElement);
         rootLiElement.appendChild(this.playButtonElement);
         rootLiElement.appendChild(this.volumeInputComponent.rootElement);
         rootLiElement.appendChild(this.progressTimeElement);
@@ -487,7 +492,7 @@ class ListItemComponent {
         this.spanTimeElement.innerText = `${this.soundHandle.currentTime.toFixed(2)} / ${this.soundHandle.duration.toFixed(2)} (${percentage.toFixed(2)}%)`;
         this.progressTimeElement.style.width = percentage + '%';
         this.volumeInputComponent.updateElements();
-        this.playButtonElement.innerText = (this.soundHandle.status === SoundHandleState.PLAYING) ? 'Pausar' : 'Tocar';
+        this.iconButtonElement.innerText = (this.soundHandle.status === SoundHandleState.PLAYING) ? 'pause' : 'play_arrow';
     } 
 }
 
