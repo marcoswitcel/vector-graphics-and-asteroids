@@ -298,6 +298,7 @@ const soundResourceManager = new SoundResourceManager;
 
 soundResourceManager.add('cartoon', './resource/audio/Cartoon Metal Thunk.mp3');
 soundResourceManager.add('wooden', './resource/audio/Wooden Train Whistle.mp3');
+soundResourceManager.add('penClicking', './resource/audio/Pen Clicking.mp3');
 
 soundResourceManager.loadAll();
 
@@ -311,12 +312,13 @@ const soundMixer = new SoundMixer(soundResourceManager);
 
 const playCartoonButtonElement = document.getElementById('cartoonMetalThunk');
 const playWoodenButtonElement = document.getElementById('woodenTrainWhistle');
+const playPenClickingElement = document.getElementById('penClicking');
 const globalVolumeRangeElement = document.getElementById('globalVolume');
 const displayVolumeRangeElement = document.getElementById('displayVolume');
 const playingSoundsListElement = document.getElementById('playingSoundsList');
 
 
-if (!playCartoonButtonElement || !playWoodenButtonElement || !globalVolumeRangeElement || !displayVolumeRangeElement || !playingSoundsListElement) throw "Elemento faltando no HTML";
+if (!playCartoonButtonElement || !playWoodenButtonElement || !globalVolumeRangeElement || !displayVolumeRangeElement || !playingSoundsListElement || !playPenClickingElement) throw "Elemento faltando no HTML";
 
 const updateDisplayVolume = () => {
     if (globalVolumeRangeElement instanceof HTMLInputElement) {
@@ -330,6 +332,10 @@ playCartoonButtonElement.addEventListener('click', () => {
 
 playWoodenButtonElement.addEventListener('click', () => {
     soundMixer.play('wooden');
+});
+
+playPenClickingElement.addEventListener('click', () => {
+    soundMixer.play('penClicking');
 });
 
 globalVolumeRangeElement.addEventListener('input', () => {
