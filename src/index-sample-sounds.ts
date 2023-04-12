@@ -8,7 +8,8 @@
 
 /**
  * Específicos
- * @todo encontrar áudios para os tiros e explosões
+ * @todo encontrar áudios para os tiros e explosões (encontrei áudios para testar 
+ * o mixer, e achei um som para executar no momento da emissão do projétil)
  * @todo implementar um sistema capaz de rodar múltiplos sons simultâneamentes 
  * e multiplas vezes e simultâneamentes o mesmo som                                     -- OK
  * @todo atingir o objetivo de ser de fácil implementação no sistema de entidades
@@ -17,6 +18,10 @@
  * talvez um volume global (isso é um mixer que faz?)                                   -- OK
  * @todo caso necessário lidar com assets de som, analisar implementar um gestor
  * de recursos.                                                                         -- OK
+ * @todo reorganizar os arquivos das classes em um módulo separado para poder
+ * importar na demonstração da nave com os asteróides
+ * @todo com o código separado em módulos, agora posso tentar implementar na
+ * demonstração da navinha e ajustar/adicionar possíveis recursos faltantes
  * 
  * Coisas que descartei inicialmente: son espacial (2d), 
  */
