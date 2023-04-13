@@ -22,7 +22,7 @@ import { SoundResourceManager } from './sounds/sound-resource-manager.js';
  * @todo caso necessário lidar com assets de som, analisar implementar um gestor
  * de recursos.                                                                         -- OK
  * @todo reorganizar os arquivos das classes em um módulo separado para poder
- * importar na demonstração da nave com os asteróides
+ * importar na demonstração da nave com os asteróides                                   -- OK
  * @todo com o código separado em módulos, agora posso tentar implementar na
  * demonstração da navinha e ajustar/adicionar possíveis recursos faltantes
  * 
