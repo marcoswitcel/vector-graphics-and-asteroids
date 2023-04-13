@@ -135,11 +135,13 @@ export class SoundMixer {
                 soundHandle.play();
 
                 this.playingSounds.add(soundHandle);
+            } else if (soundResEntry.errorLoading) {
+                console.warn(`[[ SoundMixer.play ]] O som registrado para o nome: '${name}' não carregou corretamente, essa requisição será ignorada`);
             } else {
-                console.warn(`O som registrado para o nome: ${name} não está pronto para ser tocado, essa requisição será ignorada`);    
+                console.warn(`[[ SoundMixer.play ]] O som registrado para o nome: '${name}' não está pronto para ser tocado, essa requisição será ignorada`);    
             }
         } else {
-            console.warn(`Não há som registrado para o nome: ${name}`);
+            console.warn(`[[ SoundMixer.play ]] Não há som registrado para o nome: '${name}'`);
         }
     }
 
