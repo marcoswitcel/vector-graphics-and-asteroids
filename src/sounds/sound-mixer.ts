@@ -121,8 +121,9 @@ export class SoundMixer {
      * os status do som
      * @param name nome do sons a ser tocado
      * @param loop som deve ser tocado em loop
+     * @param volume volume do áudio a ser tocado (padrão 1)
      */
-    public play(name: string, loop: boolean = false) {
+    public play(name: string, loop: boolean = false, volume: number = 1) {
         if (this.soundResourceManager.entries.has(name)) {
             const soundResEntry = this.soundResourceManager.entries.get(name) as SoundResourceEntry;
             if (soundResEntry.readyToPlay) {
@@ -132,6 +133,7 @@ export class SoundMixer {
                  */
                 const audioElement = soundResEntry.data?.cloneNode(true) as HTMLAudioElement;
                 const soundHandle = new SoundHandle(audioElement, this, loop, 1);
+                soundHandle.setVolume(volume);
                 soundHandle.play();
 
                 this.playingSounds.add(soundHandle);
