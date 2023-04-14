@@ -93,6 +93,10 @@ export class SoundHandle {
         return this.audioElement.src;
     }
 
+    /**
+     * @todo João, esse é o único método que precisa ser trabalhado para poder
+     * retornar o SoundHandle nas requisições ao método SoundMixer.play()
+     */
     public releaseResources() {
         const audioElement = this.audioElement;
         audioElement.srcObject = null;
