@@ -1,5 +1,5 @@
-import { SoundHandle, SoundHandleState, SoundMixer } from './sounds/sound-mixer.js';
-import { SoundResourceManager } from './sounds/sound-resource-manager.js';
+import { SoundHandle, SoundHandleState, SoundMixer } from "./sounds/sound-mixer.js";
+import { SoundResourceManager } from "./sounds/sound-resource-manager.js";
 
 /**
  * estudar e implentar um sistema de som que funcione junto com a simulação,

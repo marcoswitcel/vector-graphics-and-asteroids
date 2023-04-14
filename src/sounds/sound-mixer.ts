@@ -1,4 +1,4 @@
-import { SoundResourceEntry, SoundResourceManager } from './sound-resource-manager.js';
+import { SoundResourceEntry, SoundResourceManager } from "./sound-resource-manager.js";
 
 export enum SoundHandleState {
     NOT_STARTED,
