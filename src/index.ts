@@ -10,12 +10,6 @@ const ctx = canvas.getContext('2d');
 
 if (ctx === null) throw 'Contexto nulo';
 
-// @todo João, definir o formato para trabalhar com os polígonos
-const polygon: Vector2[] = [
-    { x: 0, y: 1 },
-    { x: 1, y: -1 },
-    { x: -1, y: -1 },
-];
 let moving = false;
 let forward = false;
 const playerAcceleration = { x: 0, y: 0.45 };
@@ -111,16 +105,16 @@ eventLoop.add((time: number) => {
     const shootEntities = entities.filter(entity => entity.type === 'shoot');
 
     for (const entity of entities) {
-        if (entity.type === 'asteroids') {
-            for (const shootEntity of shootEntities) {
-                if (distance(entity.position, shootEntity.position) < (entity.hitRadius + shootEntity.hitRadius)) {
-                    entity.components[hittedMark] = true;
-                    shootEntity.components[hittedMark] = true;
-                }
+        if (entity.type !== 'asteroids') continue;
+
+        for (const shootEntity of shootEntities) {
+            if (distance(entity.position, shootEntity.position) < (entity.hitRadius + shootEntity.hitRadius)) {
+                entity.components[hittedMark] = true;
+                shootEntity.components[hittedMark] = true;
             }
-            if (distance(entity.position, entityPlayer.position) < (entity.hitRadius + entityPlayer.hitRadius)) {
-                entityPlayer.components[hittedMark] = true;
-            }
+        }
+        if (distance(entity.position, entityPlayer.position) < (entity.hitRadius + entityPlayer.hitRadius)) {
+            entityPlayer.components[hittedMark] = true;
         }
     }
 });
@@ -218,7 +212,7 @@ eventLoop.add((time: number) => {
             const color = entity.components[hittedMark] ? '#00FF00' : '#FF0000';
             // @todo João, avaliar aqui se faz sentido fazer dessa forma
             // drawCircle(ctx, entity.position, entity.hitRadius, color);
-            renderFigureInside(entity, polygon, ctx, (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => {
+            renderFigureInside(entity, [], ctx, (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => {
                 drawCircle(ctx, position, entity.hitRadius, color);
             });
         }

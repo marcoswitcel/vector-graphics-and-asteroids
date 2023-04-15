@@ -23,6 +23,13 @@ export class EventLoop {
         }
     }
 
+    /**
+     * @note Talvez no futuro seja interessante adicionar um parâmetro opcional
+     * para armazenar um nome descritivo do handler, para poder retornar em 
+     * caso de erros.
+     * 
+     * @param handler função com a lógica que precisa ser rodada
+     */
     public add(handler: EventHandler) {
         this.handlers.add(handler);
     }
