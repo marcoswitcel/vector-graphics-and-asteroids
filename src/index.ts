@@ -10,6 +10,27 @@ const ctx = canvas.getContext('2d');
 
 if (ctx === null) throw 'Contexto nulo';
 
+/**
+ * @todo João, acredito que seria interessante explicar na tela que clicando
+ * duas vezes o jogo entrará em modo fullscreen e clicando novamente ele sairá.
+ */
+canvas.addEventListener('dblclick', () => {
+    const isFullScreen = (window.innerWidth == screen.width && window.innerHeight == screen.height);
+    if (isFullScreen) {
+        window.document.exitFullscreen();
+    } else {
+        canvas.requestFullscreen();
+    }
+});
+
+/**
+ * @todo João, seria interessante organizar essas variáveis em algum tipo de GameObject
+ * para que as variáveis de estado do jogo não fiquem espalhadas pelo arquivo e mal 
+ * documentadas de certo modo, pois no final do dia é só uma variável global que pode
+ * referir a qualquer parte do processo de execução do jogo. Outro motivo interessante 
+ * é que se tivermos algum tipo de classe aí sim poderemos ter múltiplas instâncias do
+ * jogo rodando em uma mesma página.
+ */
 let moving = false;
 let forward = false;
 const playerAcceleration = { x: 0, y: 0.45 };
