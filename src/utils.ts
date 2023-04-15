@@ -95,3 +95,26 @@ export function renderFigureInside(entity: Entity, figure: Vector2[], ctx: Canva
 
     drawFunction(ctx, figure, entity.position, entity);
 }
+
+/**
+ * Função que retorna o menor resolução entre a largura e altura
+ * do viewport multiplicado pelo fator provido pelo usuário, o 
+ * padrão é 1, o que faz com que a resolução máxima seja usada.
+ * @note Não tenho certeza, mas, fiz igual: essa função também
+ * garante que a resolução seja mútlipla de dois para evitar
+ * desalinhamento dos píxeis do monitor com o canvas e
+ * não encorajar o browser a aplicar nenhum tipo de filtro.
+ * 
+ * @param factor fator de escalonamento da resolução
+ * @returns retorna resolução computada seguindo as regras
+ */
+export function computeResolution(factor: number = 1): number {
+    let resolution = Math.floor(Math.min(window.innerWidth, window.innerHeight) * factor)
+    if (resolution % 2 !== 0) {
+        resolution--;
+    }
+
+    console.assert(resolution % 2 === 0);
+
+    return resolution;
+}

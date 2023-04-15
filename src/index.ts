@@ -3,9 +3,11 @@ import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed } from "./
 import { EventLoop } from "./event-loop.js";
 import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from "./figure.js";
 import { KeyBoardInput } from "./keyboard-input.js";
-import { createCanvas, fragmentAsteroid, renderFigureInside } from "./utils.js";
+import { createCanvas, fragmentAsteroid, computeResolution, renderFigureInside } from "./utils.js";
 
-const canvas = createCanvas(500, 500, document.body);
+const GAME_RESOLUTION = computeResolution(0.9);
+
+const canvas = createCanvas(GAME_RESOLUTION, GAME_RESOLUTION, document.body);
 const ctx = canvas.getContext('2d');
 
 if (ctx === null) throw 'Contexto nulo';
