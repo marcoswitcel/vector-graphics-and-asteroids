@@ -25,6 +25,8 @@ import { SoundResourceManager } from "./sounds/sound-resource-manager.js";
  * importar na demonstração da nave com os asteróides                                   -- OK
  * @todo com o código separado em módulos, agora posso tentar implementar na
  * demonstração da navinha e ajustar/adicionar possíveis recursos faltantes
+ * @todo encontrar bons sons para os tiros, explosões e o fogo, quem sabe uma música
+ * de fundo?
  * 
  * Coisas que descartei inicialmente: son espacial (2d), 
  */
