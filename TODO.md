@@ -24,3 +24,8 @@
 
 - [ ] Implementar o efeito de iluminação parecido com o dos arcades para o processo de renderização dos gráficos vetoriais.
 - [ ] Achar algum meio para distribuir os asteroides de forma "randômica"
+
+## Lista de Bugs
+
+* Por algum motivo os asteróides (possivelmente tudo), estão apresentando
+  uma animação não suave. Eles aparentam estar saltando "pra frente e pra trás"
