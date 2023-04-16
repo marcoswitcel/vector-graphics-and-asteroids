@@ -3,9 +3,15 @@ import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed } from "./
 import { EventLoop } from "./event-loop.js";
 import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from "./figure.js";
 import { KeyBoardInput } from "./keyboard-input.js";
-import { createCanvas, fragmentAsteroid, computeResolution, renderFigureInside } from "./utils.js";
+import { fragmentAsteroid, renderFigureInside } from "./utils.js";
 
-export function mainSimulation(canvas: HTMLCanvasElement): EventLoop {
+/**
+ * Função que monta o estado e a sequência de execução da simulação.
+ * 
+ * @param canvas elemento canvas aonde deve ser renderizada a cena
+ * @returns o `EventLoop` configurado com a lógica da simulação
+ */
+export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
 
     const ctx = canvas.getContext('2d');
     if (ctx === null) throw 'Contexto nulo';

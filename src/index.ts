@@ -1,10 +1,5 @@
-import { distance, drawCircle, drawComplexShape, drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
-import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed } from "./entity.js";
-import { EventLoop } from "./event-loop.js";
-import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from "./figure.js";
-import { KeyBoardInput } from "./keyboard-input.js";
-import { mainSimulation } from "./main-simulation.js";
-import { createCanvas, fragmentAsteroid, computeResolution, renderFigureInside } from "./utils.js";
+import { createMainSimulation } from "./main-simulation.js";
+import { createCanvas, computeResolution } from "./utils.js";
 
 const GAME_RESOLUTION = computeResolution(0.9);
 const canvas = createCanvas(GAME_RESOLUTION, GAME_RESOLUTION, document.body);
@@ -22,6 +17,6 @@ canvas.addEventListener('dblclick', () => {
     }
 });
 
-const eventLoop = mainSimulation(canvas);
+const eventLoop = createMainSimulation(canvas);
 
 eventLoop.start();
