@@ -84,6 +84,11 @@ keyBoardInput.addListener('keyup. ', () => {
     shootWaitingToBeEmmited = true;
 }); 
 
+/**
+ * Função responsável pelo processamento de input
+ * Primeira etapa do processo, entrada de input e aplicação das lógicas
+ * definidas.
+ */
 eventLoop.add((timestamp: number, deltaTime: number) => {
     const angularVelocitySpaceShipTurn = 2.4;
     if (keyBoardInput.isKeyPressed('d')) {
@@ -119,6 +124,10 @@ eventLoop.add((timestamp: number, deltaTime: number) => {
     }
 });
 
+/**
+ * Função responsável pela detecção de colisões
+ * Aqui é feito a detecção da colisão e registrado para o posterior processamento
+ */
 eventLoop.add((time: number) => {
     const now = Date.now();
     entities = entities.filter(entity => {
@@ -142,6 +151,9 @@ eventLoop.add((time: number) => {
     }
 });
 
+/**
+ * Função responsável por fragmentar os asteróides onde `hittedMark === true`
+ */
 eventLoop.add((time: number) => {
     const hittedAsteroids = entities.filter(entity => entity.components[hittedMark] && entity.type === 'asteroids');
     if (hittedAsteroids.length === 0) return;
@@ -160,6 +172,14 @@ eventLoop.add((time: number) => {
     entities.push(...allFragments);
 });
 
+/**
+ * Função responsável por computar a "física" da simulação e as devidas restrições
+ * O modelo físico usado é bem básico e possivelmente incorreto, então nem compararei
+ * o basta dizer, é que ele leva em consideração a posição, velocidade e aceleração 
+ * das entidades para posicioná-las nas suas novas coordenadas. Também é importante
+ * anotar que é aqui onde a restrição do espaço a um ambiente com as laterais conectadas
+ * acontece.
+ */
 eventLoop.add((timestamp: number, deltaTime: number) => {
     for (const entity of entities) {
         // computando velocidade
@@ -186,7 +206,14 @@ eventLoop.add((timestamp: number, deltaTime: number) => {
     }
 });
 
-// Renderiza
+/**
+ * Função responsável pela renderização da cena
+ * Hoje para realizar esse processo só é necessário
+ * iterar pela lista das entidades e aplicar os processos de renderização
+ * definidos para cada entidade. Talvez no futuro alguma etapa para emitir
+ * requisições de renderização seja incluída para poder aplicar efeitos de
+ * forma mais sustentável e eficiente, mas hoje é só isso que é necessário.
+ */
 eventLoop.add((time: number) => {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -226,7 +253,10 @@ eventLoop.add((time: number) => {
     }
 });
 
-// Renderiza informação visual da área de hit
+/**
+ * Renderiza informação visual da área de hit
+ * Quando apertado 2 no teclado esse recurso é ativado ou desativado
+ */
 eventLoop.add((time: number) => {
     if (!debugHitRadius) return;
     
