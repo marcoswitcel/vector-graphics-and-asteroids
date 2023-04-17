@@ -9,7 +9,13 @@ const canvas = createCanvas(GAME_RESOLUTION, GAME_RESOLUTION, document.body);
  * duas vezes o jogo entrará em modo fullscreen e clicando novamente ele sairá.
  */
 canvas.addEventListener('dblclick', () => {
-    const isFullScreen = (window.innerWidth == screen.width && window.innerHeight == screen.height);
+    /**
+     * @note um detalhe interessante dessa implementação é que na verdade quando o usuário está com
+     * zoom aplicado à página, o cheque lógico abaixo não produz o resultado correto. Por isso adicionei
+     * o atributo depreciado do documento `document.fullscreen` ao cheque, quando presente ele será
+     * mais confiável.
+     */
+    const isFullScreen = document.fullscreen || (window.innerWidth == screen.width && window.innerHeight == screen.height);
     if (isFullScreen) {
         window.document.exitFullscreen();
     } else {
