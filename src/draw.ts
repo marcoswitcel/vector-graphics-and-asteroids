@@ -86,6 +86,42 @@ export function drawCircle(ctx: CanvasRenderingContext2D, position: Vector2, rad
     ctx.stroke();
 }
 
+/**
+ * @note links úteis:
+ * * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textAlign}
+ * * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textBaseline}
+ * * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textRendering}
+ * 
+ * @param ctx contexto atual
+ * @param text texto a ser exibido
+ * @param position posição do texto
+ * @param size tamanho do texto de 0 a 1, será mapeado para uma fração do tamanho do canvas
+ * @param fillStyle cor de preenchimento
+ * @param fontFamily fonta desejada
+ * @param textAlign alinhamento horizontal do texto
+ * @param textBaseline alinhamento vertical do texto
+ */
+export function drawText(ctx: CanvasRenderingContext2D, text: string, position: Vector2, size: number, fillStyle = '#FFFFFF', fontFamily = 'monospace', textAlign: CanvasTextAlign = 'center', textBaseline: CanvasTextBaseline = 'middle'): void {
+    const { width, height } = ctx.canvas;
+    /**
+     * @note A escolha da altura como valor base do escalonamento é arbitrária, poderia ter sido
+     * a largura, ou um min ou max de ambas. Só que  no presente momento, ambas os valores devem
+     * ser os mesmo, então, não vou inventar complexidades desnecessárias, mas se o cenário mudar
+     * preciso atualizar aqui.
+     */
+    console.assert(width === height, 'A altura e a largura não são iguas. Pode ser interessante atualizar a lógica contida na função `drawText`');
+    const sizeInPixels = size * height;
+    ctx.font = `${sizeInPixels}px ${fontFamily}`;
+    ctx.fillStyle = fillStyle;
+    /**
+     * @note no geral os métodos de renderização estão sempre renderizando o elemento centralizado,
+     * por isso por padrão o texto também estará centralizado vertical e horizontalmente
+     */
+    ctx.textAlign = textAlign;
+    ctx.textBaseline = textBaseline;
+    ctx.fillText(text, (position.x+1)/2 * width, height - (position.y+1)/2 * height);
+}
+
 export class Shape {
     public polygon: readonly Vector2[];
 

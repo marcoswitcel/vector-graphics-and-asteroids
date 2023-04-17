@@ -1,4 +1,4 @@
-import { distance, drawCircle, drawComplexShape, drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
+import { distance, drawCircle, drawComplexShape, drawLine, drawPolygon, drawText, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
 import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed } from "./entity.js";
 import { EventLoop } from "./event-loop.js";
 import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from "./figure.js";
@@ -26,6 +26,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
      */
     let moving = false;
     let forward = false;
+    let asteroidsDestroyedCounter = 0;
     const playerAcceleration = { x: 0, y: 0.45 };
     const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.09, 0.08);
     const shipStandingFigure = makeShipStandingFigure();
@@ -156,7 +157,12 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
             if (numberOfFragmentation) {
                 const fragments = fragmentAsteroid(hittedAsteroid, numberOfFragmentation);
                 allFragments.push(...fragments);
-            } 
+            }
+
+            /**
+             * @note implementação temporária, reavaliar se aqui é o melhor lugar para incrementar o contador
+             */
+            asteroidsDestroyedCounter++;
         }
 
         entities = entities.filter(entity => !entity.components[hittedMark] || entity.type === 'player');
@@ -242,6 +248,12 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
                 });
             }
         }
+
+        /**
+         * Nesse primeiro momento os textos serão desenhados separadamente,
+         * mas poderiam passar pelo sistema de entidades.
+         */
+        drawText(ctx, `${asteroidsDestroyedCounter}`, { x: -0.97, y: 0.91 }, 0.06, '#FFFFFF', 'monospace', 'left');
     });
 
     /**
