@@ -32,7 +32,13 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
     const shipStandingFigure = makeShipStandingFigure();
     const shipForwardFigure = makeShipForwardFigure();
     const shipBackwardsFigure = makeShipBackwardsFigure();
-    const asteroids = Array(3).fill(0).map(() => {
+    /**
+     * Função que monta a onda de asteróides
+     * @note João, definir os parâmetros necessários para poder customizar aspectos da
+     * onda de asteróides montada. Usar número pseudo-randômicos?
+     * @returns lista de asteróides criados para a nova onda
+     */
+    const createAsteroidsWave = () => Array(3).fill(0).map(() => {
         const x = Math.random() * 2 - 1;
         const y = Math.random() * 2 - 1;
         const scale = 0.15 + Math.random() * 0.1;
@@ -46,6 +52,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         entity.components[fragmentationAllowed] = 4;
         return entity;
     });
+    const asteroids = createAsteroidsWave();
     let entities = [ entityPlayer, ...asteroids ];
     let shootWaitingToBeEmmited = false;
     const primaryWhite = '#FFFFFF';
