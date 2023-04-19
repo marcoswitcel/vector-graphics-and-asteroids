@@ -37,7 +37,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         const y = Math.random() * 2 - 1;
         const scale = 0.15 + Math.random() * 0.1;
         const hitRadius = scale * 1.33;
-        const defaultVelocity = { x: -0.3, y: -0.54 };
+        const factor = 0.65;
+        const defaultVelocity = { x: -0.3 * factor, y: -0.54 * factor };
         defaultVelocity.x *= Math.random() > 0.5 ? -1 : 1;
         defaultVelocity.y *= Math.random() > 0.5 ? -1 : 1;
 
