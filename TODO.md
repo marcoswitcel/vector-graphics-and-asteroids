@@ -15,10 +15,10 @@
 - [X] Projetar a nave, animar as chamas da nave. Deixar uma pequena cena com a nave pilotável
 - [X] Melhorar método de renderização para suportar de forma simples e organizada a renderização das entidades que estão atravessando as bordas. Renderizar as partes da entidade em seu devidos lados da tela.
 - [X] estudar e implentar um sistema de som que funcione junto com a simulação, entender o que é necessário e integrá-lo ao sistema de entidades, implementar algum tipo de catálogo de áudios.
+- [X] Adicionar um contador de asteróides destruídos
 - [ ] Criar e implementar as funcionalidades e efeitos envolvidos em converter a forma da nave em linhas e criar entidades para que cada linha possa sair flutuando após a fragmentação da nave, ou fragmentação do asteroide que não pode mais ser partidos.  
 - [ ] Implementar e organizar um sistema que permita gerenciar as entidades do jogo/simulação.
 - [ ] Implementar/estudar melhor forma de implementar a renderização de animações e figuras compostas de várias formas animadas.
-- [ ] Adicionar um contador de asteróides destruídos
 - [ ] Implementar um sistema simples para inserir mais asteróides conforme forem sendo destruídos, acredito que poderia trabalhar com "ondas" de e ir incrementando.
 
 
