@@ -31,6 +31,8 @@
 
 * Por algum motivo os asteróides (possivelmente tudo), estão apresentando
 uma animação não suave. Eles aparentam estar saltando "pra frente e pra trás"
-* * Tentei debugar esse cenário, montar um caso mais simples e entender o problema, fazendo isso
+ * Tentei debugar esse cenário, montar um caso mais simples e entender o problema, fazendo isso
 descobri que o problema não ocorre sempre, parece ter haver com a carga da CPU, talvez tenha algo
 que possa ser feito no jogo para ajustar o compasso.
+ * Talvez o problema tenha haver com a conversão do deltatime para ponto flutuante?
+ * Talvez o método de renderização cause o artefacto visual
