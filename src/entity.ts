@@ -4,6 +4,13 @@ export const createdAtTimestamp = Symbol('createdAtTimestamp');
 export const hittedMark = Symbol('hittedMark');
 export const fragmentationAllowed = Symbol('fragmentationAllowed');
 
+/**
+ * @note João, considerar criar um atributo para indicar que a entidade deve ser
+ * removida ao final do frame e começar a usar este mesmo atributo para evitar
+ * tantas criações de listas filtros e iterações desncessárias para criar estas
+ * listas. Talvez um outra estrutura de dados fosse útil também, mas isso é
+ * outra história.
+ */
 export class Entity {
     public type: string;
     public position: Vector2;

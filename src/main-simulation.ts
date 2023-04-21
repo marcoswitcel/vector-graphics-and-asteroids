@@ -129,6 +129,11 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
      * Aqui é feito a detecção da colisão e registrado para o posterior processamento
      */
     eventLoop.add((time: number) => {
+        /**
+         * @note Remove as entidades com "createdAtTimestamp"com mais de 1,5 segundos de vida,
+         * embora não seja essa a única utilidade desse componente, por hora só é usado para isso
+         */
+        
         const now = Date.now();
         entities = entities.filter(entity => {
             return !(entity.components[createdAtTimestamp] && now - entity.components[createdAtTimestamp] > 1500);
