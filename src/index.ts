@@ -1,5 +1,5 @@
-import { createMainSimulation } from "./main-simulation.js";
-import { createCanvas, computeResolution } from "./utils.js";
+import { createMainSimulation } from './main-simulation.js';
+import { createCanvas, computeResolution } from './utils.js';
 
 const GAME_RESOLUTION = computeResolution(0.9);
 const canvas = createCanvas(GAME_RESOLUTION, GAME_RESOLUTION, document.body);

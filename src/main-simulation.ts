@@ -1,9 +1,9 @@
-import { distance, drawCircle, drawComplexShape, drawLine, drawPolygon, drawText, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
-import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed } from "./entity.js";
-import { EventLoop } from "./event-loop.js";
-import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from "./figure.js";
-import { KeyBoardInput } from "./keyboard-input.js";
-import { fragmentAsteroid, renderFigureInside } from "./utils.js";
+import { distance, drawCircle, drawComplexShape, drawLine, drawPolygon, drawText, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from './draw.js';
+import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed } from './entity.js';
+import { EventLoop } from './event-loop.js';
+import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
+import { KeyBoardInput } from './keyboard-input.js';
+import { fragmentAsteroid, renderFigureInside } from './utils.js';
 
 /**
  * Função que monta o estado e a sequência de execução da simulação.

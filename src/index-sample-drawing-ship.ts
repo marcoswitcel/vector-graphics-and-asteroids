@@ -1,9 +1,9 @@
-import { ComplexShape, drawComplexShape, DrawInfo, drawLine, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Shape, Vector2 } from "./draw.js";
-import { Entity } from "./entity.js";
-import { EventLoop } from "./event-loop.js";
-import { makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure, makeSpaceShip, makeTriangle } from "./figure.js";
-import { KeyBoardInput } from "./keyboard-input.js";
-import { createCanvas } from "./utils.js";
+import { drawComplexShape, rotatePoint } from './draw.js';
+import { Entity } from './entity.js';
+import { EventLoop } from './event-loop.js';
+import { makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
+import { KeyBoardInput } from './keyboard-input.js';
+import { createCanvas } from './utils.js';
 
 const canvas = createCanvas(500, 500, document.body);
 const ctx = canvas.getContext('2d');

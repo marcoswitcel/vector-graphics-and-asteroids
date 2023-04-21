@@ -1,5 +1,5 @@
-import { SoundHandle, SoundHandleState, SoundMixer } from "./sounds/sound-mixer.js";
-import { SoundResourceManager } from "./sounds/sound-resource-manager.js";
+import { SoundHandle, SoundHandleState, SoundMixer } from './sounds/sound-mixer.js';
+import { SoundResourceManager } from './sounds/sound-resource-manager.js';
 
 /**
  * estudar e implentar um sistema de som que funcione junto com a simulação,
@@ -64,7 +64,7 @@ const displayVolumeRangeElement = document.getElementById('displayVolume');
 const playingSoundsListElement = document.getElementById('playingSoundsList');
 
 
-if (!playCartoonButtonElement || !playWoodenButtonElement || !globalVolumeRangeElement || !displayVolumeRangeElement || !playingSoundsListElement || !playPenClickingElement) throw "Elemento faltando no HTML";
+if (!playCartoonButtonElement || !playWoodenButtonElement || !globalVolumeRangeElement || !displayVolumeRangeElement || !playingSoundsListElement || !playPenClickingElement) throw 'Elemento faltando no HTML';
 
 const updateDisplayVolume = () => {
     if (globalVolumeRangeElement instanceof HTMLInputElement) {

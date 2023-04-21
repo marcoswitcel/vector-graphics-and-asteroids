@@ -1,4 +1,4 @@
-import { Vector2 } from "./draw";
+import { Vector2 } from './draw.js';
 
 export const createdAtTimestamp = Symbol('createdAtTimestamp');
 export const hittedMark = Symbol('hittedMark');

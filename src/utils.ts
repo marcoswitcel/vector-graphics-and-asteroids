@@ -1,5 +1,5 @@
-import { rotatePoint, Vector2 } from "./draw.js";
-import { Entity, fragmentationAllowed } from "./entity.js";
+import { rotatePoint, Vector2 } from './draw.js';
+import { Entity, fragmentationAllowed } from './entity.js';
 
 /**
  * Cria um canvas com as dimensões especificadas e adiciona ele a algum elemnto

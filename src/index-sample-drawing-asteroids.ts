@@ -1,9 +1,9 @@
-import { distance, drawCircle, drawLine, drawPoint, drawPolygon, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from "./draw.js";
-import { Entity, fragmentationAllowed, hittedMark } from "./entity.js";
-import { EventLoop } from "./event-loop.js";
-import { makeAsteroid } from "./figure.js";
-import { KeyBoardInput } from "./keyboard-input.js";
-import { createCanvas, fragmentAsteroid } from "./utils.js";
+import { distance, drawCircle, drawPolygon, makePolygonWithAbsolutePosition, rotatePolygon, scalePolygon, Vector2 } from './draw.js';
+import { Entity, fragmentationAllowed, hittedMark } from './entity.js';
+import { EventLoop } from './event-loop.js';
+import { makeAsteroid } from './figure.js';
+import { KeyBoardInput } from './keyboard-input.js';
+import { createCanvas, fragmentAsteroid } from './utils.js';
 
 
 const keyBoardInput = new KeyBoardInput({ autoStart: true });
