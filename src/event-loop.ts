@@ -1,6 +1,11 @@
 
 type EventHandler = (timestamp: number, deltaTime: number) => void;
 
+/**
+ * @todo João, analisar se interessante adicionar um profiler de memória
+ * e tempo ao `EventLoop` para ativamente coletar e talvez exibir um um frame
+ * a parte as métricas.
+ */
 export class EventLoop {
 
     private running: boolean = false;
