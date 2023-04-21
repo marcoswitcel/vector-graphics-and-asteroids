@@ -81,7 +81,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
     });
 
     keyBoardInput.addListener('keyup. ', () => {
-        shootWaitingToBeEmmited = true;
+        if (!entityPlayer.components[hittedMark]) {
+            shootWaitingToBeEmmited = true;
+        }
     }); 
 
     /**
@@ -118,7 +120,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
             moving = false;
         }
 
-        if (shootWaitingToBeEmmited) {
+        if (shootWaitingToBeEmmited && !entityPlayer.components[hittedMark]) {
             emmitShoot(entityPlayer, entities);
             shootWaitingToBeEmmited = false;
         }
@@ -188,6 +190,19 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
 
         entities = entities.filter(entity => !entity.components[hittedMark] || entity.type === 'player');
         entities.push(...allFragments);
+    });
+
+    /**
+     * Função responsável por fragmentar o player caso ele esteja marcado com `hittedMark === true`
+     */
+    eventLoop.add((time: number) => {
+        if (!entityPlayer.components[hittedMark]) return;
+
+        // @todo joão, aqui implementar a lógica para fragmentar a nave e gerar as
+        // entidades "linha"/"fragmento", pode começar testando com uma linha
+        // normal girando
+
+        entities = entities.filter(entity => entity !== entityPlayer);
     });
 
     /**
