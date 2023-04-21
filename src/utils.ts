@@ -119,6 +119,15 @@ export function computeResolution(factor: number = 1): number {
     return resolution;
 }
 
-export function countEntitiesByType(entities: Entity[], type: string) {
-    return entities.filter(entity => entity.type === type).length;
+export function countEntitiesByType(entities: readonly Entity[], type: string) {
+    const length = entities.length;
+    let found = 0 ;
+
+    for (let i = 0; i < length; i++) {
+        if (entities[i].type === type) {
+            found++;
+        }
+    }
+
+    return found;
 }
