@@ -3,7 +3,7 @@ import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed } from './
 import { EventLoop } from './event-loop.js';
 import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
 import { KeyBoardInput } from './keyboard-input.js';
-import { fragmentAsteroid, renderFigureInside } from './utils.js';
+import { countEntitiesByType, fragmentAsteroid, renderFigureInside } from './utils.js';
 
 /**
  * Função que monta o estado e a sequência de execução da simulação.
@@ -121,6 +121,14 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         if (shootWaitingToBeEmmited) {
             emmitShoot(entityPlayer, entities);
             shootWaitingToBeEmmited = false;
+        }
+
+        /**
+         * @todo João, achar um lugar melhora para esse funcionalidade a seguir
+         * @todo João, escrever um utilitário para contar e um para pegar entidades de um tipo
+         */
+        if (countEntitiesByType(entities, 'asteroids') === 0) {
+            entities.push(...createAsteroidsWave());
         }
     });
 

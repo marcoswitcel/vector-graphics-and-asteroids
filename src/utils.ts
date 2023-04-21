@@ -118,3 +118,7 @@ export function computeResolution(factor: number = 1): number {
 
     return resolution;
 }
+
+export function countEntitiesByType(entities: Entity[], type: string) {
+    return entities.filter(entity => entity.type === type).length;
+}
