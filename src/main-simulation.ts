@@ -28,7 +28,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
     let forward = false;
     let asteroidsDestroyedCounter = 0;
     const playerAcceleration = { x: 0, y: 0.45 };
-    const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.09, 0.08);
+    const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.07, 0.08);
     const shipStandingFigure = makeShipStandingFigure();
     const shipForwardFigure = makeShipForwardFigure();
     const shipBackwardsFigure = makeShipBackwardsFigure();
