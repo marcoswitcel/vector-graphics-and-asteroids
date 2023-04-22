@@ -228,7 +228,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
             p1 = centralizePoint(rotatePoint(p1, entityPlayer.angle), newCenter);
 
             const velocity = rotatePoint({ ...entityPlayer.velocity  }, (i * Math.PI / 8));
-            const entity = new Entity(position, velocity, { x: 0, y: 0 }, entityPlayer.angle, 'fragments', 0.09, 0.08, -0.4 - 0.2 * i / polygon.length);
+            const entity = new Entity(position, velocity, { x: 0, y: 0 }, entityPlayer.angle, 'fragments', 0.09, 0.08, -1.6 - 0.8 * i / polygon.length);
             entity.components[lineFigure] = [p0, p1];
 
             entities.push(entity);
