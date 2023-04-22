@@ -1,5 +1,5 @@
-import { distance, drawCircle, drawComplexShape, drawLine, drawPolygon, drawText, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePolygon, Vector2 } from './draw.js';
-import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed } from './entity.js';
+import { centralizePoint, distance, drawCircle, drawComplexShape, drawLine, drawPolygon, drawText, makePointAbsolute, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePoint, scalePolygon, Vector2 } from './draw.js';
+import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed, lineFigure } from './entity.js';
 import { EventLoop } from './event-loop.js';
 import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
 import { KeyBoardInput } from './keyboard-input.js';
@@ -196,13 +196,44 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
      * Função responsável por fragmentar o player caso ele esteja marcado com `hittedMark === true`
      */
     eventLoop.add((time: number) => {
-        if (!entityPlayer.components[hittedMark]) return;
+        if (!entityPlayer.components[hittedMark] || entityPlayer.toBeRemoved) return;
 
-        // @todo joão, aqui implementar a lógica para fragmentar a nave e gerar as
-        // entidades "linha"/"fragmento", pode começar testando com uma linha
-        // normal girando
-
+        entityPlayer.toBeRemoved = true;
         entities = entities.filter(entity => entity !== entityPlayer);
+        
+        // Por hora é aí que está a figura da nave sem as chamas do propulsor
+        const shape = shipStandingFigure.shapes[0];
+        const drawInfo = shipStandingFigure.drawInfo[0];
+        const polygon = makePolygonWithAbsolutePosition(drawInfo.position, rotatePolygon(scalePolygon(shape.polygon, drawInfo.scale), drawInfo.angle));
+
+        for (let i = 0; polygon.length > 1 && i < polygon.length; i++) {
+            let p0 = polygon[i];
+            const nextIndex = i + 1 === polygon.length ? 0 : i + 1;
+            let p1 = polygon[nextIndex];
+
+            let aP0 = makePointAbsolute(entityPlayer.position, scalePoint(p0, entityPlayer.scale));
+            let aP1 = makePointAbsolute(entityPlayer.position, scalePoint(p1, entityPlayer.scale));
+            const position = {
+                ...entityPlayer.position
+            };
+
+            position.x = (aP0.x - aP1.x) / 2 + aP1.x;
+            position.y = (aP0.y - aP1.y) / 2 + aP1.y;
+
+            const newCenter = {
+                x: (p0.x - p1.x) / 2 + p1.x,
+                y: (p0.y - p1.y) / 2 + p1.y,
+            }
+
+            p0 = centralizePoint(rotatePoint(p0, entityPlayer.angle), newCenter);
+            p1 = centralizePoint(rotatePoint(p1, entityPlayer.angle), newCenter);
+
+            const velocity = rotatePoint({ ...entityPlayer.velocity  }, (i * Math.PI / 8));
+            const entity = new Entity(position, velocity, { x: 0, y: 0 }, entityPlayer.angle, 'fragments', 0.09, 0.08, -0.6);
+            entity.components[lineFigure] = [p0, p1];
+
+            entities.push(entity);
+        }
     });
 
     /**
@@ -274,7 +305,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
                     y: entity.position.y + entity.velocity.y * 0.0075,
                 };
                 drawLine(ctx, startPosition, endPosition, primaryWhite);
-            } else {
+            } else if (entity.type === 'asteroids') {
                 // @todo João, avaliar essa solução, visualmente está correto, porém acredito que a função `renderFigureInside` apesar de funcionar
                 // trás uma complexidade desnecessária, acho que seria interessante nessa etapa apenas acumular as figuras que devem ser
                 // desenhadas e em um próximo loop fazer a renderização de fato.
@@ -282,6 +313,15 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
                 renderFigureInside(entity, makeAsteroid(), ctx, (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => {
                     drawPolygon(ctx, makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), secondaryWhite);
                 });
+            } else if (entity.type === 'fragments') {
+                // @todo João, otimizar a renderização, implementar uma função para renderizar polígonos abertos
+                // por hora está renderizando com o `drawPolygon`, que está fechando a linha e desenhando uma linha
+                // sobreposta
+                renderFigureInside(entity, entity.components[lineFigure] as Vector2[], ctx, (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => {
+                    drawPolygon(ctx, makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), secondaryWhite);
+                });
+            } else {
+                // @note por hora todas entidades com tipos diferentes não são renderizadas
             }
         }
 

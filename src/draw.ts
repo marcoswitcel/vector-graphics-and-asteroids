@@ -37,6 +37,27 @@ export function rotatePoint(point: Vector2, angle: number): Vector2 {
     };
 }
 
+export function centralizePoint(point: Vector2, newCenter: Vector2): Vector2 {
+    return {
+        x: point.x - newCenter.x,
+        y: point.y - newCenter.y,
+    }
+}
+
+export function scalePoint(point: Vector2, xScaleFactor: number, yScaleFactor = xScaleFactor) : Vector2 {
+    return {
+        x: point.x * xScaleFactor,
+        y: point.y * yScaleFactor,
+    };
+}
+
+export function makePointAbsolute(position: Vector2, point: Vector2) {
+    return {
+        x: position.x + point.x,
+        y: position.y + point.y
+    };
+}
+
 export function makePolygonWithAbsolutePosition(position: Vector2, polygon: readonly Vector2[]): Vector2[] {
     return polygon.map(point => ({
         x: position.x + point.x,
