@@ -52,8 +52,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         entity.components[fragmentationAllowed] = 4;
         return entity;
     });
-    const asteroids = createAsteroidsWave();
-    let entities = [ entityPlayer, ...asteroids ];
+    let entities = [ entityPlayer ];
     let shootWaitingToBeEmmited = false;
     const primaryWhite = '#FFFFFF';
     const secondaryWhite = 'rgba(255,255,255,0.7)';
