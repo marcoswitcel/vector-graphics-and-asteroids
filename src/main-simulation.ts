@@ -92,7 +92,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
      * definidas.
      */
     eventLoop.add((timestamp: number, deltaTime: number) => {
-        const angularVelocitySpaceShipTurn = 2.4;
+        const angularVelocitySpaceShipTurn = 3.4;
         if (keyBoardInput.isKeyPressed('d')) {
             entityPlayer.angle += -angularVelocitySpaceShipTurn * deltaTime;
         }
