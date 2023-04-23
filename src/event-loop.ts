@@ -1,6 +1,11 @@
 
 type EventHandler = (timestamp: number, deltaTime: number) => void;
 
+/**
+ * @todo João, analisar se interessante adicionar um profiler de memória
+ * e tempo ao `EventLoop` para ativamente coletar e talvez exibir um um frame
+ * a parte as métricas.
+ */
 export class EventLoop {
 
     private running: boolean = false;
@@ -23,6 +28,13 @@ export class EventLoop {
         }
     }
 
+    /**
+     * @note Talvez no futuro seja interessante adicionar um parâmetro opcional
+     * para armazenar um nome descritivo do handler, para poder retornar em 
+     * caso de erros.
+     * 
+     * @param handler função com a lógica que precisa ser rodada
+     */
     public add(handler: EventHandler) {
         this.handlers.add(handler);
     }

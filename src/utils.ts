@@ -1,5 +1,5 @@
-import { rotatePoint, Vector2 } from "./draw.js";
-import { Entity, fragmentationAllowed } from "./entity.js";
+import { rotatePoint, Vector2 } from './draw.js';
+import { Entity, fragmentationAllowed } from './entity.js';
 
 /**
  * Cria um canvas com as dimensões especificadas e adiciona ele a algum elemnto
@@ -59,6 +59,8 @@ export function fragmentAsteroid(entity: Entity, numberOfFragments = 4): Entity[
 }
 
 /**
+ * Função que renderiza a figura de forma espelhada em todas as posições necessárias para parecer
+ * que a figura está atravessando as bordas e aparecendo do outro lado.
  * @todo João, avaliar se faz sentido fazer dessa forma. Acredito que isso agregue complexidade.
  */
 export function renderFigureInside(entity: Entity, figure: Vector2[], ctx: CanvasRenderingContext2D, drawFunction: (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => void) {
@@ -92,4 +94,40 @@ export function renderFigureInside(entity: Entity, figure: Vector2[], ctx: Canva
     }
 
     drawFunction(ctx, figure, entity.position, entity);
+}
+
+/**
+ * Função que retorna o menor resolução entre a largura e altura
+ * do viewport multiplicado pelo fator provido pelo usuário, o 
+ * padrão é 1, o que faz com que a resolução máxima seja usada.
+ * @note Não tenho certeza, mas, fiz igual: essa função também
+ * garante que a resolução seja mútlipla de dois para evitar
+ * desalinhamento dos píxeis do monitor com o canvas e
+ * não encorajar o browser a aplicar nenhum tipo de filtro.
+ * 
+ * @param factor fator de escalonamento da resolução
+ * @returns retorna resolução computada seguindo as regras
+ */
+export function computeResolution(factor: number = 1): number {
+    let resolution = Math.floor(Math.min(window.innerWidth, window.innerHeight) * factor)
+    if (resolution % 2 !== 0) {
+        resolution--;
+    }
+
+    console.assert(resolution % 2 === 0);
+
+    return resolution;
+}
+
+export function countEntitiesByType(entities: readonly Entity[], type: string) {
+    const length = entities.length;
+    let found = 0 ;
+
+    for (let i = 0; i < length; i++) {
+        if (entities[i].type === type) {
+            found++;
+        }
+    }
+
+    return found;
 }
