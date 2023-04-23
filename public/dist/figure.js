@@ -1,4 +1,4 @@
-import { ComplexShape, DrawInfo, Shape } from "./draw.js";
+import { ComplexShape, DrawInfo, Shape } from './draw.js';
 export const makeAsteroid = () => [
     { x: -1, y: 0.2 },
     { x: -0.4, y: 1 },

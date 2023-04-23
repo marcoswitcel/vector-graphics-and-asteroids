@@ -1,6 +1,6 @@
-import { drawPolygon, makePolygonWithAbsolutePosition, rotatePolygon, scalePolygon } from "./draw.js";
-import { EventLoop } from "./event-loop.js";
-import { createCanvas } from "./utils.js";
+import { drawPolygon, makePolygonWithAbsolutePosition, rotatePolygon, scalePolygon } from './draw.js';
+import { EventLoop } from './event-loop.js';
+import { createCanvas } from './utils.js';
 const canvas = createCanvas(500, 500, document.body);
 const ctx = canvas.getContext('2d');
 const canvas2 = createCanvas(500, 500, document.body);
