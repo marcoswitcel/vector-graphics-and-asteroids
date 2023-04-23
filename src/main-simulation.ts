@@ -155,11 +155,20 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
             if (entity.type !== 'asteroids') continue;
 
             for (const shootEntity of shootEntities) {
+                /**
+                 * @todo João, não testei, mas por dedução imagino que esse check abaixo não
+                 * é o suficiente para checar todos os tipos de colisão possíveis. Como
+                 * o espaço do jogo é fechado e conectado a colisão pode acontecer entre
+                 * bordas opostas. O mesmo vale para o cheque de colisão do jogador.
+                 */
                 if (distance(entity.position, shootEntity.position) < (entity.hitRadius + shootEntity.hitRadius)) {
                     entity.components[hittedMark] = true;
                     shootEntity.components[hittedMark] = true;
                 }
             }
+            /**
+             * @todo João, ler nota acima
+             */
             if (distance(entity.position, entityPlayer.position) < (entity.hitRadius + entityPlayer.hitRadius)) {
                 entityPlayer.components[hittedMark] = true;
             }
