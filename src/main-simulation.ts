@@ -36,15 +36,18 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
      * Função que monta a onda de asteróides
      * @note João, definir os parâmetros necessários para poder customizar aspectos da
      * onda de asteróides montada. Usar número pseudo-randômicos?
+     * @todo João, acho que seria legal adicionar parâmetros para controlar a velocidade
+     * base, tamanho base e quantidade de elementos. Isso pode permitir implementar
+     * a variedade de asteróides necessários.
      * @returns lista de asteróides criados para a nova onda
      */
     const createAsteroidsWave = () => Array(3).fill(0).map(() => {
         const isVerticalBorder = Math.random() > 0.5;
         const x = isVerticalBorder ? Math.random() * 2 - 1 : Math.round(Math.random()) * 2 - 1;
         const y = isVerticalBorder ? Math.round(Math.random()) * 2 - 1 : Math.random() * 2 - 1;
-        const scale = 0.15 + Math.random() * 0.1;
-        const hitRadius = scale * 1.33;
-        const factor = 0.65;
+        const scale = 0.13 + Math.random() * 0.1;
+        const hitRadius = scale * 1.2;
+        const factor = 0.6;
         const defaultVelocity = { x: -0.3 * factor, y: -0.54 * factor };
         defaultVelocity.x *= Math.random() > 0.5 ? -1 : 1;
         defaultVelocity.y *= Math.random() > 0.5 ? -1 : 1;
@@ -92,7 +95,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
      * definidas.
      */
     eventLoop.add((timestamp: number, deltaTime: number) => {
-        const angularVelocitySpaceShipTurn = 3.4;
+        const angularVelocitySpaceShipTurn = 3.5;
         if (keyBoardInput.isKeyPressed('d')) {
             entityPlayer.angle += -angularVelocitySpaceShipTurn * deltaTime;
         }

@@ -20,6 +20,7 @@
 - [X] Criar e implementar as funcionalidades e efeitos envolvidos em converter a forma da nave em linhas e criar entidades para que cada linha possa sair flutuando após a fragmentação da nave, ou fragmentação do asteroide que não pode mais ser partidos.  
 - [ ] Implementar e organizar um sistema que permita gerenciar as entidades do jogo/simulação.
 - [ ] Implementar/estudar melhor forma de implementar a renderização de animações e figuras compostas de várias formas animadas.
+- [ ] Adicionar botão de restart para não precisar apertar F5.
 
 
 ## Coisas a melhorar / Concluir
@@ -27,7 +28,8 @@
 - [ ] Escolher sons bons para a simulação principal e adicioná-los nos momentos apropriados.
 - [ ] Corrigir o bug dos fragmentos da nave não estarem girando a partir do seu centro.
 - [ ] Melhorar a forma como os asteróides são adicionados, o sistema de "ondas" de asteróides
-não possuí variedade nem progressão de dificuldade/entretenimento. 
+não possuí variedade nem progressão de dificuldade/entretenimento.
+- [ ] Testar e alterar os valores da aceleração, velocidade angular para rotação para que o movimento, aceleração, capacidade de fazer curvas fiquem bons.
 
 ## Ideias para o futuro
 
