@@ -87,7 +87,22 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         if (!entityPlayer.components[hittedMark]) {
             shootWaitingToBeEmmited = true;
         }
-    }); 
+    });
+    
+    keyBoardInput.addListener('keyup.r', () => {
+        asteroidsDestroyedCounter = 0;
+        entities.length = 0;
+
+        // @note melhorar esse processo, rotina de inicialização?
+        entityPlayer.components[hittedMark] = false;
+        entityPlayer.toBeRemoved = false;
+        entityPlayer.position = { x: 0, y: 0 };
+        entityPlayer.velocity = { x: 0, y: 0 };
+        entityPlayer.position = { x: 0, y: 0 };
+        entityPlayer.angle = 0;
+
+        entities.push(entityPlayer);
+    });
 
     /**
      * Função responsável pelo processamento de input

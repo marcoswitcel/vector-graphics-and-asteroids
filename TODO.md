@@ -18,9 +18,9 @@
 - [X] Adicionar um contador de asteróides destruídos
 - [X] Implementar um sistema simples para inserir mais asteróides conforme forem sendo destruídos, acredito que poderia trabalhar com "ondas" de e ir incrementando.
 - [X] Criar e implementar as funcionalidades e efeitos envolvidos em converter a forma da nave em linhas e criar entidades para que cada linha possa sair flutuando após a fragmentação da nave, ou fragmentação do asteroide que não pode mais ser partidos.  
+- [X] Adicionar botão de restart para não precisar apertar F5.
 - [ ] Implementar e organizar um sistema que permita gerenciar as entidades do jogo/simulação.
 - [ ] Implementar/estudar melhor forma de implementar a renderização de animações e figuras compostas de várias formas animadas.
-- [ ] Adicionar botão de restart para não precisar apertar F5.
 
 
 ## Coisas a melhorar / Concluir
