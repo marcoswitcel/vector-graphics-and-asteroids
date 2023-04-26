@@ -309,6 +309,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+        // Deixando a largura da linha escalável
+        const lineWidth = Math.max(1, canvas.width * 0.002); 
         const playerFigure = moving
             ? (forward ? shipForwardFigure : shipBackwardsFigure)
             : shipStandingFigure;
@@ -320,7 +322,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
                 // desenhadas e em um próximo loop fazer a renderização de fato.
                 // drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), primaryWhite);
                 renderFigureInside(entity, [], ctx, (ctx: CanvasRenderingContext2D, _: readonly Vector2[], position: Vector2, entity: Entity) => {
-                    drawComplexShape(ctx, playerFigure, position, entity.scale, entity.angle, primaryWhite);
+                    drawComplexShape(ctx, playerFigure, position, entity.scale, entity.angle, primaryWhite, lineWidth);
                 });
             } else if (entity.type === 'shoot') {
                 const startPosition = {
@@ -331,21 +333,21 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
                     x: entity.position.x + entity.velocity.x * 0.0075,
                     y: entity.position.y + entity.velocity.y * 0.0075,
                 };
-                drawLine(ctx, startPosition, endPosition, primaryWhite);
+                drawLine(ctx, startPosition, endPosition, primaryWhite, lineWidth);
             } else if (entity.type === 'asteroids') {
                 // @todo João, avaliar essa solução, visualmente está correto, porém acredito que a função `renderFigureInside` apesar de funcionar
                 // trás uma complexidade desnecessária, acho que seria interessante nessa etapa apenas acumular as figuras que devem ser
                 // desenhadas e em um próximo loop fazer a renderização de fato.
                 // drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), entity.scale), entity.angle)), secondaryWhite);
                 renderFigureInside(entity, makeAsteroid(), ctx, (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => {
-                    drawPolygon(ctx, makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), secondaryWhite);
+                    drawPolygon(ctx, makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), secondaryWhite, lineWidth);
                 });
             } else if (entity.type === 'fragments') {
                 // @todo João, otimizar a renderização, implementar uma função para renderizar polígonos abertos
                 // por hora está renderizando com o `drawPolygon`, que está fechando a linha e desenhando uma linha
                 // sobreposta
                 renderFigureInside(entity, entity.components[lineFigure] as Vector2[], ctx, (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => {
-                    drawPolygon(ctx, makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), secondaryWhite);
+                    drawPolygon(ctx, makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), secondaryWhite, lineWidth);
                 });
             } else {
                 // @note por hora todas entidades com tipos diferentes não são renderizadas
@@ -365,6 +367,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
      */
     eventLoop.add((time: number) => {
         if (!debugHitRadius) return;
+
+        // Deixando a largura da linha escalável
+        const lineWidth = Math.max(1, canvas.width * 0.002);
         
         for (const entity of entities) {
             if (entity.hitRadius) {
@@ -372,7 +377,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
                 // @todo João, avaliar aqui se faz sentido fazer dessa forma
                 // drawCircle(ctx, entity.position, entity.hitRadius, color);
                 renderFigureInside(entity, [], ctx, (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => {
-                    drawCircle(ctx, position, entity.hitRadius, color);
+                    drawCircle(ctx, position, entity.hitRadius, color,lineWidth);
                 });
             }
         }
@@ -381,13 +386,16 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
     // Renderiza informação visual de debug
     eventLoop.add((time: number) => {
         if (!debug) return;
+
+        // Deixando a largura da linha escalável
+        const lineWidth = Math.max(1, canvas.width * 0.002);
         
         for (const entity of entities) {
             const endPosition = {
                 x: entity.position.x + entity.acceleration.x,
                 y: entity.position.y + entity.acceleration.y,
             };
-            drawLine(ctx, entity.position, endPosition);
+            drawLine(ctx, entity.position, endPosition, undefined, lineWidth);
         }
     });
     
