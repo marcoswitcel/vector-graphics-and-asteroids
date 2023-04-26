@@ -49,7 +49,7 @@ export function makePolygonWithAbsolutePosition(position, polygon) {
         y: position.y + point.y
     }));
 }
-export function drawPolygon(ctx, polygon, strokeStyle = '#FFFFFF') {
+export function drawPolygon(ctx, polygon, strokeStyle = '#FFFFFF', lineWidth = 1) {
     let point = polygon[0];
     const { width, height } = ctx.canvas;
     ctx.beginPath();
@@ -61,16 +61,16 @@ export function drawPolygon(ctx, polygon, strokeStyle = '#FFFFFF') {
     point = polygon[0];
     ctx.lineTo((point.x + 1) / 2 * width, height - (point.y + 1) / 2 * height);
     ctx.closePath();
-    ctx.lineWidth = 1;
+    ctx.lineWidth = lineWidth;
     ctx.strokeStyle = strokeStyle;
     ctx.stroke();
 }
-export function drawLine(ctx, pointA, pointB, strokeStyle = '#FFFFFF') {
+export function drawLine(ctx, pointA, pointB, strokeStyle = '#FFFFFF', lineWidth = 1) {
     const { width, height } = ctx.canvas;
     ctx.beginPath();
     ctx.moveTo((pointA.x + 1) / 2 * width, height - (pointA.y + 1) / 2 * height);
     ctx.lineTo((pointB.x + 1) / 2 * width, height - (pointB.y + 1) / 2 * height);
-    ctx.lineWidth = 1;
+    ctx.lineWidth = lineWidth;
     ctx.strokeStyle = strokeStyle;
     ctx.stroke();
 }
@@ -79,11 +79,11 @@ export function drawPoint(ctx, position, fillStyle = '#FFFFFF') {
     ctx.fillStyle = fillStyle;
     ctx.fillRect((position.x + 1) / 2 * width, height - (position.y + 1) / 2 * height, 1, 1);
 }
-export function drawCircle(ctx, position, radius, strokeStyle = '#FFFFFF') {
+export function drawCircle(ctx, position, radius, strokeStyle = '#FFFFFF', lineWidth = 1) {
     const { width, height } = ctx.canvas;
     ctx.beginPath();
     ctx.arc((position.x + 1) / 2 * width, height - (position.y + 1) / 2 * height, radius * width / 2, 0, 2 * Math.PI);
-    ctx.lineWidth = 1;
+    ctx.lineWidth = lineWidth;
     ctx.strokeStyle = strokeStyle;
     ctx.stroke();
 }
@@ -143,12 +143,12 @@ export class ComplexShape {
 /**
  * @todo João, testar mais
  */
-export function drawComplexShape(ctx, complexShape, position, scale, angle, strokeStyle = '#FFFFFF') {
+export function drawComplexShape(ctx, complexShape, position, scale, angle, strokeStyle = '#FFFFFF', lineWidth = 1) {
     for (let index = 0; index < complexShape.shapes.length; index++) {
         const shape = complexShape.shapes[index];
         const drawInfo = complexShape.drawInfo[index];
         let polygon = makePolygonWithAbsolutePosition(drawInfo.position, rotatePolygon(scalePolygon(shape.polygon, drawInfo.scale), drawInfo.angle));
         polygon = makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, scale), angle));
-        drawPolygon(ctx, polygon, strokeStyle);
+        drawPolygon(ctx, polygon, strokeStyle, lineWidth);
     }
 }

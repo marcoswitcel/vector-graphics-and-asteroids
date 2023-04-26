@@ -272,6 +272,8 @@ export function createMainSimulation(canvas) {
     eventLoop.add((time) => {
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Deixando a largura da linha escalável
+        const lineWidth = Math.max(1, canvas.width * 0.002);
         const playerFigure = moving
             ? (forward ? shipForwardFigure : shipBackwardsFigure)
             : shipStandingFigure;
@@ -282,7 +284,7 @@ export function createMainSimulation(canvas) {
                 // desenhadas e em um próximo loop fazer a renderização de fato.
                 // drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), primaryWhite);
                 renderFigureInside(entity, [], ctx, (ctx, _, position, entity) => {
-                    drawComplexShape(ctx, playerFigure, position, entity.scale, entity.angle, primaryWhite);
+                    drawComplexShape(ctx, playerFigure, position, entity.scale, entity.angle, primaryWhite, lineWidth);
                 });
             }
             else if (entity.type === 'shoot') {
@@ -294,7 +296,7 @@ export function createMainSimulation(canvas) {
                     x: entity.position.x + entity.velocity.x * 0.0075,
                     y: entity.position.y + entity.velocity.y * 0.0075,
                 };
-                drawLine(ctx, startPosition, endPosition, primaryWhite);
+                drawLine(ctx, startPosition, endPosition, primaryWhite, lineWidth);
             }
             else if (entity.type === 'asteroids') {
                 // @todo João, avaliar essa solução, visualmente está correto, porém acredito que a função `renderFigureInside` apesar de funcionar
@@ -302,7 +304,7 @@ export function createMainSimulation(canvas) {
                 // desenhadas e em um próximo loop fazer a renderização de fato.
                 // drawPolygon(ctx, makePolygonWithAbsolutePosition(entity.position, rotatePolygon(scalePolygon(makeAsteroid(), entity.scale), entity.angle)), secondaryWhite);
                 renderFigureInside(entity, makeAsteroid(), ctx, (ctx, polygon, position, entity) => {
-                    drawPolygon(ctx, makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), secondaryWhite);
+                    drawPolygon(ctx, makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), secondaryWhite, lineWidth);
                 });
             }
             else if (entity.type === 'fragments') {
@@ -310,7 +312,7 @@ export function createMainSimulation(canvas) {
                 // por hora está renderizando com o `drawPolygon`, que está fechando a linha e desenhando uma linha
                 // sobreposta
                 renderFigureInside(entity, entity.components[lineFigure], ctx, (ctx, polygon, position, entity) => {
-                    drawPolygon(ctx, makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), secondaryWhite);
+                    drawPolygon(ctx, makePolygonWithAbsolutePosition(position, rotatePolygon(scalePolygon(polygon, entity.scale), entity.angle)), secondaryWhite, lineWidth);
                 });
             }
             else {
@@ -330,13 +332,15 @@ export function createMainSimulation(canvas) {
     eventLoop.add((time) => {
         if (!debugHitRadius)
             return;
+        // Deixando a largura da linha escalável
+        const lineWidth = Math.max(1, canvas.width * 0.002);
         for (const entity of entities) {
             if (entity.hitRadius) {
                 const color = entity.components[hittedMark] ? '#00FF00' : '#FF0000';
                 // @todo João, avaliar aqui se faz sentido fazer dessa forma
                 // drawCircle(ctx, entity.position, entity.hitRadius, color);
                 renderFigureInside(entity, [], ctx, (ctx, polygon, position, entity) => {
-                    drawCircle(ctx, position, entity.hitRadius, color);
+                    drawCircle(ctx, position, entity.hitRadius, color, lineWidth);
                 });
             }
         }
@@ -345,12 +349,14 @@ export function createMainSimulation(canvas) {
     eventLoop.add((time) => {
         if (!debug)
             return;
+        // Deixando a largura da linha escalável
+        const lineWidth = Math.max(1, canvas.width * 0.002);
         for (const entity of entities) {
             const endPosition = {
                 x: entity.position.x + entity.acceleration.x,
                 y: entity.position.y + entity.acceleration.y,
             };
-            drawLine(ctx, entity.position, endPosition);
+            drawLine(ctx, entity.position, endPosition, undefined, lineWidth);
         }
     });
     return eventLoop;
