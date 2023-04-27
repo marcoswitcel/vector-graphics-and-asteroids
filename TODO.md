@@ -28,8 +28,9 @@
 - [ ] Escolher sons bons para a simulação principal e adicioná-los nos momentos apropriados.
 - [ ] Corrigir o bug dos fragmentos da nave não estarem girando a partir do seu centro.
 - [ ] Melhorar a forma como os asteróides são adicionados, o sistema de "ondas" de asteróides
-não possuí variedade nem progressão de dificuldade/entretenimento.
+não possuí variedade nem progressão de dificuldade/entretenimento. (A simulação deve começar mais fácil, dando mais chance para reagir e aprender a se mover)
 - [ ] Testar e alterar os valores da aceleração, velocidade angular para rotação para que o movimento, aceleração, capacidade de fazer curvas fiquem bons.
+- [ ] Adicionar suporte a mais uma configuração de controles. (adicionar controle por setinhas)
 
 ## Ideias para o futuro
 
