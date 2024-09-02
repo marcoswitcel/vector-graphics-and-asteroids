@@ -43,9 +43,9 @@ export function createMainSimulation(canvas) {
         const isVerticalBorder = Math.random() > 0.5;
         const x = isVerticalBorder ? Math.random() * 2 - 1 : Math.round(Math.random()) * 2 - 1;
         const y = isVerticalBorder ? Math.round(Math.random()) * 2 - 1 : Math.random() * 2 - 1;
-        const scale = 0.13 + Math.random() * 0.1;
+        const scale = 0.10 + Math.random() * 0.09;
         const hitRadius = scale * 1.2;
-        const factor = 0.6;
+        const factor = 0.5;
         const defaultVelocity = { x: -0.3 * factor, y: -0.54 * factor };
         defaultVelocity.x *= Math.random() > 0.5 ? -1 : 1;
         defaultVelocity.y *= Math.random() > 0.5 ? -1 : 1;
