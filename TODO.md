@@ -25,16 +25,18 @@
 
 ## Coisas a melhorar / Concluir
 
-- [ ] Escolher sons bons para a simulação principal e adicioná-los nos momentos apropriados.
+- [ ] Escolher sons bons para a simulação principal e adicioná-los nos momentos apropriados. Sons como: disparos, um ou mais caso seja necessário variação; som de explosão, quando acerta o meteoro e quando a nave explode.
 - [ ] Corrigir o bug dos fragmentos da nave não estarem girando a partir do seu centro.
 - [ ] Melhorar a forma como os asteróides são adicionados, o sistema de "ondas" de asteróides
-não possuí variedade nem progressão de dificuldade/entretenimento.
+não possuí variedade nem progressão de dificuldade/entretenimento. (A simulação deve começar mais fácil, dando mais chance para reagir e aprender a se mover)
 - [ ] Testar e alterar os valores da aceleração, velocidade angular para rotação para que o movimento, aceleração, capacidade de fazer curvas fiquem bons.
+- [ ] Adicionar suporte a mais uma configuração de controles. (adicionar controle por setinhas)
 
 ## Ideias para o futuro
 
 - [ ] Implementar o efeito de iluminação parecido com o dos arcades para o processo de renderização dos gráficos vetoriais.
 - [ ] Achar algum meio para distribuir os asteroides de forma "randômica"
+- [ ] Implementar algum mecanismo que permita aplicar "efeitos" aos sons que serão adicionados
 
 ## Lista de Bugs
 
