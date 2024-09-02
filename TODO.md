@@ -36,6 +36,7 @@ não possuí variedade nem progressão de dificuldade/entretenimento. (A simula�
 
 - [ ] Implementar o efeito de iluminação parecido com o dos arcades para o processo de renderização dos gráficos vetoriais.
 - [ ] Achar algum meio para distribuir os asteroides de forma "randômica"
+- [ ] Implementar algum mecanismo que permita aplicar "efeitos" aos sons que serão adicionados
 
 ## Lista de Bugs
 
