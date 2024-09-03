@@ -3,7 +3,10 @@ import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed, lineFigur
 import { EventLoop } from './event-loop.js';
 import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
 import { KeyBoardInput } from './keyboard-input.js';
+import { SoundMixer } from './sounds/sound-mixer.js';
+import { SoundResourceManager } from './sounds/sound-resource-manager.js';
 import { countEntitiesByType, fragmentAsteroid, renderFigureInside } from './utils.js';
+
 
 /**
  * Função que monta o estado e a sequência de execução da simulação.
@@ -16,6 +19,12 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
     const ctx = canvas.getContext('2d');
     if (ctx === null) throw 'Contexto nulo';
 
+    const soundResourceManager = new SoundResourceManager();
+    soundResourceManager.add('shoot', './resource/audio/fx/alienshoot1.ogg');
+    soundResourceManager.loadAll();
+
+    const soundMixer = new SoundMixer(soundResourceManager);
+    
     /**
      * @todo João, seria interessante organizar essas variáveis em algum tipo de GameObject
      * para que as variáveis de estado do jogo não fiquem espalhadas pelo arquivo e mal 
@@ -74,6 +83,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         const shootEntity = new Entity(position, velocity, { x: 0, y: 0 }, player.angle, 'shoot');
         shootEntity.components[createdAtTimestamp] = Date.now();
         entities.push(shootEntity);
+
+        soundMixer.play('shoot', false, .15);
     }
 
     keyBoardInput.addListener('keyup.1', () => {
