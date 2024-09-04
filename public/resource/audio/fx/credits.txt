@@ -1,6 +1,28 @@
+------------------------------------------------------------------------------
+
 Crédito do efeito especial 'alienshoot1.ogg' e 'alienshoot1.wav'
 
 Nome: Robin Lamb
 
 Encontrado através do site OpenGameArt, link abaixo:
 https://opengameart.org/content/space-shoot-sounds
+
+------------------------------------------------------------------------------
+
+Crédito do efeito especial 'explosion.wav'
+
+Nome: Duckstruction
+
+Encontrado através do site OpenGameArt, link abaixo:
+https://opengameart.org/content/explosion-0
+
+------------------------------------------------------------------------------
+
+Crédito do efeito especial 'NenadSimic - Muffled Distant Explosion.wav'
+
+Nome: NenadSimic
+
+Encontrado através do site OpenGameArt, link abaixo:
+https://opengameart.org/content/muffled-distant-explosion
+
+------------------------------------------------------------------------------
