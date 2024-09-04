@@ -18,6 +18,8 @@ export function createMainSimulation(canvas) {
         throw 'Contexto nulo';
     const soundResourceManager = new SoundResourceManager();
     soundResourceManager.add('shoot', './resource/audio/fx/alienshoot1.ogg');
+    soundResourceManager.add('asteroid-explosion', './resource/audio/fx/explosion.wav');
+    soundResourceManager.add('ship-explosion', './resource/audio/fx/NenadSimic - Muffled Distant Explosion.wav');
     soundResourceManager.loadAll();
     const soundMixer = new SoundMixer(soundResourceManager);
     /**
@@ -74,7 +76,8 @@ export function createMainSimulation(canvas) {
         const shootEntity = new Entity(position, velocity, { x: 0, y: 0 }, player.angle, 'shoot');
         shootEntity.components[createdAtTimestamp] = Date.now();
         entities.push(shootEntity);
-        soundMixer.play('shoot', false, .15);
+        // iniciando o som junto com a entidade que representa o 'disparo'
+        soundMixer.play('shoot', false, .1);
     };
     keyBoardInput.addListener('keyup.1', () => {
         debug = !debug;
@@ -201,6 +204,13 @@ export function createMainSimulation(canvas) {
              * @note implementação temporária, reavaliar se aqui é o melhor lugar para incrementar o contador
              */
             asteroidsDestroyedCounter++;
+            /**
+             * @note sempre que um asteroide é destruído um som é emitido, por hora
+             * gero dentro do loop, em raros casos há mais de um asteroide eliminado
+             * por ciclo, porém, cada asteroide emite um som num volume diferente
+             */
+            const volumeScale = (numberOfFragmentation || 1);
+            soundMixer.play('asteroid-explosion', false, 0.01 * volumeScale);
         }
         entities = entities.filter(entity => !entity.components[hittedMark] || entity.type === 'player');
         entities.push(...allFragments);
@@ -237,6 +247,8 @@ export function createMainSimulation(canvas) {
             entity.components[lineFigure] = [p0, p1];
             entities.push(entity);
         }
+        // som emitido quando nave explode
+        soundMixer.play('ship-explosion', false, 0.3);
     });
     /**
      * Função responsável por computar a "física" da simulação e as devidas restrições
