@@ -47,3 +47,4 @@ descobri que o problema não ocorre sempre, parece ter haver com a carga da CPU,
 que possa ser feito no jogo para ajustar o compasso.
  * Talvez o problema tenha haver com a conversão do deltatime para ponto flutuante?
  * Talvez o método de renderização cause o artefacto visual
+ * Limite de tags de áudio atingido no chrome, há um print do erro e segue o link do stackoverflow com possível solução: https://stackoverflow.com/questions/68480528/blocked-attempt-to-create-a-webmediaplayer-as-there-are-too-many-webmediaplayers
