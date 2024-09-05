@@ -6,6 +6,7 @@ export var SoundHandleState;
     SoundHandleState[SoundHandleState["STOPED"] = 2] = "STOPED";
     SoundHandleState[SoundHandleState["ENDED"] = 3] = "ENDED";
     SoundHandleState[SoundHandleState["RELEASED"] = 4] = "RELEASED";
+    SoundHandleState[SoundHandleState["BLOCKED"] = 5] = "BLOCKED";
 })(SoundHandleState || (SoundHandleState = {}));
 export class SoundHandle {
     constructor(audioElement, currentMixer, loop = false, volume = 1, state = SoundHandleState.NOT_STARTED) {
@@ -34,7 +35,8 @@ export class SoundHandle {
     }
     play() {
         this.state = SoundHandleState.PLAYING;
-        this.audioElement.play();
+        this.audioElement.play()
+            .catch(() => this.state = SoundHandleState.BLOCKED);
     }
     stop() {
         this.state = SoundHandleState.STOPED;
@@ -63,6 +65,7 @@ export class SoundHandle {
             case SoundHandleState.ENDED: return SoundHandleState.ENDED;
             case SoundHandleState.STOPED: return SoundHandleState.STOPED;
             case SoundHandleState.RELEASED: return SoundHandleState.RELEASED;
+            case SoundHandleState.BLOCKED: return SoundHandleState.BLOCKED;
         }
         console.warn('Estado inválido, retornando ENDED');
         return SoundHandleState.ENDED;
@@ -114,6 +117,10 @@ export class SoundMixer {
                  * para um pool de `HTMLAudioElement`, mas não farei isso ainda.
                  */
                 const audioElement = (_a = soundResEntry.data) === null || _a === void 0 ? void 0 : _a.cloneNode(true);
+                /**
+                 * @todo João, avaliar se não seria mais flexível adicionar um listener para executar
+                 * quando o som finalizasse e não estivesse em loop, aí ele poderia se remover sozinho.
+                 */
                 const soundHandle = new SoundHandle(audioElement, this, loop, 1);
                 soundHandle.setVolume(volume);
                 soundHandle.play();
@@ -154,7 +161,7 @@ export class SoundMixer {
     clear() {
         const playingSounds = new Set();
         for (const it of this.playingSounds) {
-            if (it.status !== SoundHandleState.ENDED) {
+            if (it.status !== SoundHandleState.ENDED && it.status !== SoundHandleState.BLOCKED) {
                 playingSounds.add(it);
             }
             else {

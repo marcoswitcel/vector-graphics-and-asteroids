@@ -77,7 +77,7 @@ export function createMainSimulation(canvas) {
         shootEntity.components[createdAtTimestamp] = Date.now();
         entities.push(shootEntity);
         // iniciando o som junto com a entidade que representa o 'disparo'
-        soundMixer.play('shoot', false, .1);
+        soundMixer.play('shoot', false, .05);
     };
     keyBoardInput.addListener('keyup.1', () => {
         debug = !debug;
@@ -343,6 +343,8 @@ export function createMainSimulation(canvas) {
          * mas poderiam passar pelo sistema de entidades.
          */
         drawText(ctx, `${asteroidsDestroyedCounter}`, { x: -0.97, y: 0.91 }, 0.06, '#FFFFFF', 'monospace', 'left');
+        // acionando cleanup do soundMixer
+        soundMixer.clear();
     });
     /**
      * Renderiza informação visual da área de hit
