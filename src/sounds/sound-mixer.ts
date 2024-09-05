@@ -6,6 +6,7 @@ export enum SoundHandleState {
     STOPED,
     ENDED,
     RELEASED,
+    BLOCKED,
 }
 
 export class SoundHandle {
@@ -43,7 +44,8 @@ export class SoundHandle {
 
     public play() {
         this.state = SoundHandleState.PLAYING;
-        this.audioElement.play();
+        this.audioElement.play()
+            .catch(() => this.state = SoundHandleState.BLOCKED);
     }
 
     public stop() {
@@ -80,6 +82,7 @@ export class SoundHandle {
             case SoundHandleState.ENDED: return SoundHandleState.ENDED;
             case SoundHandleState.STOPED: return SoundHandleState.STOPED;
             case SoundHandleState.RELEASED: return SoundHandleState.RELEASED;
+            case SoundHandleState.BLOCKED: return SoundHandleState.BLOCKED;
         }
         console.warn('Estado inválido, retornando ENDED');
         return SoundHandleState.ENDED;
@@ -136,6 +139,10 @@ export class SoundMixer {
                  * para um pool de `HTMLAudioElement`, mas não farei isso ainda.
                  */
                 const audioElement = soundResEntry.data?.cloneNode(true) as HTMLAudioElement;
+                /**
+                 * @todo João, avaliar se não seria mais flexível adicionar um listener para executar
+                 * quando o som finalizasse e não estivesse em loop, aí ele poderia se remover sozinho.
+                 */
                 const soundHandle = new SoundHandle(audioElement, this, loop, 1);
                 soundHandle.setVolume(volume);
                 soundHandle.play();
@@ -179,7 +186,7 @@ export class SoundMixer {
     public clear(): void {
         const playingSounds: Set<SoundHandle> = new Set();
         for (const it of this.playingSounds) {
-            if (it.status !== SoundHandleState.ENDED) {
+            if (it.status !== SoundHandleState.ENDED && it.status !== SoundHandleState.BLOCKED) {
                 playingSounds.add(it);
             } else {
                 it.releaseResources();
