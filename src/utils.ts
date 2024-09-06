@@ -1,6 +1,30 @@
 import { rotatePoint, Vector2 } from './draw.js';
 import { Entity, fragmentationAllowed } from './entity.js';
 
+export class TextElement {
+    text: string;
+    position: Vector2;
+    color: string;
+    fontSize: number;
+    fontFamily: string;
+    align: CanvasTextAlign;
+
+    visibleUntil?: number;
+
+    constructor(text: string, position: Vector2, color: string, fontSize: number, fontFamily: string, align: CanvasTextAlign) {
+        this.text = text;
+        this.position = position;
+        this.color = color;
+        this.fontSize = fontSize;
+        this.fontFamily = fontFamily;
+        this.align = align;
+    }
+
+    setVisibleUntil(visibleUntil: number) {
+        this.visibleUntil = visibleUntil;
+    }
+}
+
 /**
  * Cria um canvas com as dimensões especificadas e adiciona ele a algum elemnto
  * caso o parâmetro `appendTo` seja especificado

@@ -5,7 +5,7 @@ import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipS
 import { KeyBoardInput } from './keyboard-input.js';
 import { SoundMixer } from './sounds/sound-mixer.js';
 import { SoundResourceManager } from './sounds/sound-resource-manager.js';
-import { countEntitiesByType, fragmentAsteroid, renderFigureInside } from './utils.js';
+import { countEntitiesByType, fragmentAsteroid, renderFigureInside, TextElement } from './utils.js';
 
 
 /**
@@ -40,11 +40,13 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
     let moving = false;
     let forward = false;
     let asteroidsDestroyedCounter = 0;
+    let waveIndex = 0;
     const playerAcceleration = { x: 0, y: 0.45 };
     const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.07, 0.08);
     const shipStandingFigure = makeShipStandingFigure();
     const shipForwardFigure = makeShipForwardFigure();
     const shipBackwardsFigure = makeShipBackwardsFigure();
+    let textToDrawn: TextElement[] = [];
     /**
      * Função que monta a onda de asteróides
      * @note João, definir os parâmetros necessários para poder customizar aspectos da
@@ -113,7 +115,11 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
     
     keyBoardInput.addListener('keyup.r', () => {
         asteroidsDestroyedCounter = 0;
+        waveIndex = 0;
         entities.length = 0;
+
+        // limpando textos
+        textToDrawn.length = 0;
 
         // @note melhorar esse processo, rotina de inicialização?
         entityPlayer.components[hittedMark] = false;
@@ -171,6 +177,10 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
          */
         if (countEntitiesByType(entities, 'asteroids') === 0) {
             entities.push(...createAsteroidsWave());
+            waveIndex++;
+            const text = new TextElement('Onda ' + waveIndex, { x: 0, y: 0.5, }, 'white', 0.06, 'monospace', 'center');
+            text.setVisibleUntil(timestamp + 2000);
+            textToDrawn.push(text);
         }
     });
 
@@ -397,7 +407,13 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
          * @todo João, implementar um contador de 'ondas' e um mecanismo para adicionar textos flutuantes
          * que somem sozinho, possivelmente com 'fade-in' e 'fade-out'
          */
-        //drawText(ctx, `1 onda`, { x: 0, y: 0.5 }, 0.06, '#FFFFFF', 'monospace', 'center');
+        for (const text of textToDrawn) {
+            if (text.visibleUntil && time > text.visibleUntil) continue;
+            drawText(ctx, text.text, text.position, text.fontSize, text.color, text.fontFamily, text.align);
+        }
+
+        // limpando
+        textToDrawn = textToDrawn.filter(text => text.visibleUntil && text.visibleUntil > time);
         
         // acionando cleanup do soundMixer
         soundMixer.clear();
