@@ -64,8 +64,14 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         const defaultVelocity = { x: -0.3 * factor, y: -0.54 * factor };
         defaultVelocity.x *= Math.random() > 0.5 ? -1 : 1;
         defaultVelocity.y *= Math.random() > 0.5 ? -1 : 1;
+        /**
+         * @note João, adicionei mais variedade visual variando o ângulo e
+         * a velocidade angular.
+         */
+        const angle = Math.random() * 180;
+        const angularVelocity = -0.6 * (Math.random() > 0.5 ? -1 : 1);
 
-        const entity = new Entity({ x, y }, defaultVelocity, { x: 0, y: 0 }, 0, 'asteroids', hitRadius, scale, -0.6);
+        const entity = new Entity({ x, y }, defaultVelocity, { x: 0, y: 0 }, angle, 'asteroids', hitRadius, scale, angularVelocity);
         entity.components[fragmentationAllowed] = 4;
         return entity;
     });
