@@ -392,6 +392,12 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
          * mas poderiam passar pelo sistema de entidades.
          */
         drawText(ctx, `${asteroidsDestroyedCounter}`, { x: -0.97, y: 0.91 }, 0.06, '#FFFFFF', 'monospace', 'left');
+
+        /**
+         * @todo João, implementar um contador de 'ondas' e um mecanismo para adicionar textos flutuantes
+         * que somem sozinho, possivelmente com 'fade-in' e 'fade-out'
+         */
+        //drawText(ctx, `1 onda`, { x: 0, y: 0.5 }, 0.06, '#FFFFFF', 'monospace', 'center');
         
         // acionando cleanup do soundMixer
         soundMixer.clear();
