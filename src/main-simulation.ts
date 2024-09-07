@@ -114,6 +114,15 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
     });
     
     keyBoardInput.addListener('keyup.r', () => {
+        /**
+         * @note seria interessante formalizar o estado interno da 'partida',
+         * porém por hora ainda tem alguns pontos em aberto sobre a evolução da
+         * estrutura de 'ondas/fases'.
+         */
+        const gameOver = !entities.includes(entityPlayer);
+        
+        if (!gameOver) return;
+
         asteroidsDestroyedCounter = 0;
         waveIndex = 0;
         entities.length = 0;
