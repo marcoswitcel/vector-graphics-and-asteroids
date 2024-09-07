@@ -208,6 +208,10 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         if (countEntitiesByType(entities, 'asteroids') === 0) {
             entities.push(...createAsteroidsWave());
             waveIndex++;
+            /**
+             * @todo João, ajustar para usar um formato de duração de exibição similar ao
+             * dos 'disparos' da navinha.
+             */
             const text = new TextElement('Onda ' + waveIndex, { x: 0, y: 0.5, }, 'white', 0.06, 'monospace', 'center');
             text.setVisibleUntil(timestamp + 2000);
             textToDrawn.push(text);
