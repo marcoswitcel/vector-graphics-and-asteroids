@@ -304,6 +304,12 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
 
         // som emitido quando nave explode
         soundMixer.play('ship-explosion', false, 0.3);
+
+        const textGameOver = new TextElement('Fim de jogo', { x: 0, y: 0, }, 'white', 0.06, 'monospace', 'center');
+        const textReplayExplanation = new TextElement('Aperte "r" para jogar novamente', { x: 0, y: -0.15, }, 'white', 0.03, 'monospace', 'center');
+        
+        textToDrawn.push(textGameOver);
+        textToDrawn.push(textReplayExplanation);
     });
 
     /**
@@ -413,7 +419,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         }
 
         // limpando
-        textToDrawn = textToDrawn.filter(text => text.visibleUntil && text.visibleUntil > time);
+        textToDrawn = textToDrawn.filter(text => !text.visibleUntil || text.visibleUntil > time);
         
         // acionando cleanup do soundMixer
         soundMixer.clear();
