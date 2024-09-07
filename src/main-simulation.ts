@@ -1,5 +1,5 @@
 import { centralizePoint, distance, drawCircle, drawComplexShape, drawLine, drawPolygon, drawText, makePointAbsolute, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePoint, scalePolygon, Vector2 } from './draw.js';
-import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed, lineFigure } from './entity.js';
+import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure } from './entity.js';
 import { EventLoop } from './event-loop.js';
 import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
 import { KeyBoardInput } from './keyboard-input.js';
@@ -94,7 +94,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         const position = { x: player.position.x + radius.x, y: player.position.y + radius.y };
         const velocity = rotatePoint({ x: 0, y: 1.2 }, entityPlayer.angle);
         const shootEntity = new Entity(position, velocity, { x: 0, y: 0 }, player.angle, 'shoot');
-        shootEntity.components[createdAtTimestamp] = Date.now();
+        shootEntity.components[liveTimeInMilliseconds] = 1500;
         entities.push(shootEntity);
 
         // iniciando o som junto com a entidade que representa o 'disparo'
@@ -218,15 +218,18 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
      * Função responsável pela detecção de colisões
      * Aqui é feito a detecção da colisão e registrado para o posterior processamento
      */
-    eventLoop.add((time: number) => {
+    eventLoop.add((time: number, deltaTime: number) => {
         /**
-         * @note Remove as entidades com "createdAtTimestamp"com mais de 1,5 segundos de vida,
+         * @note Remove as entidades com "liveTimeInMilliseconds" zerado,
          * embora não seja essa a única utilidade desse componente, por hora só é usado para isso
          */
-        
-        const now = Date.now();
         entities = entities.filter(entity => {
-            return !(entity.components[createdAtTimestamp] && now - entity.components[createdAtTimestamp] > 1500);
+            if (entity.components[liveTimeInMilliseconds] == undefined) return true;
+
+            // @note Não deveria fazer isso no filter, mas... por hora fica assim
+            entity.components[liveTimeInMilliseconds] -= 1000 * deltaTime;
+
+            return entity.components[liveTimeInMilliseconds] > 0;
         });
 
         const shootEntities = entities.filter(entity => entity.type === 'shoot');

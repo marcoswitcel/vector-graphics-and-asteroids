@@ -1,6 +1,7 @@
 import { Vector2 } from './draw.js';
 
 export const createdAtTimestamp = Symbol('createdAtTimestamp');
+export const liveTimeInMilliseconds = Symbol('liveTimeInMilliseconds');
 export const hittedMark = Symbol('hittedMark');
 export const fragmentationAllowed = Symbol('fragmentationAllowed');
 export const lineFigure = Symbol('lineFigure');
@@ -23,7 +24,7 @@ export class Entity {
     public scale: number;
     public angularVelocity: number;
     public toBeRemoved: boolean;
-    public components: { [createdAtTimestamp]?: number, [hittedMark]?: boolean, [fragmentationAllowed]?: number, [lineFigure]?: Vector2[] };
+    public components: { [createdAtTimestamp]?: number, [liveTimeInMilliseconds]?: number, [hittedMark]?: boolean, [fragmentationAllowed]?: number, [lineFigure]?: Vector2[] };
 
     constructor(position: Vector2, velocity: Vector2, acceleration: Vector2, angle: number, type = 'entity', hitRadius = 0, scale = 0.01, angularVelocity = 0) {
         this.position = position;
