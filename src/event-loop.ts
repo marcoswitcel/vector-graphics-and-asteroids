@@ -25,6 +25,12 @@ export class EventLoop {
         if (this.running) {
             this.running = false;
             cancelAnimationFrame(this.handlerId);
+            this.handlerId = 0;
+            /**
+             * @note João, não é claro se deveria mesmo limpar o lastTimestamp, porém
+             * pra forma de uso atual está sendo util.
+             */
+            this.lastTimestamp = 0;
         }
     }
 

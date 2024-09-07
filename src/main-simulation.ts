@@ -41,6 +41,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
     let forward = false;
     let asteroidsDestroyedCounter = 0;
     let waveIndex = 0;
+    let isPaused = false;
     const playerAcceleration = { x: 0, y: 0.45 };
     const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.07, 0.08);
     const shipStandingFigure = makeShipStandingFigure();
@@ -112,6 +113,26 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
             shootWaitingToBeEmmited = true;
         }
     });
+
+    /**
+     * @note Implementar a funcionalidade de pausa fez com que diversas questões
+     * surgissem, como por exemplo, até então estava usando o timestamp provido pelo eventLoop
+     * para gerenciar a duração de algumas entidades e textos usados no jogo, porém agora considerando
+     * a forma como a funcionalidade de pausa foi implementada, essas entidade somem imediatamente após
+     * despausar, isso porque o EventLoop busca o tempo a partir do timestamp do frame sendo desenhado,
+     * acredito que o melhor seria criar mais um 'timestamp' para representar o tempo decorrido na simualação.
+     */
+    keyBoardInput.addListener('keyup.p', () => {
+        if (isPaused) {
+            eventLoop.start()
+        } else {
+            eventLoop.stop()
+        }
+
+        isPaused = !isPaused;
+
+        drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', 'monospace', 'center');
+    })
     
     keyBoardInput.addListener('keyup.r', () => {
         /**
