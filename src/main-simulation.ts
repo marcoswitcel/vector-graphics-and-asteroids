@@ -82,6 +82,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
     let shootWaitingToBeEmmited = false;
     const primaryWhite = '#FFFFFF';
     const secondaryWhite = 'rgba(255,255,255,0.7)';
+    const backgroundColor = '#000';
 
     const eventLoop = new EventLoop();
     const keyBoardInput = new KeyBoardInput({ autoStart: true });
@@ -392,7 +393,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
      * forma mais sustentável e eficiente, mas hoje é só isso que é necessário.
      */
     eventLoop.add((time: number) => {
-        ctx.fillStyle = '#000';
+        ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Deixando a largura da linha escalável
