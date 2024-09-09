@@ -1,11 +1,11 @@
 import { centralizePoint, distance, drawCircle, drawComplexShape, drawLine, drawPolygon, drawText, makePointAbsolute, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePoint, scalePolygon, Vector2 } from './draw.js';
-import { Entity, createdAtTimestamp, hittedMark, fragmentationAllowed, lineFigure } from './entity.js';
+import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure } from './entity.js';
 import { EventLoop } from './event-loop.js';
 import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
 import { KeyBoardInput } from './keyboard-input.js';
 import { SoundMixer } from './sounds/sound-mixer.js';
 import { SoundResourceManager } from './sounds/sound-resource-manager.js';
-import { countEntitiesByType, fragmentAsteroid, renderFigureInside } from './utils.js';
+import { countEntitiesByType, fragmentAsteroid, renderFigureInside, TextElement } from './utils.js';
 
 
 /**
@@ -40,11 +40,14 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
     let moving = false;
     let forward = false;
     let asteroidsDestroyedCounter = 0;
+    let waveIndex = 0;
+    let isPaused = false;
     const playerAcceleration = { x: 0, y: 0.45 };
     const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.07, 0.08);
     const shipStandingFigure = makeShipStandingFigure();
     const shipForwardFigure = makeShipForwardFigure();
     const shipBackwardsFigure = makeShipBackwardsFigure();
+    let textToDrawn: TextElement[] = [];
     /**
      * Função que monta a onda de asteróides
      * @note João, definir os parâmetros necessários para poder customizar aspectos da
@@ -64,8 +67,14 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         const defaultVelocity = { x: -0.3 * factor, y: -0.54 * factor };
         defaultVelocity.x *= Math.random() > 0.5 ? -1 : 1;
         defaultVelocity.y *= Math.random() > 0.5 ? -1 : 1;
+        /**
+         * @note João, adicionei mais variedade visual variando o ângulo e
+         * a velocidade angular.
+         */
+        const angle = Math.random() * 180;
+        const angularVelocity = -0.6 * (Math.random() > 0.5 ? -1 : 1);
 
-        const entity = new Entity({ x, y }, defaultVelocity, { x: 0, y: 0 }, 0, 'asteroids', hitRadius, scale, -0.6);
+        const entity = new Entity({ x, y }, defaultVelocity, { x: 0, y: 0 }, angle, 'asteroids', hitRadius, scale, angularVelocity);
         entity.components[fragmentationAllowed] = 4;
         return entity;
     });
@@ -73,6 +82,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
     let shootWaitingToBeEmmited = false;
     const primaryWhite = '#FFFFFF';
     const secondaryWhite = 'rgba(255,255,255,0.7)';
+    const backgroundColor = '#000';
 
     const eventLoop = new EventLoop();
     const keyBoardInput = new KeyBoardInput({ autoStart: true });
@@ -85,7 +95,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         const position = { x: player.position.x + radius.x, y: player.position.y + radius.y };
         const velocity = rotatePoint({ x: 0, y: 1.2 }, entityPlayer.angle);
         const shootEntity = new Entity(position, velocity, { x: 0, y: 0 }, player.angle, 'shoot');
-        shootEntity.components[createdAtTimestamp] = Date.now();
+        shootEntity.components[liveTimeInMilliseconds] = 1500;
         entities.push(shootEntity);
 
         // iniciando o som junto com a entidade que representa o 'disparo'
@@ -104,10 +114,43 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
             shootWaitingToBeEmmited = true;
         }
     });
+
+    /**
+     * @note Implementar a funcionalidade de pausa fez com que diversas questões
+     * surgissem, como por exemplo, até então estava usando o timestamp provido pelo eventLoop
+     * para gerenciar a duração de algumas entidades e textos usados no jogo, porém agora considerando
+     * a forma como a funcionalidade de pausa foi implementada, essas entidade somem imediatamente após
+     * despausar, isso porque o EventLoop busca o tempo a partir do timestamp do frame sendo desenhado,
+     * acredito que o melhor seria criar mais um 'timestamp' para representar o tempo decorrido na simualação.
+     */
+    keyBoardInput.addListener('keyup.p', () => {
+        if (isPaused) {
+            eventLoop.start()
+        } else {
+            eventLoop.stop()
+        }
+
+        isPaused = !isPaused;
+
+        drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', 'monospace', 'center');
+    })
     
     keyBoardInput.addListener('keyup.r', () => {
+        /**
+         * @note seria interessante formalizar o estado interno da 'partida',
+         * porém por hora ainda tem alguns pontos em aberto sobre a evolução da
+         * estrutura de 'ondas/fases'.
+         */
+        const gameOver = !entities.includes(entityPlayer);
+        
+        if (!gameOver) return;
+
         asteroidsDestroyedCounter = 0;
+        waveIndex = 0;
         entities.length = 0;
+
+        // limpando textos
+        textToDrawn.length = 0;
 
         // @note melhorar esse processo, rotina de inicialização?
         entityPlayer.components[hittedMark] = false;
@@ -165,6 +208,14 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
          */
         if (countEntitiesByType(entities, 'asteroids') === 0) {
             entities.push(...createAsteroidsWave());
+            waveIndex++;
+            /**
+             * @todo João, ajustar para usar um formato de duração de exibição similar ao
+             * dos 'disparos' da navinha.
+             */
+            const text = new TextElement('Onda ' + waveIndex, { x: 0, y: 0.5, }, 'white', 0.06, 'monospace', 'center');
+            text.setVisibleUntil(timestamp + 2000);
+            textToDrawn.push(text);
         }
     });
 
@@ -172,15 +223,18 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
      * Função responsável pela detecção de colisões
      * Aqui é feito a detecção da colisão e registrado para o posterior processamento
      */
-    eventLoop.add((time: number) => {
+    eventLoop.add((time: number, deltaTime: number) => {
         /**
-         * @note Remove as entidades com "createdAtTimestamp"com mais de 1,5 segundos de vida,
+         * @note Remove as entidades com "liveTimeInMilliseconds" zerado,
          * embora não seja essa a única utilidade desse componente, por hora só é usado para isso
          */
-        
-        const now = Date.now();
         entities = entities.filter(entity => {
-            return !(entity.components[createdAtTimestamp] && now - entity.components[createdAtTimestamp] > 1500);
+            if (entity.components[liveTimeInMilliseconds] == undefined) return true;
+
+            // @note Não deveria fazer isso no filter, mas... por hora fica assim
+            entity.components[liveTimeInMilliseconds] -= 1000 * deltaTime;
+
+            return entity.components[liveTimeInMilliseconds] > 0;
         });
 
         const shootEntities = entities.filter(entity => entity.type === 'shoot');
@@ -288,6 +342,12 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
 
         // som emitido quando nave explode
         soundMixer.play('ship-explosion', false, 0.3);
+
+        const textGameOver = new TextElement('Fim de jogo', { x: 0, y: 0, }, 'white', 0.06, 'monospace', 'center');
+        const textReplayExplanation = new TextElement('Aperte "r" para jogar novamente', { x: 0, y: -0.15, }, 'white', 0.03, 'monospace', 'center');
+        
+        textToDrawn.push(textGameOver);
+        textToDrawn.push(textReplayExplanation);
     });
 
     /**
@@ -333,7 +393,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
      * forma mais sustentável e eficiente, mas hoje é só isso que é necessário.
      */
     eventLoop.add((time: number) => {
-        ctx.fillStyle = '#000';
+        ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Deixando a largura da linha escalável
@@ -386,6 +446,18 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
          * mas poderiam passar pelo sistema de entidades.
          */
         drawText(ctx, `${asteroidsDestroyedCounter}`, { x: -0.97, y: 0.91 }, 0.06, '#FFFFFF', 'monospace', 'left');
+
+        /**
+         * @todo João, implementar um contador de 'ondas' e um mecanismo para adicionar textos flutuantes
+         * que somem sozinho, possivelmente com 'fade-in' e 'fade-out'
+         */
+        for (const text of textToDrawn) {
+            if (text.visibleUntil && time > text.visibleUntil) continue;
+            drawText(ctx, text.text, text.position, text.fontSize, text.color, text.fontFamily, text.align);
+        }
+
+        // limpando
+        textToDrawn = textToDrawn.filter(text => !text.visibleUntil || text.visibleUntil > time);
         
         // acionando cleanup do soundMixer
         soundMixer.clear();
