@@ -1,5 +1,18 @@
 import { rotatePoint } from './draw.js';
 import { Entity, fragmentationAllowed } from './entity.js';
+export class TextElement {
+    constructor(text, position, color, fontSize, fontFamily, align) {
+        this.text = text;
+        this.position = position;
+        this.color = color;
+        this.fontSize = fontSize;
+        this.fontFamily = fontFamily;
+        this.align = align;
+    }
+    setVisibleUntil(visibleUntil) {
+        this.visibleUntil = visibleUntil;
+    }
+}
 /**
  * Cria um canvas com as dimensões especificadas e adiciona ele a algum elemnto
  * caso o parâmetro `appendTo` seja especificado

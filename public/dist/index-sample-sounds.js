@@ -10,11 +10,11 @@ import { SoundResourceManager } from './sounds/sound-resource-manager.js';
 /**
  * Específicos
  * @todo encontrar áudios para os tiros e explosões (encontrei áudios para testar
- * o mixer, e achei um som para executar no momento da emissão do projétil)
+ * o mixer, e achei um som para executar no momento da emissão do projétil)             -- OK
  * @todo implementar um sistema capaz de rodar múltiplos sons simultâneamentes
  * e multiplas vezes e simultâneamentes o mesmo som                                     -- OK
  * @todo atingir o objetivo de ser de fácil implementação no sistema de entidades
- * rodando na simulação principal.
+ * rodando na simulação principal.                                                      -- OK
  * @todo implementar um controle de volume que funcione por instância de som e
  * talvez um volume global (isso é um mixer que faz?)                                   -- OK
  * @todo caso necessário lidar com assets de som, analisar implementar um gestor
@@ -22,9 +22,9 @@ import { SoundResourceManager } from './sounds/sound-resource-manager.js';
  * @todo reorganizar os arquivos das classes em um módulo separado para poder
  * importar na demonstração da nave com os asteróides                                   -- OK
  * @todo com o código separado em módulos, agora posso tentar implementar na
- * demonstração da navinha e ajustar/adicionar possíveis recursos faltantes
+ * demonstração da navinha e ajustar/adicionar possíveis recursos faltantes             -- OK
  * @todo encontrar bons sons para os tiros, explosões e o fogo, quem sabe uma música
- * de fundo?
+ * de fundo?                                                                            -- OK
  *
  * Coisas que descartei inicialmente: son espacial (2d),
  */

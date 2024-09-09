@@ -1,4 +1,5 @@
 export const createdAtTimestamp = Symbol('createdAtTimestamp');
+export const liveTimeInMilliseconds = Symbol('liveTimeInMilliseconds');
 export const hittedMark = Symbol('hittedMark');
 export const fragmentationAllowed = Symbol('fragmentationAllowed');
 export const lineFigure = Symbol('lineFigure');
