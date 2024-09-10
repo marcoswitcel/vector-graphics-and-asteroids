@@ -124,6 +124,12 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
      * acredito que o melhor seria criar mais um 'timestamp' para representar o tempo decorrido na simualação.
      */
     keyBoardInput.addListener('keyup.p', () => {
+        // @todo João, criar um utilitário ou um 'variável global' para conter se está ou não
+        // em status 'gameOver'
+        const gameOver = !entities.includes(entityPlayer);
+
+        if (gameOver) return;
+
         if (isPaused) {
             eventLoop.start()
         } else {
