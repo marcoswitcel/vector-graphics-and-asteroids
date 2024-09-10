@@ -348,6 +348,13 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         
         textToDrawn.push(textGameOver);
         textToDrawn.push(textReplayExplanation);
+
+        // salvando maior pontuação
+        // @note esse código deve ser movido para uma rotina própria
+        const highestScore = parseInt(localStorage.getItem('highestScore') || '0', 10);
+        if (asteroidsDestroyedCounter > highestScore || isNaN(highestScore)) {
+            localStorage.setItem('highestScore', asteroidsDestroyedCounter.toString());
+        }
     });
 
     /**
