@@ -131,9 +131,17 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         if (gameOver) return;
 
         if (isPaused) {
-            eventLoop.start()
+            eventLoop.start();
+            // executa sons pausados se houver algum
+            for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
+                soundHandler.play();
+            }
         } else {
-            eventLoop.stop()
+            eventLoop.stop();
+            // pausa todos os sons se houver algum executando
+            for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
+                soundHandler.stop();
+            }
         }
 
         isPaused = !isPaused;
