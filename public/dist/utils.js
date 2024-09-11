@@ -127,3 +127,14 @@ export function countEntitiesByType(entities, type) {
     }
     return found;
 }
+/**
+ * @note um detalhe interessante dessa implementação é que na verdade quando o usuário está com
+ * zoom aplicado à página, o cheque lógico abaixo não produz o resultado correto. Por isso adicionei
+ * o atributo depreciado do documento `document.fullscreen` ao cheque, quando presente ele será
+ * mais confiável.
+ *
+ * @returns booleano indicando se está ou não em modo 'fullscreen'
+ */
+export function isFullScreen() {
+    return document.fullscreen || (window.innerWidth == screen.width && window.innerHeight == screen.height);
+}
