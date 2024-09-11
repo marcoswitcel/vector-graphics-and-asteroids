@@ -124,10 +124,24 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
      * acredito que o melhor seria criar mais um 'timestamp' para representar o tempo decorrido na simualação.
      */
     keyBoardInput.addListener('keyup.p', () => {
+        // @todo João, criar um utilitário ou um 'variável global' para conter se está ou não
+        // em status 'gameOver'
+        const gameOver = !entities.includes(entityPlayer);
+
+        if (gameOver) return;
+
         if (isPaused) {
-            eventLoop.start()
+            eventLoop.start();
+            // executa sons pausados se houver algum
+            for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
+                soundHandler.play();
+            }
         } else {
-            eventLoop.stop()
+            eventLoop.stop();
+            // pausa todos os sons se houver algum executando
+            for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
+                soundHandler.stop();
+            }
         }
 
         isPaused = !isPaused;
@@ -348,6 +362,13 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
         
         textToDrawn.push(textGameOver);
         textToDrawn.push(textReplayExplanation);
+
+        // salvando maior pontuação
+        // @note esse código deve ser movido para uma rotina própria
+        const highestScore = parseInt(localStorage.getItem('highestScore') || '0', 10);
+        if (asteroidsDestroyedCounter > highestScore || isNaN(highestScore)) {
+            localStorage.setItem('highestScore', asteroidsDestroyedCounter.toString());
+        }
     });
 
     /**
