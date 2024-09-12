@@ -5,8 +5,37 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gráficos Vetoriais</title>
+    <style>
+        .c-gamepad-root {
+            display: flex;
+        }
+        .c-gamepad-root__button {
+            background-color: rgba(0, 0, 255, .1);
+            border: none;
+            outline: none;
+            border-radius: 5%;
+            width: 2em;
+            height: 4em;
+            /* color: transparent; */
+        }
+        .c-gamepad-root__button:active {
+            background-color: rgba(0, 0, 255, .05);
+        }
+        .c-gamepad-root__button.space {
+            border-radius: 50%;
+            width: 4em;
+            height: 4em;
+        }
+    </style>
 </head>
 <body>
     <!-- @todo João, montar o layout primeiro, depois criar o js complementar necessário. -->
+    <div class="c-gamepad-root">
+        <button class="c-gamepad-root__button a" type="button">a</button>
+        <button class="c-gamepad-root__button w" type="button">w</button>
+        <button class="c-gamepad-root__button d" type="button">d</button>
+        <button class="c-gamepad-root__button s" type="button">s</button>
+        <button class="c-gamepad-root__button space" type="button">space</button>
+    </div>
 </body>
 </html>
