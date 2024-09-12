@@ -10,9 +10,11 @@ const canvas = createCanvas(GAME_RESOLUTION, GAME_RESOLUTION, document.body);
  */
 canvas.addEventListener('dblclick', () => {
     if (isFullScreen()) {
-        window.document.exitFullscreen();
+        document.body.classList.remove('fullscreen-mode');
+        document.exitFullscreen();
     } else {
-        canvas.requestFullscreen();
+        document.body.classList.add('fullscreen-mode');
+        document.body.requestFullscreen();
     }
 });
 
