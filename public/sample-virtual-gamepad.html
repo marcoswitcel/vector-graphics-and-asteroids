@@ -4,59 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gráficos Vetoriais</title>
-    <style>
-        .c-gamepad-root {
-            display: flex;
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            font-size: 5vw;
-            width: 100vw;
-            justify-content: space-between;
-        }
-        .c-gamepad-directionals {
-            display: flex;
-            font-size: inherit;
-            flex-wrap: wrap;
-            flex-direction: column-reverse;
-            height: 5.7em;
-        }
-        .c-gamepad-root__button {
-            background-color: rgba(0, 0, 255, .1);
-            border: none;
-            outline: none;
-            border-radius: 5%;
-            font-size: inherit;
-            width: 1.7em;
-            height: 2.8em;
-            /* color: transparent; */
-        }
-        .c-gamepad-root__button.a, .c-gamepad-root__button.d {
-            height: 3em;
-        }
-        .c-gamepad-root__button:active {
-            background-color: rgba(0, 0, 255, .05);
-        }
-        .c-gamepad-root__button.space {
-            border-radius: 50%;
-            width: 3em;
-            height: 3em;
-        }
-    </style>
-</head>
+    <title>Gráficos Vetoriais</title></head>
 <body>
-    <!-- montar o layout primeiro -- ok -->
-    <!-- @todo João, depois criar a class/api js que vai gerenciar e iniciar esse componente. -->
-    <div class="c-gamepad-root">
-        <div class="c-gamepad-directionals">
-            <button class="c-gamepad-root__button a" type="button">a</button>
-            <button class="c-gamepad-root__button s" type="button">s</button>
-            <button class="c-gamepad-root__button w" type="button">w</button>
-            <button class="c-gamepad-root__button d" type="button">d</button>
-        </div>
-        <button class="c-gamepad-root__button space" type="button">space</button>
-    </div>
     <script type="module" src="./dist/index-sample-virtual-gamepad.js"></script>
 </body>
 </html>
