@@ -19,6 +19,17 @@ canvas.addEventListener('dblclick', () => {
 });
 
 /**
+ * @note por segurança vou deixar essa adição de classe no 'dbclick' também
+ */
+document.addEventListener('fullscreenchange', () => {
+    if (isFullScreen()) {
+        document.body.classList.add('fullscreen-mode');
+    } else {
+        document.body.classList.remove('fullscreen-mode');
+    }
+});
+
+/**
  * @todo João, validar melhor essa funcionalidade, não certeza de que escutando o evento
  * 'resize' é suficiente para saber a nova resolução da 'window'
  */
