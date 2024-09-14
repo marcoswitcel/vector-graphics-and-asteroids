@@ -85,6 +85,10 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
     const backgroundColor = '#000';
 
     const eventLoop = new EventLoop();
+    /**
+     * @todo João, criar uma interface para o 'keyBoard' para poder unificar o keyboard virtual
+     * e o teclado físico, porém considerar habilitar os dois simultaneamente.
+     */
     const keyBoardInput = new KeyBoardInput({ autoStart: true });
     let debug = false;
     let debugHitRadius = false;

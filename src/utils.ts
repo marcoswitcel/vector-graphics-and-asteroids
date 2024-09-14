@@ -165,5 +165,5 @@ export function countEntitiesByType(entities: readonly Entity[], type: string) {
  * @returns booleano indicando se está ou não em modo 'fullscreen'
  */
 export function isFullScreen(): boolean {
-    return document.fullscreen || (window.innerWidth == screen.width && window.innerHeight == screen.height);
+    return document.fullscreen || (document.fullscreenElement != null) || (window.innerWidth == screen.width && window.innerHeight == screen.height);
 }
