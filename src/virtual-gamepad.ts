@@ -1,4 +1,9 @@
 
+/**
+ * @todo João, aumentar tamanho dos botões, testar usar polegadas como unidade de medida.
+ * @todo João, ajustar para acionar o botão ao passar o dedo por cima do botão.
+ */
+
 const htmlMarkup = `
 <div class="c-gamepad-root">
     <div class="c-gamepad-directionals">
@@ -17,16 +22,17 @@ const cssStyle = `
     position: fixed;
     left: 0;
     bottom: 0;
-    font-size: 5vw;
+    font-size: .15in;
     width: 100vw;
     justify-content: space-between;
+    user-select: none;
 }
 .c-gamepad-directionals {
     display: flex;
     font-size: inherit;
     flex-wrap: wrap;
     flex-direction: column-reverse;
-    height: 5.7em;
+    height: 1.2in;
 }
 .c-gamepad-root__button {
     background-color: rgba(0, 0, 255, .1);
@@ -34,20 +40,20 @@ const cssStyle = `
     outline: none;
     border-radius: 5%;
     font-size: inherit;
-    width: 1.7em;
-    height: 2.8em;
+    width: 0.5in;
+    height: 0.6in;
     /* color: transparent; */
 }
 .c-gamepad-root__button.a, .c-gamepad-root__button.d {
-    height: 3em;
+    height: 0.61in;
 }
 .c-gamepad-root__button:active {
     background-color: rgba(0, 0, 255, .05);
 }
 .c-gamepad-root__button.space {
     border-radius: 50%;
-    width: 3em;
-    height: 3em;
+    width: 0.5in;
+    height: 0.5in;
 }
 `;
 
@@ -124,6 +130,15 @@ export class VirtualGamepad {
                 button.addEventListener('pointerup', () => {
                     this.keyState[vKey] = false;
                     this.eventTarget.dispatchEvent(new Event(`keyup.${vKey}`))
+                });
+
+                /**
+                 * @todo João, avaliar o que pode ser feito para não ficar estranho no PC, pois só passar o mouse
+                 * por cima do botão e acionar o 'buttonPressed' não é intuitivo. Mas no mobile ficou legal.
+                 */
+                button.addEventListener('pointerenter', () => {
+                    this.keyState[vKey] = true;
+                    this.eventTarget.dispatchEvent(new Event(`keydown.${vKey}`));
                 });
 
                 button.addEventListener('pointerout', () => {
