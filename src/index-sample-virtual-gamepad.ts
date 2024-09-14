@@ -54,12 +54,20 @@ const cssStyle = `
 class VirtualGamepad {
     private keyState = { a: false, w: false, s: false, d: false, space: false, };
     private target: HTMLElement;
+    private eventTarget: EventTarget;
+    private isHTMLSetupDone: boolean;
 
     constructor(target: HTMLElement) {
         this.target = target;
+        this.eventTarget = new EventTarget();
+        this.isHTMLSetupDone = false;
     }
 
     addGamepadToPage() {
+        if (this.isHTMLSetupDone) return;
+
+        this.isHTMLSetupDone = true;
+
         const html = document.createElement('html');
         const style = document.createElement('style');
 
@@ -80,27 +88,111 @@ class VirtualGamepad {
         }
     }
 
+    /**
+     * 
+     * @todo João, separar o `setupKeyListeners` para poder acionar separadamente.
+     * @todo João, implementar um 'cleanKeyListeners'
+     * @todo João, implementar um listener para blur da página, para limpar botões pressionados
+     * @todo João, simplificar código abaixo com um loop
+     * @todo João, implementar pointerout listener para pegar quando o dedo sair de cima do botão. 
+     * @param gamepadRoot 
+     */
     setupKeyListeners(gamepadRoot: Element) {
-        for (const element of gamepadRoot.querySelectorAll('.c-gamepad-root__button.a')) {
-            element.addEventListener('pointerdown', () => {
+        const buttonA = gamepadRoot.querySelector('.c-gamepad-root__button.a')
+        
+        if (buttonA) {
+            buttonA.addEventListener('pointerdown', () => {
                 this.keyState.a = true;
+                this.eventTarget.dispatchEvent(new Event('keydown.a'));
             });
-            element.addEventListener('pointerup', () => {
+            buttonA.addEventListener('pointerup', () => {
                 this.keyState.a = false;
+                this.eventTarget.dispatchEvent(new Event('keyup.a'))
             });
         }
+
+        const buttonW = gamepadRoot.querySelector('.c-gamepad-root__button.w')
+        
+        if (buttonW) {
+            buttonW.addEventListener('pointerdown', () => {
+                this.keyState.w = true;
+                this.eventTarget.dispatchEvent(new Event('keydown.w'));
+            });
+            buttonW.addEventListener('pointerup', () => {
+                this.keyState.w = false;
+                this.eventTarget.dispatchEvent(new Event('keyup.w'))
+            });
+        }
+
+        const buttonS = gamepadRoot.querySelector('.c-gamepad-root__button.s')
+        
+        if (buttonS) {
+            buttonS.addEventListener('pointerdown', () => {
+                this.keyState.s = true;
+                this.eventTarget.dispatchEvent(new Event('keydown.s'));
+            });
+            buttonS.addEventListener('pointerup', () => {
+                this.keyState.s = false;
+                this.eventTarget.dispatchEvent(new Event('keyup.s'))
+            });
+        }
+
+        const buttonD = gamepadRoot.querySelector('.c-gamepad-root__button.d')
+        
+        if (buttonD) {
+            buttonD.addEventListener('pointerdown', () => {
+                this.keyState.d = true;
+                this.eventTarget.dispatchEvent(new Event('keydown.d'));
+            });
+            buttonD.addEventListener('pointerup', () => {
+                this.keyState.d = false;
+                this.eventTarget.dispatchEvent(new Event('keyup.d'))
+            });
+        }
+
+        const buttonSpace = gamepadRoot.querySelector('.c-gamepad-root__button.space')
+        
+        if (buttonSpace) {
+            buttonSpace.addEventListener('pointerdown', () => {
+                this.keyState.space = true;
+                this.eventTarget.dispatchEvent(new Event('keydown.space'));
+            });
+            buttonSpace.addEventListener('pointerup', () => {
+                this.keyState.space = false;
+                this.eventTarget.dispatchEvent(new Event('keyup.space'))
+            });
+        }
+
+        // @todo João, implementar blur
     }
 
     startListening() {
         // @todo João, implementar
-        throw "Não implementado";
+        throw new Error("Não implementado");
     }
 
-    addListener(name: string, handler: any) {
+    addListener(name: string, handler: (event: Event) => void) {
+        this.eventTarget.addEventListener(name, handler);
+    }
+
+    removeListeners(name: string, handler: (event: Event) => void) {
         // @todo João, implementar
+        throw new Error("Não implementado");
     }
 }
 
 const gamepad = new VirtualGamepad(document.body);
 
 gamepad.addGamepadToPage();
+
+gamepad.addListener('keydown.a', (event) => {
+    console.log('keydown.a', event);
+    const square = document.querySelector('.square');
+    if (square && square instanceof HTMLElement) {
+        square.style.top = (parseFloat(getComputedStyle(square).top) + 10) + 'px';
+    }
+});
+
+gamepad.addListener('keyup.a', (event) => {
+    console.log('keyup.a', event);
+});
