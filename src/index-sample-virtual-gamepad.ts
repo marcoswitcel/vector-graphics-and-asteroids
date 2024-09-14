@@ -100,7 +100,6 @@ class VirtualGamepad {
     /**
      * 
      * @todo João, implementar um 'cleanKeyListeners'
-     * @todo João, implementar um listener para blur da página, para limpar botões pressionados
      * @param gamepadRoot 
      */
     setupKeyListeners() {
@@ -132,7 +131,11 @@ class VirtualGamepad {
             }
         }
 
-        // @todo João, implementar blur
+        window.addEventListener('blur', () => {
+            for (const vKey of vKeys) {
+                this.keyState[vKey] = false;
+            }
+        })
     }
 
     startListening() {
