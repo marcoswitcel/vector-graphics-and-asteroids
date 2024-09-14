@@ -136,5 +136,5 @@ export function countEntitiesByType(entities, type) {
  * @returns booleano indicando se está ou não em modo 'fullscreen'
  */
 export function isFullScreen() {
-    return document.fullscreen || (window.innerWidth == screen.width && window.innerHeight == screen.height);
+    return document.fullscreen || (document.fullscreenElement != null) || (window.innerWidth == screen.width && window.innerHeight == screen.height);
 }
