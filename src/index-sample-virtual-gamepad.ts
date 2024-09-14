@@ -51,8 +51,11 @@ const cssStyle = `
 }
 `;
 
+type VirtualKeys = 'a' | 'w' | 's' | 'd' | 'space';
+type KeyStateObject = { [key in VirtualKeys]: boolean };
+
 class VirtualGamepad {
-    private keyState = { a: false, w: false, s: false, d: false, space: false, };
+    private keyState: KeyStateObject = { a: false, w: false, s: false, d: false, space: false, };
     private target: HTMLElement;
     private eventTarget: EventTarget;
     private gamepadRoot: HTMLElement | null;
@@ -98,7 +101,6 @@ class VirtualGamepad {
      * 
      * @todo João, implementar um 'cleanKeyListeners'
      * @todo João, implementar um listener para blur da página, para limpar botões pressionados
-     * @todo João, simplificar código abaixo com um loop
      * @todo João, implementar pointerout listener para pegar quando o dedo sair de cima do botão. 
      * @param gamepadRoot 
      */
@@ -109,69 +111,20 @@ class VirtualGamepad {
 
         this.isListenersSetupDone = true;
 
-        const buttonA = this.gamepadRoot.querySelector('.c-gamepad-root__button.a')
+        const vKeys: VirtualKeys[] = [ 'a', 'w', 's', 'd', 'space' ];
+        for (const vKey of vKeys) {
+            const button = this.gamepadRoot.querySelector(`.c-gamepad-root__button.${vKey}`)
         
-        if (buttonA) {
-            buttonA.addEventListener('pointerdown', () => {
-                this.keyState.a = true;
-                this.eventTarget.dispatchEvent(new Event('keydown.a'));
-            });
-            buttonA.addEventListener('pointerup', () => {
-                this.keyState.a = false;
-                this.eventTarget.dispatchEvent(new Event('keyup.a'))
-            });
-        }
-
-        const buttonW = this.gamepadRoot.querySelector('.c-gamepad-root__button.w')
-        
-        if (buttonW) {
-            buttonW.addEventListener('pointerdown', () => {
-                this.keyState.w = true;
-                this.eventTarget.dispatchEvent(new Event('keydown.w'));
-            });
-            buttonW.addEventListener('pointerup', () => {
-                this.keyState.w = false;
-                this.eventTarget.dispatchEvent(new Event('keyup.w'))
-            });
-        }
-
-        const buttonS = this.gamepadRoot.querySelector('.c-gamepad-root__button.s')
-        
-        if (buttonS) {
-            buttonS.addEventListener('pointerdown', () => {
-                this.keyState.s = true;
-                this.eventTarget.dispatchEvent(new Event('keydown.s'));
-            });
-            buttonS.addEventListener('pointerup', () => {
-                this.keyState.s = false;
-                this.eventTarget.dispatchEvent(new Event('keyup.s'))
-            });
-        }
-
-        const buttonD = this.gamepadRoot.querySelector('.c-gamepad-root__button.d')
-        
-        if (buttonD) {
-            buttonD.addEventListener('pointerdown', () => {
-                this.keyState.d = true;
-                this.eventTarget.dispatchEvent(new Event('keydown.d'));
-            });
-            buttonD.addEventListener('pointerup', () => {
-                this.keyState.d = false;
-                this.eventTarget.dispatchEvent(new Event('keyup.d'))
-            });
-        }
-
-        const buttonSpace = this.gamepadRoot.querySelector('.c-gamepad-root__button.space')
-        
-        if (buttonSpace) {
-            buttonSpace.addEventListener('pointerdown', () => {
-                this.keyState.space = true;
-                this.eventTarget.dispatchEvent(new Event('keydown.space'));
-            });
-            buttonSpace.addEventListener('pointerup', () => {
-                this.keyState.space = false;
-                this.eventTarget.dispatchEvent(new Event('keyup.space'))
-            });
+            if (button) {
+                button.addEventListener('pointerdown', () => {
+                    this.keyState[vKey] = true;
+                    this.eventTarget.dispatchEvent(new Event(`keydown.${vKey}`));
+                });
+                button.addEventListener('pointerup', () => {
+                    this.keyState[vKey] = false;
+                    this.eventTarget.dispatchEvent(new Event(`keyup.${vKey}`))
+                });
+            }
         }
 
         // @todo João, implementar blur
