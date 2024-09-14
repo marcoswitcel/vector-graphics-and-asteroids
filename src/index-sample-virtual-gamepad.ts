@@ -101,7 +101,6 @@ class VirtualGamepad {
      * 
      * @todo João, implementar um 'cleanKeyListeners'
      * @todo João, implementar um listener para blur da página, para limpar botões pressionados
-     * @todo João, implementar pointerout listener para pegar quando o dedo sair de cima do botão. 
      * @param gamepadRoot 
      */
     setupKeyListeners() {
@@ -120,7 +119,13 @@ class VirtualGamepad {
                     this.keyState[vKey] = true;
                     this.eventTarget.dispatchEvent(new Event(`keydown.${vKey}`));
                 });
+                
                 button.addEventListener('pointerup', () => {
+                    this.keyState[vKey] = false;
+                    this.eventTarget.dispatchEvent(new Event(`keyup.${vKey}`))
+                });
+
+                button.addEventListener('pointerout', () => {
                     this.keyState[vKey] = false;
                     this.eventTarget.dispatchEvent(new Event(`keyup.${vKey}`))
                 });
