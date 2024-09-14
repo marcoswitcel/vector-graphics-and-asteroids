@@ -55,15 +55,19 @@ class VirtualGamepad {
     private keyState = { a: false, w: false, s: false, d: false, space: false, };
     private target: HTMLElement;
     private eventTarget: EventTarget;
+    private gamepadRoot: HTMLElement | null;
     private isHTMLSetupDone: boolean;
+    private isListenersSetupDone: boolean;
 
     constructor(target: HTMLElement) {
         this.target = target;
         this.eventTarget = new EventTarget();
         this.isHTMLSetupDone = false;
+        this.isListenersSetupDone = false;
+        this.gamepadRoot = null;
     }
 
-    addGamepadToPage() {
+    addGamepadToPage(setupListeners = false) {
         if (this.isHTMLSetupDone) return;
 
         this.isHTMLSetupDone = true;
@@ -77,28 +81,35 @@ class VirtualGamepad {
         document.head.appendChild(style);
         
         html.innerHTML = htmlMarkup;
-        const gamepadRoot = html.querySelector('.c-gamepad-root');
+        this.gamepadRoot = html.querySelector('.c-gamepad-root');
 
         
-        if (gamepadRoot) {
-            this.setupKeyListeners(gamepadRoot);
-            gamepadRoot.setAttribute('data-gamepad', '');
-            gamepadRoot.remove();
-            this.target.appendChild(gamepadRoot);
+        if (this.gamepadRoot) {
+            if (setupListeners) {
+                this.setupKeyListeners();
+            }
+            this.gamepadRoot.setAttribute('data-gamepad', '');
+            this.gamepadRoot.remove();
+            this.target.appendChild(this.gamepadRoot);
         }
     }
 
     /**
      * 
-     * @todo João, separar o `setupKeyListeners` para poder acionar separadamente.
      * @todo João, implementar um 'cleanKeyListeners'
      * @todo João, implementar um listener para blur da página, para limpar botões pressionados
      * @todo João, simplificar código abaixo com um loop
      * @todo João, implementar pointerout listener para pegar quando o dedo sair de cima do botão. 
      * @param gamepadRoot 
      */
-    setupKeyListeners(gamepadRoot: Element) {
-        const buttonA = gamepadRoot.querySelector('.c-gamepad-root__button.a')
+    setupKeyListeners() {
+        if (this.gamepadRoot == null) return;
+        if (this.isListenersSetupDone) return;
+        if (!this.isHTMLSetupDone) return;
+
+        this.isListenersSetupDone = true;
+
+        const buttonA = this.gamepadRoot.querySelector('.c-gamepad-root__button.a')
         
         if (buttonA) {
             buttonA.addEventListener('pointerdown', () => {
@@ -111,7 +122,7 @@ class VirtualGamepad {
             });
         }
 
-        const buttonW = gamepadRoot.querySelector('.c-gamepad-root__button.w')
+        const buttonW = this.gamepadRoot.querySelector('.c-gamepad-root__button.w')
         
         if (buttonW) {
             buttonW.addEventListener('pointerdown', () => {
@@ -124,7 +135,7 @@ class VirtualGamepad {
             });
         }
 
-        const buttonS = gamepadRoot.querySelector('.c-gamepad-root__button.s')
+        const buttonS = this.gamepadRoot.querySelector('.c-gamepad-root__button.s')
         
         if (buttonS) {
             buttonS.addEventListener('pointerdown', () => {
@@ -137,7 +148,7 @@ class VirtualGamepad {
             });
         }
 
-        const buttonD = gamepadRoot.querySelector('.c-gamepad-root__button.d')
+        const buttonD = this.gamepadRoot.querySelector('.c-gamepad-root__button.d')
         
         if (buttonD) {
             buttonD.addEventListener('pointerdown', () => {
@@ -150,7 +161,7 @@ class VirtualGamepad {
             });
         }
 
-        const buttonSpace = gamepadRoot.querySelector('.c-gamepad-root__button.space')
+        const buttonSpace = this.gamepadRoot.querySelector('.c-gamepad-root__button.space')
         
         if (buttonSpace) {
             buttonSpace.addEventListener('pointerdown', () => {
@@ -183,7 +194,7 @@ class VirtualGamepad {
 
 const gamepad = new VirtualGamepad(document.body);
 
-gamepad.addGamepadToPage();
+gamepad.addGamepadToPage(true);
 
 gamepad.addListener('keydown.a', (event) => {
     console.log('keydown.a', event);
