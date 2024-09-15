@@ -23,6 +23,7 @@ const cssStyle = `
     width: 100vw;
     justify-content: space-between;
     user-select: none;
+    touch-action: none; /* desabilita ações touch pra lidar com pointer events */
 }
 .c-gamepad-directionals {
     display: flex;
