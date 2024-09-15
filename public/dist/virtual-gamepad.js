@@ -99,9 +99,10 @@ export class VirtualGamepad {
         for (const vKey of vKeys) {
             const button = this.gamepadRoot.querySelector(`.c-gamepad-root__button.${vKey}`);
             if (button) {
-                button.addEventListener('pointerdown', () => {
+                button.addEventListener('pointerdown', (event) => {
                     this.keyState[vKey] = true;
                     this.eventTarget.dispatchEvent(new Event(`keydown.${vKey}`));
+                    button.releasePointerCapture(event.pointerId);
                 });
                 button.addEventListener('pointerup', () => {
                     this.keyState[vKey] = false;
@@ -111,7 +112,7 @@ export class VirtualGamepad {
                  * @todo João, avaliar o que pode ser feito para não ficar estranho no PC, pois só passar o mouse
                  * por cima do botão e acionar o 'buttonPressed' não é intuitivo. Mas no mobile ficou legal.
                  */
-                button.addEventListener('touchenter', () => {
+                button.addEventListener('pointerenter', () => {
                     this.keyState[vKey] = true;
                     this.eventTarget.dispatchEvent(new Event(`keydown.${vKey}`));
                 });
