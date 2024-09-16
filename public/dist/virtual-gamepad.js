@@ -1,6 +1,8 @@
 /**
  * @todo João, aumentar tamanho dos botões, testar usar polegadas como unidade de medida.
  * @todo João, ajustar para acionar o botão ao passar o dedo por cima do botão.
+ * @todo João, ajustar para o feedback visual ocorrer ao passar o dedo em cima do botão.
+ * @todo João, subir os botões direcionais um pouco mais, mudar a cor, considerar adicionar um padding entre eles e alinhar o botão de espaço.
  */
 const htmlMarkup = `
 <div class="c-gamepad-root">
@@ -24,7 +26,7 @@ const cssStyle = `
     width: 100vw;
     max-width: 5in;
     justify-content: space-between;
-    padding: 0 5vw 5vh 5vw;
+    padding: 0 5vw 7vh 5vw;
     box-sizing: border-box;
     user-select: none;
     touch-action: none; /* desabilita ações touch pra lidar com pointer events */
@@ -45,7 +47,7 @@ const cssStyle = `
     width: 0.5in;
     height: 0.6in;
     /* color: transparent; */
-    transition: 0.1s all ;
+    transition: all 0.1s ease-out;
     box-shadow: inset 0 0 17px rgba(255, 255, 255, 0.9);
 }
 .c-gamepad-root__button.a, .c-gamepad-root__button.d {
@@ -53,7 +55,7 @@ const cssStyle = `
     width: 0.45in;
     transform: translateY(-50%);
 }
-.c-gamepad-root__button:active, .c-gamepad-root__button:hover {
+.c-gamepad-root__button:active, .c-gamepad-root__button:hover, .c-gamepad-root__button.active  {
     background-color: rgba(212, 212, 212, .5);
     box-shadow: inset 0 0 17px rgba(0, 0, 0, 0.1);
 }
@@ -61,6 +63,7 @@ const cssStyle = `
     border-radius: 50%;
     width: 0.75in;
     height: 0.75in;
+    align-self: center;
 }
 `;
 export const vKeys = ['a', 'w', 's', 'd', 'space'];
@@ -125,10 +128,12 @@ export class VirtualGamepad {
                 button.addEventListener('pointerenter', () => {
                     this.keyState[vKey] = true;
                     this.eventTarget.dispatchEvent(new Event(`keydown.${vKey}`));
+                    button.classList.add('active');
                 });
                 button.addEventListener('pointerout', () => {
                     this.keyState[vKey] = false;
                     this.eventTarget.dispatchEvent(new Event(`keyup.${vKey}`));
+                    button.classList.remove('active');
                 });
             }
         }
