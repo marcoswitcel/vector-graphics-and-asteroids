@@ -58,7 +58,7 @@ const cssStyle = `
     width: 0.45in;
     transform: translateY(-50%);
 }
-.c-gamepad-root__button:active, .c-gamepad-root__button:hover, .c-gamepad-root__button.active  {
+.c-gamepad-root__button.active  {
     background-color: rgba(212, 212, 212, .5);
     box-shadow: inset 0 0 17px rgba(0, 0, 0, 0.1);
 }
@@ -138,13 +138,17 @@ export class VirtualGamepad {
                 button.addEventListener('pointerdown', (event) => {
                     this.keyState[vKey] = true;
                     this.eventTarget.dispatchEvent(new Event(`keydown.${vKey}`));
+
+                    button.classList.add('active');
                     
-                    button.releasePointerCapture(event.pointerId)
+                    button.releasePointerCapture(event.pointerId);
                 });
                 
                 button.addEventListener('pointerup', () => {
                     this.keyState[vKey] = false;
                     this.eventTarget.dispatchEvent(new Event(`keyup.${vKey}`))
+
+                    button.classList.remove('active');
                 });
 
                 /**
@@ -154,12 +158,14 @@ export class VirtualGamepad {
                 button.addEventListener('pointerenter', () => {
                     this.keyState[vKey] = true;
                     this.eventTarget.dispatchEvent(new Event(`keydown.${vKey}`));
+                    
                     button.classList.add('active');
                 });
 
                 button.addEventListener('pointerout', () => {
                     this.keyState[vKey] = false;
                     this.eventTarget.dispatchEvent(new Event(`keyup.${vKey}`))
+                    
                     button.classList.remove('active');
                 });
             }
