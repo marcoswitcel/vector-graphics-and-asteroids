@@ -39,3 +39,4 @@ Durante o desenvolvimento utilizei a IDE [Visual Studio Code](https://code.visua
 * [https://www.w3schools.com/jsref/obj_mouseevent.asp](https://www.w3schools.com/jsref/obj_mouseevent.asp)
 * [https://stackoverflow.com/questions/55677/how-do-i-get-the-coordinates-of-a-mouse-click-on-a-canvas-element/18053642#18053642](https://stackoverflow.com/questions/55677/how-do-i-get-the-coordinates-of-a-mouse-click-on-a-canvas-element/18053642#18053642)
 * [https://stackoverflow.com/questions/27908339/js-touch-equivalent-for-mouseenter#answer-57046105](https://stackoverflow.com/questions/27908339/js-touch-equivalent-for-mouseenter#answer-57046105)
+* [https://stackoverflow.com/questions/3514784/how-to-detect-a-mobile-device-using-jquery#answer-3540295](https://stackoverflow.com/questions/3514784/how-to-detect-a-mobile-device-using-jquery#answer-3540295)
