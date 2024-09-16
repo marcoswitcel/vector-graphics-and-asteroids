@@ -20,11 +20,15 @@ const cssStyle = `
 .c-gamepad-root {
     display: flex;
     position: fixed;
-    left: 0;
     bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
     font-size: .15in;
     width: 100vw;
+    max-width: 5in;
     justify-content: space-between;
+    padding: 0 5vw 5vh 5vw;
+    box-sizing: border-box;
     user-select: none;
     touch-action: none; /* desabilita ações touch pra lidar com pointer events */
 }
@@ -36,25 +40,30 @@ const cssStyle = `
     height: 1.2in;
 }
 .c-gamepad-root__button {
-    background-color: rgba(0, 0, 255, .1);
+    background-color: rgba(212, 212, 212, .76);
     border: none;
     outline: none;
-    border-radius: 5%;
+    border-radius: 10%;
     font-size: inherit;
     width: 0.5in;
     height: 0.6in;
     /* color: transparent; */
+    transition: 0.1s all ;
+    box-shadow: inset 0 0 17px rgba(255, 255, 255, 0.9);
 }
 .c-gamepad-root__button.a, .c-gamepad-root__button.d {
     height: 0.61in;
+    width: 0.45in;
+    transform: translateY(-50%);
 }
-.c-gamepad-root__button:active {
-    background-color: rgba(0, 0, 255, .05);
+.c-gamepad-root__button:active, .c-gamepad-root__button:hover {
+    background-color: rgba(212, 212, 212, .5);
+    box-shadow: inset 0 0 17px rgba(0, 0, 0, 0.1);
 }
 .c-gamepad-root__button.space {
     border-radius: 50%;
-    width: 0.5in;
-    height: 0.5in;
+    width: 0.75in;
+    height: 0.75in;
 }
 `;
 

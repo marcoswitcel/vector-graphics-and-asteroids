@@ -167,3 +167,12 @@ export function countEntitiesByType(entities: readonly Entity[], type: string) {
 export function isFullScreen(): boolean {
     return document.fullscreen || (document.fullscreenElement != null) || (window.innerWidth == screen.width && window.innerHeight == screen.height);
 }
+
+/**
+ * se é um userAgent normalmente usado em dispositivos 'mobile'
+ * @returns se é ou não mobile
+ */
+export function isMobileBrowser(): boolean {
+    const userAgentsKnownToBeMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    return userAgentsKnownToBeMobile.test(navigator.userAgent);
+}

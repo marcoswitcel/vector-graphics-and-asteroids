@@ -1,5 +1,6 @@
 import { createMainSimulation } from './main-simulation.js';
-import { createCanvas, computeResolution, isFullScreen } from './utils.js';
+import { createCanvas, computeResolution, isFullScreen, isMobileBrowser } from './utils.js';
+import { VirtualGamepad } from './virtual-gamepad.js';
 
 const GAME_RESOLUTION = computeResolution(0.9);
 const canvas = createCanvas(GAME_RESOLUTION, GAME_RESOLUTION, document.body);
@@ -45,5 +46,10 @@ window.addEventListener('resize', () => {
 })
 
 const eventLoop = createMainSimulation(canvas);
+
+if (isMobileBrowser()) {
+    const virtualGamepad = new VirtualGamepad(document.body);
+    virtualGamepad.addGamepadToPage(true);
+}
 
 eventLoop.start();
