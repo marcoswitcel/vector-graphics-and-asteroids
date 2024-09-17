@@ -1,8 +1,8 @@
 
 /**
- * @todo João, aumentar tamanho dos botões, testar usar polegadas como unidade de medida.
- * @todo João, ajustar para acionar o botão ao passar o dedo por cima do botão.
- * @todo João, ajustar para o feedback visual ocorrer ao passar o dedo em cima do botão.
+ * @todo João, aumentar tamanho dos botões, testar usar polegadas como unidade de medida -- ok
+ * @todo João, ajustar para acionar o botão ao passar o dedo por cima do botão - ok
+ * @todo João, ajustar para o feedback visual ocorrer ao passar o dedo em cima do botão -- ok
  * @todo João, subir os botões direcionais um pouco mais, mudar a cor, considerar adicionar um padding entre eles e alinhar o botão de espaço.
  */
 
@@ -137,7 +137,9 @@ export class VirtualGamepad {
             if (button) {
                 button.addEventListener('pointerdown', (event) => {
                     this.keyState[vKey] = true;
-                    this.eventTarget.dispatchEvent(new Event(`keydown.${vKey}`));
+                    // @note João, avaliar o impacto, porém parece o correto não disparar ao pressionar,
+                    // usar os eventos de 'pointerenter' e 'pointerout' funcionar melhor 
+                    // this.eventTarget.dispatchEvent(new Event(`keydown.${vKey}`));
 
                     button.classList.add('active');
                     
@@ -146,7 +148,9 @@ export class VirtualGamepad {
                 
                 button.addEventListener('pointerup', () => {
                     this.keyState[vKey] = false;
-                    this.eventTarget.dispatchEvent(new Event(`keyup.${vKey}`))
+                    // @note João, avaliar o impacto, porém parece o correto não disparar ao pressionar,
+                    // usar os eventos de 'pointerenter' e 'pointerout' funcionar melhor 
+                    // this.eventTarget.dispatchEvent(new Event(`keyup.${vKey}`))
 
                     button.classList.remove('active');
                 });
