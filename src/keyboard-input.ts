@@ -1,5 +1,6 @@
+import { KeyBoardInputInterface } from './keyboard-input-interface.js';
 
-export class KeyBoardInput {
+export class KeyBoardInput implements KeyBoardInputInterface {
     
     private listening = false;
     private keyState: Map<string, boolean> = new Map();
@@ -37,11 +38,11 @@ export class KeyBoardInput {
     }
 
     public isKeyPressed(key: string) {
-        return this.keyState.has(key) && this.keyState.get(key);
+        return this.keyState.has(key) && !!this.keyState.get(key);
     }
     
     public areBothKeysPressed(key1: string,  key2: string) {
-        return this.keyState.get(key1) && this.keyState.get(key2);
+        return !!this.keyState.get(key1) && !!this.keyState.get(key2);
     }
 
     public addListener(eventTypeName: string, callback: () => void) {

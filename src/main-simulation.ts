@@ -2,10 +2,12 @@ import { centralizePoint, distance, drawCircle, drawComplexShape, drawLine, draw
 import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure } from './entity.js';
 import { EventLoop } from './event-loop.js';
 import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
+import { KeyBoardInputInterface } from './keyboard-input-interface.js';
 import { KeyBoardInput } from './keyboard-input.js';
 import { SoundMixer } from './sounds/sound-mixer.js';
 import { SoundResourceManager } from './sounds/sound-resource-manager.js';
 import { countEntitiesByType, fragmentAsteroid, renderFigureInside, TextElement } from './utils.js';
+import { VirtualGamepad } from './virtual-gamepad.js';
 
 
 /**
@@ -14,7 +16,7 @@ import { countEntitiesByType, fragmentAsteroid, renderFigureInside, TextElement 
  * @param canvas elemento canvas aonde deve ser renderizada a cena
  * @returns o `EventLoop` configurado com a lógica da simulação
  */
-export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
+export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: VirtualGamepad | null): EventLoop {
 
     const ctx = canvas.getContext('2d');
     if (ctx === null) throw 'Contexto nulo';
@@ -89,7 +91,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
      * @todo João, criar uma interface para o 'keyBoard' para poder unificar o keyboard virtual
      * e o teclado físico, porém considerar habilitar os dois simultaneamente.
      */
-    const keyBoardInput = new KeyBoardInput({ autoStart: true });
+    const keyBoardInput: KeyBoardInputInterface = virtualGamepad != null ? virtualGamepad : new KeyBoardInput({ autoStart: true });
     let debug = false;
     let debugHitRadius = false;
 
@@ -118,6 +120,18 @@ export function createMainSimulation(canvas: HTMLCanvasElement): EventLoop {
             shootWaitingToBeEmmited = true;
         }
     });
+
+    /**
+     * @todo João, terminar de normalizar os nomes das teclas
+     */
+    if (virtualGamepad) {
+        virtualGamepad.addListener('keyup.space', () => {
+            console.log('asd');
+            if (!entityPlayer.components[hittedMark]) {
+                shootWaitingToBeEmmited = true;
+            }
+        });
+    }
 
     /**
      * @note Implementar a funcionalidade de pausa fez com que diversas questões

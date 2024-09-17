@@ -45,11 +45,12 @@ window.addEventListener('resize', () => {
     canvas.height = newResolution;
 })
 
-const eventLoop = createMainSimulation(canvas);
+const virtualGamepad = isMobileBrowser() ? new VirtualGamepad(document.body): null;
 
-if (isMobileBrowser()) {
-    const virtualGamepad = new VirtualGamepad(document.body);
+if (virtualGamepad) {
     virtualGamepad.addGamepadToPage(true);
 }
+
+const eventLoop = createMainSimulation(canvas, virtualGamepad);
 
 eventLoop.start();
