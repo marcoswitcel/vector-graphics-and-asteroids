@@ -1,3 +1,4 @@
+import { KeyBoardInputInterface } from './keyboard-input-interface.js';
 
 /**
  * @todo João, aumentar tamanho dos botões, testar usar polegadas como unidade de medida -- ok
@@ -76,7 +77,7 @@ type KeyStateObject = { [key in VirtualKeys]: boolean };
 
 export const vKeys: VirtualKeys[] = [ 'a', 'w', 's', 'd', 'space' ];
 
-export class VirtualGamepad {
+export class VirtualGamepad implements KeyBoardInputInterface {
     private keyState: KeyStateObject = { a: false, w: false, s: false, d: false, space: false, };
     private target: HTMLElement;
     private eventTarget: EventTarget;
@@ -198,5 +199,14 @@ export class VirtualGamepad {
 
     isKeyPressed(vKey: VirtualKeys) {
         return this.keyState[vKey];
+    }
+
+    stopListening(): void {
+        // @todo João, implementar
+        throw new Error("Não implementado");
+    }
+
+    areBothKeysPressed(vKey1: VirtualKeys, vKey2: VirtualKeys): boolean {
+        return this.keyState[vKey1] && this.keyState[vKey2];
     }
 }

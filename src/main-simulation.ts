@@ -91,7 +91,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * @todo João, criar uma interface para o 'keyBoard' para poder unificar o keyboard virtual
      * e o teclado físico, porém considerar habilitar os dois simultaneamente.
      */
-    const keyBoardInput: KeyBoardInputInterface = new KeyBoardInput({ autoStart: true });
+    const keyBoardInput: KeyBoardInputInterface = virtualGamepad != null ? virtualGamepad : new KeyBoardInput({ autoStart: true });
     let debug = false;
     let debugHitRadius = false;
 
@@ -121,6 +121,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         }
     });
 
+    /**
+     * @todo João, terminar de normalizar os nomes das teclas
+     */
     if (virtualGamepad) {
         virtualGamepad.addListener('keyup.space', () => {
             console.log('asd');
