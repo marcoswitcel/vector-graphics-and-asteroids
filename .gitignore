@@ -3,3 +3,5 @@
 node_modules
 # builds
 public/dist
+
+docs
