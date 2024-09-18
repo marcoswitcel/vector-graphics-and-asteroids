@@ -71,7 +71,7 @@ const cssStyle = `
     align-self: center;
 }
 .c-gamepad-root__button.space.active {
-    transform: scale(0.97);
+    transform: scale(0.97); 
 }
 .c-gamepad-root__button.start {
     align-self: center;
