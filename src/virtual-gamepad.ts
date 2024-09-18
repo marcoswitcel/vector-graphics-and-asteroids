@@ -70,9 +70,12 @@ const cssStyle = `
     height: 0.75in;
     align-self: center;
 }
+.c-gamepad-root__button.space.active {
+    transform: scale(0.97);
+}
 .c-gamepad-root__button.start {
     align-self: center;
-    height: 0.3 1in;
+    height: 0.31in;
 }
 `;
 
