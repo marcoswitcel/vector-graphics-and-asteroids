@@ -12,6 +12,7 @@ const htmlMarkup = `
         <button class="c-gamepad-root__button w" type="button">w</button>
         <button class="c-gamepad-root__button d" type="button">d</button>
     </div>
+    <button class="c-gamepad-root__button start" type="button">start</button>
     <button class="c-gamepad-root__button space" type="button">space</button>
 </div>
 `;
@@ -65,11 +66,18 @@ const cssStyle = `
     height: 0.75in;
     align-self: center;
 }
+.c-gamepad-root__button.space.active {
+    transform: scale(0.97);
+}
+.c-gamepad-root__button.start {
+    align-self: center;
+    height: 0.31in;
+}
 `;
-export const vKeys = ['a', 'w', 's', 'd', 'space'];
+export const vKeys = ['a', 'w', 's', 'd', 'space', 'start'];
 export class VirtualGamepad {
     constructor(target) {
-        this.keyState = { a: false, w: false, s: false, d: false, space: false, };
+        this.keyState = { a: false, w: false, s: false, d: false, space: false, start: false, };
         this.target = target;
         this.eventTarget = new EventTarget();
         this.isHTMLSetupDone = false;

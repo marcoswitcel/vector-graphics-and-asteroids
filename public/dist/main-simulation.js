@@ -41,6 +41,7 @@ export function createMainSimulation(canvas, virtualGamepad) {
     const shipForwardFigure = makeShipForwardFigure();
     const shipBackwardsFigure = makeShipBackwardsFigure();
     let textToDrawn = [];
+    const isMobileUi = virtualGamepad != null;
     /**
      * Função que monta a onda de asteróides
      * @note João, definir os parâmetros necessários para poder customizar aspectos da
@@ -93,6 +94,29 @@ export function createMainSimulation(canvas, virtualGamepad) {
         // iniciando o som junto com a entidade que representa o 'disparo'
         soundMixer.play('shoot', false, .05);
     };
+    const setInitialState = () => {
+        /**
+         * @note seria interessante formalizar o estado interno da 'partida',
+         * porém por hora ainda tem alguns pontos em aberto sobre a evolução da
+         * estrutura de 'ondas/fases'.
+         */
+        const gameOver = !entities.includes(entityPlayer);
+        if (!gameOver)
+            return;
+        asteroidsDestroyedCounter = 0;
+        waveIndex = 0;
+        entities.length = 0;
+        // limpando textos
+        textToDrawn.length = 0;
+        // @note melhorar esse processo, rotina de inicialização?
+        entityPlayer.components[hittedMark] = false;
+        entityPlayer.toBeRemoved = false;
+        entityPlayer.position = { x: 0, y: 0 };
+        entityPlayer.velocity = { x: 0, y: 0 };
+        entityPlayer.position = { x: 0, y: 0 };
+        entityPlayer.angle = 0;
+        entities.push(entityPlayer);
+    };
     keyBoardInput.addListener('keyup.1', () => {
         debug = !debug;
     });
@@ -109,11 +133,11 @@ export function createMainSimulation(canvas, virtualGamepad) {
      */
     if (virtualGamepad) {
         virtualGamepad.addListener('keyup.space', () => {
-            console.log('asd');
             if (!entityPlayer.components[hittedMark]) {
                 shootWaitingToBeEmmited = true;
             }
         });
+        virtualGamepad.addListener('keyup.start', setInitialState);
     }
     /**
      * @note Implementar a funcionalidade de pausa fez com que diversas questões
@@ -146,29 +170,7 @@ export function createMainSimulation(canvas, virtualGamepad) {
         isPaused = !isPaused;
         drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', 'monospace', 'center');
     });
-    keyBoardInput.addListener('keyup.r', () => {
-        /**
-         * @note seria interessante formalizar o estado interno da 'partida',
-         * porém por hora ainda tem alguns pontos em aberto sobre a evolução da
-         * estrutura de 'ondas/fases'.
-         */
-        const gameOver = !entities.includes(entityPlayer);
-        if (!gameOver)
-            return;
-        asteroidsDestroyedCounter = 0;
-        waveIndex = 0;
-        entities.length = 0;
-        // limpando textos
-        textToDrawn.length = 0;
-        // @note melhorar esse processo, rotina de inicialização?
-        entityPlayer.components[hittedMark] = false;
-        entityPlayer.toBeRemoved = false;
-        entityPlayer.position = { x: 0, y: 0 };
-        entityPlayer.velocity = { x: 0, y: 0 };
-        entityPlayer.position = { x: 0, y: 0 };
-        entityPlayer.angle = 0;
-        entities.push(entityPlayer);
-    });
+    keyBoardInput.addListener('keyup.r', setInitialState);
     /**
      * Função responsável pelo processamento de input
      * Primeira etapa do processo, entrada de input e aplicação das lógicas
@@ -328,7 +330,8 @@ export function createMainSimulation(canvas, virtualGamepad) {
         // som emitido quando nave explode
         soundMixer.play('ship-explosion', false, 0.3);
         const textGameOver = new TextElement('Fim de jogo', { x: 0, y: 0, }, 'white', 0.06, 'monospace', 'center');
-        const textReplayExplanation = new TextElement('Aperte "r" para jogar novamente', { x: 0, y: -0.15, }, 'white', 0.03, 'monospace', 'center');
+        const restartKey = isMobileUi ? "start" : "r";
+        const textReplayExplanation = new TextElement(`Aperte "${restartKey}" para jogar novamente`, { x: 0, y: -0.15, }, 'white', 0.03, 'monospace', 'center');
         textToDrawn.push(textGameOver);
         textToDrawn.push(textReplayExplanation);
         // salvando maior pontuação
