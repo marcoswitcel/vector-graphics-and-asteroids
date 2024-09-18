@@ -126,10 +126,14 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      */
     if (virtualGamepad) {
         virtualGamepad.addListener('keyup.space', () => {
-            console.log('asd');
             if (!entityPlayer.components[hittedMark]) {
                 shootWaitingToBeEmmited = true;
             }
+        });
+
+        virtualGamepad.addListener('keyup.start', () => {
+            // @todo João, chamar a rotina que seta o estado para iniciar o jogo
+            console.warn("start: Não implementando")
         });
     }
 

@@ -18,11 +18,20 @@
             min-height: 100vh;
         }
         body.fullscreen-mode {
-            background-color: black;
+            background-color: #1f1f1f;
         }
         canvas {
             margin: 0;
         }
+        @media (orientation: portrait) {
+            canvas {
+                transform: translateY(-5%);
+            }
+        }
+        body.fullscreen-mode .c-gamepad-root {
+            padding-bottom: 5vh;
+        }
+
     </style>
 </head>
 <body>
