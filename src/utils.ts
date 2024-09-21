@@ -1,5 +1,5 @@
 import { rotatePoint, Vector2 } from './draw.js';
-import { Entity, fragmentationAllowed } from './entity.js';
+import { Entity, EntityType, fragmentationAllowed } from './entity.js';
 
 export class TextElement {
     text: string;
@@ -143,7 +143,7 @@ export function computeResolution(factor: number = 1): number {
     return resolution;
 }
 
-export function countEntitiesByType(entities: readonly Entity[], type: string) {
+export function countEntitiesByType(entities: readonly Entity[], type: EntityType) {
     const length = entities.length;
     let found = 0 ;
 
