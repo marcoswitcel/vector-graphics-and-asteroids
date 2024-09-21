@@ -537,11 +537,18 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         const lineWidth = Math.max(1, canvas.width * 0.002);
         
         for (const entity of entities) {
-            const endPosition = {
+            if (entity.type != 'player' && entity.type != 'asteroids') continue;
+
+            const endPositionForAcceleration = {
                 x: entity.position.x + entity.acceleration.x,
                 y: entity.position.y + entity.acceleration.y,
             };
-            drawLine(ctx, entity.position, endPosition, undefined, lineWidth);
+            const endPositionForVelocity = {
+                x: entity.position.x + entity.velocity.x,
+                y: entity.position.y + entity.velocity.y,
+            };
+            drawLine(ctx, entity.position, endPositionForVelocity, '#00FF00', lineWidth);
+            drawLine(ctx, entity.position, endPositionForAcceleration, undefined, lineWidth);
         }
     });
     
