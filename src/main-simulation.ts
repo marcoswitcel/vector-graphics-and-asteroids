@@ -547,8 +547,14 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
                 x: entity.position.x + entity.velocity.x,
                 y: entity.position.y + entity.velocity.y,
             };
+            // @todo João, ajustar manipulação 'global' do estilo da linha
+            ctx.setLineDash([lineWidth * 2, lineWidth * 4]);
+
             drawLine(ctx, entity.position, endPositionForVelocity, '#00FF00', lineWidth);
             drawLine(ctx, entity.position, endPositionForAcceleration, undefined, lineWidth);
+
+            // @todo João, ajustar manipulação 'global' do estilo da linha
+            ctx.setLineDash([]);
         }
     });
     
