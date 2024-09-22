@@ -20,7 +20,6 @@ export class Entity {
     public position: Vector2;
     public velocity: Vector2;
     public acceleration: Vector2;
-    // @todo João, modelar melhor essa propriedade
     public angle: number;
     public hitRadius: number;
     public scale: number;
