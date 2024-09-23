@@ -30,8 +30,8 @@ document.addEventListener('fullscreenchange', () => {
     }
 });
 /**
- * @todo João, validar melhor essa funcionalidade, não certeza de que escutando o evento
- * 'resize' é suficiente para saber a nova resolução da 'window'
+ * @todo João, validar melhor essa funcionalidade, não tenho certeza de que escutar o evento
+ * 'resize' é suficiente para saber se a nova resolução da 'window'
  */
 window.addEventListener('resize', () => {
     // @todo João, se a aplicação estiver pausada o canvas é limpo e fica "transparente",

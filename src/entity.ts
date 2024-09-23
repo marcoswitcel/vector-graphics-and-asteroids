@@ -6,6 +6,8 @@ export const hittedMark = Symbol('hittedMark');
 export const fragmentationAllowed = Symbol('fragmentationAllowed');
 export const lineFigure = Symbol('lineFigure');
 
+export type EntityType = 'player' | 'shoot' | 'asteroids' | 'fragments' | 'entity';
+
 /**
  * @note João, considerar criar um atributo para indicar que a entidade deve ser
  * removida ao final do frame e começar a usar este mesmo atributo para evitar
@@ -14,11 +16,10 @@ export const lineFigure = Symbol('lineFigure');
  * outra história.
  */
 export class Entity {
-    public type: string;
+    public type: EntityType;
     public position: Vector2;
     public velocity: Vector2;
     public acceleration: Vector2;
-    // @todo João, modelar melhor essa propriedade
     public angle: number;
     public hitRadius: number;
     public scale: number;
@@ -26,7 +27,7 @@ export class Entity {
     public toBeRemoved: boolean;
     public components: { [createdAtTimestamp]?: number, [liveTimeInMilliseconds]?: number, [hittedMark]?: boolean, [fragmentationAllowed]?: number, [lineFigure]?: Vector2[] };
 
-    constructor(position: Vector2, velocity: Vector2, acceleration: Vector2, angle: number, type = 'entity', hitRadius = 0, scale = 0.01, angularVelocity = 0) {
+    constructor(position: Vector2, velocity: Vector2, acceleration: Vector2, angle: number, type: EntityType = 'entity', hitRadius = 0, scale = 0.01, angularVelocity = 0) {
         this.position = position;
         this.velocity = velocity;
         this.acceleration = acceleration;

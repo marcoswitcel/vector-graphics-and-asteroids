@@ -4,26 +4,24 @@ import { SoundResourceManager } from './sounds/sound-resource-manager.js';
  * estudar e implentar um sistema de som que funcione junto com a simulação,
  * entender o que é necessário e integrá-lo ao sistema de entidades, implementar
  * algum tipo de catálogo de áudios.
- * @todo Atingir os objetivos acima
- * @todo Uma vez pronta a implementação, aplicar também na simulação principal
+ * -- Atingir os objetivos acima descritos -- ok
+ * -- Uma vez pronta a implementação, aplicar também na simulação principal -- ok
  */
 /**
  * Específicos
- * @todo encontrar áudios para os tiros e explosões (encontrei áudios para testar
- * o mixer, e achei um som para executar no momento da emissão do projétil)             -- OK
- * @todo implementar um sistema capaz de rodar múltiplos sons simultâneamentes
+ * -- implementar um sistema capaz de rodar múltiplos sons simultâneamentes
  * e multiplas vezes e simultâneamentes o mesmo som                                     -- OK
- * @todo atingir o objetivo de ser de fácil implementação no sistema de entidades
+ * -- atingir o objetivo de ser de fácil implementação no sistema de entidades
  * rodando na simulação principal.                                                      -- OK
- * @todo implementar um controle de volume que funcione por instância de som e
+ * -- implementar um controle de volume que funcione por instância de som e
  * talvez um volume global (isso é um mixer que faz?)                                   -- OK
- * @todo caso necessário lidar com assets de som, analisar implementar um gestor
+ * -- caso necessário lidar com assets de som, analisar implementar um gestor
  * de recursos.                                                                         -- OK
- * @todo reorganizar os arquivos das classes em um módulo separado para poder
+ * -- reorganizar os arquivos das classes em um módulo separado para poder
  * importar na demonstração da nave com os asteróides                                   -- OK
- * @todo com o código separado em módulos, agora posso tentar implementar na
+ * -- com o código separado em módulos, agora posso tentar implementar na
  * demonstração da navinha e ajustar/adicionar possíveis recursos faltantes             -- OK
- * @todo encontrar bons sons para os tiros, explosões e o fogo, quem sabe uma música
+ * -- encontrar bons sons para os tiros, explosões e o fogo, quem sabe uma música
  * de fundo?                                                                            -- OK
  *
  * Coisas que descartei inicialmente: son espacial (2d),
@@ -77,7 +75,7 @@ globalVolumeRangeElement.addEventListener('input', () => {
 });
 updateDisplayVolume();
 /**
- * @todo João, código bem mal organizado e acredito que ineficiente, reorganizar e otimizar
+ * @todo João, reorganizar e otimizar
  */
 const map = new Map();
 const updateList = () => {
@@ -194,11 +192,3 @@ class ListItemComponent {
     }
 }
 setInterval(updateList, 60);
-// @todo João, testando mudanças no som ao longo da execução, notei alguns artefactos mudando pelo range,
-// podem ser em decorrência de múltiplos eventos em sequencia
-// let index = 0;
-// requestAnimationFrame(function updateSound(time) {
-//     console.log(time % 1000 / 1000);
-//     soundMixer.setVolume(time % 2000 / 2000);
-//     requestAnimationFrame(updateSound);
-// })

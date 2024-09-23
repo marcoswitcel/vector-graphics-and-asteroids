@@ -40,3 +40,4 @@ Durante o desenvolvimento utilizei a IDE [Visual Studio Code](https://code.visua
 * [https://stackoverflow.com/questions/55677/how-do-i-get-the-coordinates-of-a-mouse-click-on-a-canvas-element/18053642#18053642](https://stackoverflow.com/questions/55677/how-do-i-get-the-coordinates-of-a-mouse-click-on-a-canvas-element/18053642#18053642)
 * [https://stackoverflow.com/questions/27908339/js-touch-equivalent-for-mouseenter#answer-57046105](https://stackoverflow.com/questions/27908339/js-touch-equivalent-for-mouseenter#answer-57046105)
 * [https://stackoverflow.com/questions/3514784/how-to-detect-a-mobile-device-using-jquery#answer-3540295](https://stackoverflow.com/questions/3514784/how-to-detect-a-mobile-device-using-jquery#answer-3540295)
+* [https://dev.to/hashcode01/how-to-remove-a-file-from-git-and-add-it-to-gitignore-5c0m](https://dev.to/hashcode01/how-to-remove-a-file-from-git-and-add-it-to-gitignore-5c0m)
