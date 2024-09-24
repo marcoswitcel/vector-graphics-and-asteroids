@@ -6,7 +6,7 @@ import { KeyBoardInputInterface } from './keyboard-input-interface.js';
 import { KeyBoardInput } from './keyboard-input.js';
 import { SoundMixer } from './sounds/sound-mixer.js';
 import { SoundResourceManager } from './sounds/sound-resource-manager.js';
-import { countEntitiesByType, fragmentAsteroid, renderFigureInside, TextElement } from './utils.js';
+import { countEntitiesByType, fragmentAsteroid, renderFigureInside, TextElement, updateWebPageTitleQueued } from './utils.js';
 import { VirtualGamepad } from './virtual-gamepad.js';
 
 
@@ -30,6 +30,18 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     soundResourceManager.loadAll();
 
     const soundMixer = new SoundMixer(soundResourceManager);
+
+    const updateWebPageTitle = (state?: string) => {
+        let title = '';
+        
+        if (state) {
+            title += state + ' - ';
+        }
+
+        title += 'Gráficos vetoriais e asteroides';
+
+        updateWebPageTitleQueued(title);
+    };
     
     /**
      * @todo João, seria interessante organizar essas variáveis em algum tipo de GameObject
@@ -135,6 +147,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         entityPlayer.angle = 0;
 
         entities.push(entityPlayer);
+
+        // atualiza title
+        updateWebPageTitle();
     };
 
     keyBoardInput.addListener('keyup.1', () => {
@@ -188,17 +203,21 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
                 soundHandler.play();
             }
+
+            updateWebPageTitle();
         } else {
             eventLoop.stop();
             // pausa todos os sons se houver algum executando
             for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
                 soundHandler.stop();
             }
+
+            drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', 'monospace', 'center');
+
+            updateWebPageTitle('pausado');
         }
 
         isPaused = !isPaused;
-
-        drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', 'monospace', 'center');
     })
     
     keyBoardInput.addListener('keyup.r', setInitialState);
@@ -389,6 +408,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         
         textToDrawn.push(textGameOver);
         textToDrawn.push(textReplayExplanation);
+
+        // atualiza title
+        updateWebPageTitle('fim de jogo');
 
         // salvando maior pontuação
         // @note esse código deve ser movido para uma rotina própria
