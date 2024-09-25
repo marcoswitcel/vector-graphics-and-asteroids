@@ -192,7 +192,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * despausar, isso porque o EventLoop busca o tempo a partir do timestamp do frame sendo desenhado,
      * acredito que o melhor seria criar mais um 'timestamp' para representar o tempo decorrido na simualação.
      */
-    keyBoardInput.addListener('keyup.p', () => {
+    const setPausedState = () => {
         // @todo João, criar um utilitário ou um 'variável global' para conter se está ou não
         // em status 'gameOver'
         const gameOver = !entities.includes(entityPlayer);
@@ -220,9 +220,15 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         }
 
         isPaused = !isPaused;
-    })
+    }
+
+    keyBoardInput.addListener('keyup.p', setPausedState);
     
     keyBoardInput.addListener('keyup.r', setInitialState);
+
+    // @todo João, avaliar se não causa mais problemas do que vantagens tanto em desenvolvimento
+    // como para o usuário final...
+    window.addEventListener('blur', setPausedState);
 
     /**
      * Função responsável pelo processamento de input
