@@ -63,6 +63,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     const shipBackwardsFigure = makeShipBackwardsFigure();
     let textToDrawn: TextElement[] = [];
     const isMobileUi = virtualGamepad != null;
+    // @todo João, eventualmente posso precisar saber quando a fonte carregou
+    const fontName = '"Courier Prime", monospace';
     /**
      * Função que monta a onda de asteróides
      * @note João, definir os parâmetros necessários para poder customizar aspectos da
@@ -212,7 +214,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
                 soundHandler.stop();
             }
 
-            drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', 'monospace', 'center');
+            drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', fontName, 'center');
 
             updateWebPageTitle('pausado');
         }
@@ -272,7 +274,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
              * @todo João, ajustar para usar um formato de duração de exibição similar ao
              * dos 'disparos' da navinha.
              */
-            const text = new TextElement('Onda ' + waveIndex, { x: 0, y: 0.5, }, 'white', 0.06, 'monospace', 'center');
+            const text = new TextElement('Onda ' + waveIndex, { x: 0, y: 0.5, }, 'white', 0.06, fontName, 'center');
             text.setVisibleUntil(timestamp + 2000);
             textToDrawn.push(text);
         }
@@ -402,9 +404,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         // som emitido quando nave explode
         soundMixer.play('ship-explosion', false, 0.3);
 
-        const textGameOver = new TextElement('Fim de jogo', { x: 0, y: 0, }, 'white', 0.06, 'monospace', 'center');
+        const textGameOver = new TextElement('Fim de jogo', { x: 0, y: 0, }, 'white', 0.06, fontName, 'center');
         const restartKey = isMobileUi ? "start" : "r";
-        const textReplayExplanation = new TextElement(`Aperte "${restartKey}" para jogar novamente`, { x: 0, y: -0.15, }, 'white', 0.03, 'monospace', 'center');
+        const textReplayExplanation = new TextElement(`Aperte "${restartKey}" para jogar novamente`, { x: 0, y: -0.15, }, 'white', 0.03, fontName, 'center');
         
         textToDrawn.push(textGameOver);
         textToDrawn.push(textReplayExplanation);
@@ -515,7 +517,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
          * Nesse primeiro momento os textos serão desenhados separadamente,
          * mas poderiam passar pelo sistema de entidades.
          */
-        drawText(ctx, `${asteroidsDestroyedCounter}`, { x: -0.97, y: 0.91 }, 0.06, '#FFFFFF', 'monospace', 'left');
+        drawText(ctx, `${asteroidsDestroyedCounter}`, { x: -0.97, y: 0.91 }, 0.06, '#FFFFFF', fontName, 'left');
 
         /**
          * @todo João, implementar um contador de 'ondas' e um mecanismo para adicionar textos flutuantes
