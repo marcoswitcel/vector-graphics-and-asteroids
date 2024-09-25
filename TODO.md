@@ -31,7 +31,7 @@
 não possuí variedade nem progressão de dificuldade/entretenimento. (A simulação deve começar mais fácil, dando mais chance para reagir e aprender a se mover)
 - [ ] Testar e alterar os valores da aceleração, velocidade angular para rotação para que o movimento, aceleração, capacidade de fazer curvas fiquem bons.
 - [ ] Adicionar suporte a mais uma configuração de controles. (adicionar controle por setinhas)
-- [ ] Escolher e aplicar uma fonte para garantir consistência visual e melhorar a qualidade no geral (uma fonte candidata: https://fonts.google.com/share?selection.family=Nerko+One)
+- [X] Escolher e aplicar uma fonte para garantir consistência visual e melhorar a qualidade no geral (uma fonte candidata: https://fonts.google.com/share?selection.family=Nerko+One) ou (https://fonts.google.com/specimen/Courier+Prime)
 
 ## Ideias para o futuro
 
