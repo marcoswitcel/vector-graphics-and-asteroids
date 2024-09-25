@@ -146,3 +146,12 @@ export function isMobileBrowser() {
     const userAgentsKnownToBeMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
     return userAgentsKnownToBeMobile.test(navigator.userAgent);
 }
+/**
+ * @todo João, documentar o porquê
+ * @param title
+ */
+export function updateWebPageTitleQueued(title) {
+    queueMicrotask(() => {
+        document.title = title;
+    });
+}
