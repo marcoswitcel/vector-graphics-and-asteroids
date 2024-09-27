@@ -271,7 +271,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
         /**
          * @todo João, achar um lugar melhora para esse funcionalidade a seguir
-         * @todo João, escrever um utilitário para contar e um para pegar entidades de um tipo
          */
         if (countEntitiesByType(entities, 'asteroids') === 0) {
             entities.push(...createAsteroidsWave());
