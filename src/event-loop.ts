@@ -1,17 +1,21 @@
 
-type EventHandler = (timestamp: number, deltaTime: number) => void;
+type EventHandler<Context> = (context: Context, timestamp: number, deltaTime: number) => void;
 
 /**
  * @todo João, analisar se interessante adicionar um profiler de memória
  * e tempo ao `EventLoop` para ativamente coletar e talvez exibir um um frame
  * a parte as métricas.
  */
-export class EventLoop {
-
+export class EventLoop<Context> {
+    private context: Context;
     private running: boolean = false;
     private handlerId: number = 0;
-    private handlers: Set<EventHandler> = new Set();
+    private handlers: Set<EventHandler<Context>> = new Set();
     private lastTimestamp: number = 0;
+
+    constructor(context: Context) {
+        this.context = context;
+    }
 
     public start() {
         if (this.running) return;
@@ -41,7 +45,7 @@ export class EventLoop {
      * 
      * @param handler função com a lógica que precisa ser rodada
      */
-    public add(handler: EventHandler) {
+    public add(handler: EventHandler<Context>) {
         this.handlers.add(handler);
     }
 
@@ -61,7 +65,7 @@ export class EventLoop {
             this.lastTimestamp = timestamp;
 
             for (const handler of this.handlers) {
-                handler(timestamp, deltaTime);
+                handler(this.context, timestamp, deltaTime);
             }
             
             if (this.running) {

@@ -11,6 +11,11 @@ import { VirtualGamepad } from './virtual-gamepad.js';
 
 
 /**
+ * @todo João, avaliar o que o mais mover para dentro dessa classe
+ */
+class GameContext {}
+
+/**
  * Função que monta o estado e a sequência de execução da simulação.
  * 
  * @param canvas elemento canvas aonde deve ser renderizada a cena
@@ -101,7 +106,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     const secondaryWhite = 'rgba(255,255,255,0.7)';
     const backgroundColor = '#000';
 
-    const eventLoop = new EventLoop();
+    const eventLoop = new EventLoop(new GameContext());
     /**
      * @todo João, criar uma interface para o 'keyBoard' para poder unificar o keyboard virtual
      * e o teclado físico, porém considerar habilitar os dois simultaneamente.
@@ -239,7 +244,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * Primeira etapa do processo, entrada de input e aplicação das lógicas
      * definidas.
      */
-    eventLoop.add((timestamp: number, deltaTime: number) => {
+    eventLoop.add((context: GameContext, timestamp: number, deltaTime: number) => {
         const angularVelocitySpaceShipTurn = 3.5;
         if (keyBoardInput.isKeyPressed('d')) {
             entityPlayer.angle += -angularVelocitySpaceShipTurn * deltaTime;
@@ -293,7 +298,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * Função responsável pela detecção de colisões
      * Aqui é feito a detecção da colisão e registrado para o posterior processamento
      */
-    eventLoop.add((time: number, deltaTime: number) => {
+    eventLoop.add((context: GameContext, time: number, deltaTime: number) => {
         /**
          * @note Remove as entidades com "liveTimeInMilliseconds" zerado,
          * embora não seja essa a única utilidade desse componente, por hora só é usado para isso
@@ -336,7 +341,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     /**
      * Função responsável por fragmentar os asteróides onde `hittedMark === true`
      */
-    eventLoop.add((time: number) => {
+    eventLoop.add((context: GameContext, time: number) => {
         const hittedAsteroids = entities.filter(entity => entity.components[hittedMark] && entity.type === 'asteroids');
         if (hittedAsteroids.length === 0) return;
 
@@ -370,7 +375,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     /**
      * Função responsável por fragmentar o player caso ele esteja marcado com `hittedMark === true`
      */
-    eventLoop.add((time: number) => {
+    eventLoop.add((context: GameContext, time: number) => {
         if (!entityPlayer.components[hittedMark] || entityPlayer.toBeRemoved) return;
 
         entityPlayer.toBeRemoved = true;
@@ -439,7 +444,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * anotar que é aqui onde a restrição do espaço a um ambiente com as laterais conectadas
      * acontece.
      */
-    eventLoop.add((timestamp: number, deltaTime: number) => {
+    eventLoop.add((context: GameContext, timestamp: number, deltaTime: number) => {
         for (const entity of entities) {
             // computando velocidade
             entity.velocity.x += entity.acceleration.x * deltaTime;
@@ -473,7 +478,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * requisições de renderização seja incluída para poder aplicar efeitos de
      * forma mais sustentável e eficiente, mas hoje é só isso que é necessário.
      */
-    eventLoop.add((time: number) => {
+    eventLoop.add((context: GameContext, time: number) => {
         ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -548,7 +553,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * Renderiza informação visual da área de hit
      * Quando apertado 2 no teclado esse recurso é ativado ou desativado
      */
-    eventLoop.add((time: number) => {
+    eventLoop.add((context: GameContext, time: number) => {
         if (!debugHitRadius) return;
 
         // Deixando a largura da linha escalável
@@ -567,7 +572,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     });
 
     // Renderiza informação visual de debug
-    eventLoop.add((time: number) => {
+    eventLoop.add((context: GameContext, time: number) => {
         if (!debug) return;
 
         // Deixando a largura da linha escalável
