@@ -184,6 +184,18 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         virtualGamepad.addListener('keyup.start', setInitialState);
     }
 
+    const pauseGame = () => {
+        eventLoop.stop();
+        // pausa todos os sons se houver algum executando
+        for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
+            soundHandler.stop();
+        }
+
+        drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', fontName, 'center');
+
+        updateWebPageTitle('pausado');
+    };
+
     /**
      * @note Implementar a funcionalidade de pausa fez com que diversas questões
      * surgissem, como por exemplo, até então estava usando o timestamp provido pelo eventLoop
@@ -192,7 +204,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * despausar, isso porque o EventLoop busca o tempo a partir do timestamp do frame sendo desenhado,
      * acredito que o melhor seria criar mais um 'timestamp' para representar o tempo decorrido na simualação.
      */
-    const setPausedState = () => {
+    const switchPausedState = () => {
         // @todo João, criar um utilitário ou um 'variável global' para conter se está ou não
         // em status 'gameOver'
         const gameOver = !entities.includes(entityPlayer);
@@ -208,27 +220,19 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
             updateWebPageTitle();
         } else {
-            eventLoop.stop();
-            // pausa todos os sons se houver algum executando
-            for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
-                soundHandler.stop();
-            }
-
-            drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', fontName, 'center');
-
-            updateWebPageTitle('pausado');
+            pauseGame();
         }
 
         isPaused = !isPaused;
     }
 
-    keyBoardInput.addListener('keyup.p', setPausedState);
+    keyBoardInput.addListener('keyup.p', switchPausedState);
     
     keyBoardInput.addListener('keyup.r', setInitialState);
 
     // @todo João, avaliar se não causa mais problemas do que vantagens tanto em desenvolvimento
     // como para o usuário final...
-    window.addEventListener('blur', setPausedState);
+    window.addEventListener('blur', pauseGame);
 
     /**
      * Função responsável pelo processamento de input
