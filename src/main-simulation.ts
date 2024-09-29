@@ -22,6 +22,37 @@ const updateWebPageTitle = (state?: string) => {
 };
 
 /**
+ * Função que monta a onda de asteróides
+ * @note João, definir os parâmetros necessários para poder customizar aspectos da
+ * onda de asteróides montada. Usar número pseudo-randômicos?
+ * @todo João, acho que seria legal adicionar parâmetros para controlar a velocidade
+ * base, tamanho base e quantidade de elementos. Isso pode permitir implementar
+ * a variedade de asteróides necessários.
+ * @returns lista de asteróides criados para a nova onda
+ */
+const createAsteroidsWave = () => Array(3).fill(0).map(() => {
+    const isVerticalBorder = Math.random() > 0.5;
+    const x = isVerticalBorder ? Math.random() * 2 - 1 : Math.round(Math.random()) * 2 - 1;
+    const y = isVerticalBorder ? Math.round(Math.random()) * 2 - 1 : Math.random() * 2 - 1;
+    const scale = 0.10 + Math.random() * 0.09;
+    const hitRadius = scale * 1.2;
+    const factor = 0.5;
+    const defaultVelocity = { x: -0.3 * factor, y: -0.54 * factor };
+    defaultVelocity.x *= Math.random() > 0.5 ? -1 : 1;
+    defaultVelocity.y *= Math.random() > 0.5 ? -1 : 1;
+    /**
+     * @note João, adicionei mais variedade visual variando o ângulo e
+     * a velocidade angular.
+     */
+    const angle = Math.random() * 180;
+    const angularVelocity = -0.6 * (Math.random() > 0.5 ? -1 : 1);
+
+    const entity = new Entity({ x, y }, defaultVelocity, { x: 0, y: 0 }, angle, 'asteroids', hitRadius, scale, angularVelocity);
+    entity.components[fragmentationAllowed] = 4;
+    return entity;
+});
+
+/**
  * Função que monta o estado e a sequência de execução da simulação.
  * 
  * @param canvas elemento canvas aonde deve ser renderizada a cena
@@ -54,36 +85,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     const isMobileUi = virtualGamepad != null;
     // @todo João, eventualmente posso precisar saber quando a fonte carregou
     const fontName = '"Courier Prime", monospace';
-    /**
-     * Função que monta a onda de asteróides
-     * @note João, definir os parâmetros necessários para poder customizar aspectos da
-     * onda de asteróides montada. Usar número pseudo-randômicos?
-     * @todo João, acho que seria legal adicionar parâmetros para controlar a velocidade
-     * base, tamanho base e quantidade de elementos. Isso pode permitir implementar
-     * a variedade de asteróides necessários.
-     * @returns lista de asteróides criados para a nova onda
-     */
-    const createAsteroidsWave = () => Array(3).fill(0).map(() => {
-        const isVerticalBorder = Math.random() > 0.5;
-        const x = isVerticalBorder ? Math.random() * 2 - 1 : Math.round(Math.random()) * 2 - 1;
-        const y = isVerticalBorder ? Math.round(Math.random()) * 2 - 1 : Math.random() * 2 - 1;
-        const scale = 0.10 + Math.random() * 0.09;
-        const hitRadius = scale * 1.2;
-        const factor = 0.5;
-        const defaultVelocity = { x: -0.3 * factor, y: -0.54 * factor };
-        defaultVelocity.x *= Math.random() > 0.5 ? -1 : 1;
-        defaultVelocity.y *= Math.random() > 0.5 ? -1 : 1;
-        /**
-         * @note João, adicionei mais variedade visual variando o ângulo e
-         * a velocidade angular.
-         */
-        const angle = Math.random() * 180;
-        const angularVelocity = -0.6 * (Math.random() > 0.5 ? -1 : 1);
 
-        const entity = new Entity({ x, y }, defaultVelocity, { x: 0, y: 0 }, angle, 'asteroids', hitRadius, scale, angularVelocity);
-        entity.components[fragmentationAllowed] = 4;
-        return entity;
-    });
     const context = new GameContext();
     const eventLoop = new EventLoop(context);
 
