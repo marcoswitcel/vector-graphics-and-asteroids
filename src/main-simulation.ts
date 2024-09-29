@@ -52,11 +52,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * é que se tivermos algum tipo de classe aí sim poderemos ter múltiplas instâncias do
      * jogo rodando em uma mesma página.
      */
-    let moving = false;
-    let forward = false;
-    let asteroidsDestroyedCounter = 0;
-    let waveIndex = 0;
-    let isPaused = false;
     const playerAcceleration = { x: 0, y: 0.45 };
     const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.07, 0.08);
     const shipStandingFigure = makeShipStandingFigure();
@@ -102,7 +97,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     const secondaryWhite = 'rgba(255,255,255,0.7)';
     const backgroundColor = '#000';
 
-    const eventLoop = new EventLoop(new GameContext());
+    const context = new GameContext();
+    const eventLoop = new EventLoop(context);
     /**
      * @todo João, criar uma interface para o 'keyBoard' para poder unificar o keyboard virtual
      * e o teclado físico, porém considerar habilitar os dois simultaneamente.
@@ -134,8 +130,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         
         if (!gameOver) return;
 
-        asteroidsDestroyedCounter = 0;
-        waveIndex = 0;
+        context.asteroidsDestroyedCounter = 0;
+        context.waveIndex = 0;
         entities.length = 0;
 
         // limpando textos
@@ -212,7 +208,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
         if (gameOver) return;
 
-        if (isPaused) {
+        if (context.isPaused) {
             eventLoop.start();
             // executa sons pausados se houver algum
             for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
@@ -224,7 +220,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             pauseGame();
         }
 
-        isPaused = !isPaused;
+        context.isPaused = !context.isPaused;
     }
 
     keyBoardInput.addListener('keyup.p', switchPausedState);
@@ -252,21 +248,21 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         if (keyBoardInput.areBothKeysPressed('w', 's')) {
             entityPlayer.acceleration.x = 0;
             entityPlayer.acceleration.y = 0;
-            moving = false;
+            context.isPlayerMoving = false;
         } else  if (keyBoardInput.isKeyPressed('w')) {
             entityPlayer.acceleration = rotatePoint(playerAcceleration, entityPlayer.angle);
-            moving = true;
-            forward = true;
+            context.isPlayerMoving = true;
+            context.isPlayerMovingForward = true;
         } else if (keyBoardInput.isKeyPressed('s')) {
             entityPlayer.acceleration = rotatePoint(playerAcceleration, entityPlayer.angle);
             entityPlayer.acceleration.x *= -1;
             entityPlayer.acceleration.y *= -1;
-            moving = true;
-            forward = false;
+            context.isPlayerMoving = true;
+            context.isPlayerMovingForward = false;
         } else {
             entityPlayer.acceleration.x = 0;
             entityPlayer.acceleration.y = 0;
-            moving = false;
+            context.isPlayerMoving = false;
         }
 
         if (shootWaitingToBeEmmited && !entityPlayer.components[hittedMark]) {
@@ -279,12 +275,12 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
          */
         if (countEntitiesByType(entities, 'asteroids') === 0) {
             entities.push(...createAsteroidsWave());
-            waveIndex++;
+            context.waveIndex++;
             /**
              * @todo João, ajustar para usar um formato de duração de exibição similar ao
              * dos 'disparos' da navinha.
              */
-            const text = new TextElement('Onda ' + waveIndex, { x: 0, y: 0.5, }, 'white', 0.06, fontName, 'center');
+            const text = new TextElement('Onda ' + context.waveIndex, { x: 0, y: 0.5, }, 'white', 0.06, fontName, 'center');
             text.setVisibleUntil(timestamp + 2000);
             textToDrawn.push(text);
         }
@@ -353,7 +349,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             /**
              * @note implementação temporária, reavaliar se aqui é o melhor lugar para incrementar o contador
              */
-            asteroidsDestroyedCounter++;
+            context.asteroidsDestroyedCounter++;
 
             /**
              * @note sempre que um asteroide é destruído um som é emitido, por hora
@@ -427,8 +423,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         // salvando maior pontuação
         // @note esse código deve ser movido para uma rotina própria
         const highestScore = parseInt(localStorage.getItem('highestScore') || '0', 10);
-        if (asteroidsDestroyedCounter > highestScore || isNaN(highestScore)) {
-            localStorage.setItem('highestScore', asteroidsDestroyedCounter.toString());
+        if (context.asteroidsDestroyedCounter > highestScore || isNaN(highestScore)) {
+            localStorage.setItem('highestScore', context.asteroidsDestroyedCounter.toString());
         }
     });
 
@@ -480,8 +476,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
         // Deixando a largura da linha escalável
         const lineWidth = Math.max(1, canvas.width * 0.002); 
-        const playerFigure = moving
-            ? (forward ? shipForwardFigure : shipBackwardsFigure)
+        const playerFigure = context.isPlayerMoving
+            ? (context.isPlayerMovingForward ? shipForwardFigure : shipBackwardsFigure)
             : shipStandingFigure;
 
         for (const entity of entities) {
@@ -527,7 +523,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
          * Nesse primeiro momento os textos serão desenhados separadamente,
          * mas poderiam passar pelo sistema de entidades.
          */
-        drawText(ctx, `${asteroidsDestroyedCounter}`, { x: -0.97, y: 0.91 }, 0.06, '#FFFFFF', fontName, 'left');
+        drawText(ctx, `${context.asteroidsDestroyedCounter}`, { x: -0.97, y: 0.91 }, 0.06, '#FFFFFF', fontName, 'left');
 
         /**
          * @todo João, implementar um contador de 'ondas' e um mecanismo para adicionar textos flutuantes
