@@ -10,6 +10,9 @@ import { SoundResourceManager } from './sounds/sound-resource-manager.js';
 import { countEntitiesByType, fragmentAsteroid, renderFigureInside, TextElement, updateWebPageTitleQueued } from './utils.js';
 import { VirtualGamepad } from './virtual-gamepad.js';
 
+const primaryWhite = '#FFFFFF';
+const secondaryWhite = 'rgba(255,255,255,0.7)';
+const backgroundColor = '#000';
 
 const updateWebPageTitle = (state?: string) => {
     let title = '';
@@ -91,10 +94,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
     
     let entities = [ context.entityPlayer ];
-    let shootWaitingToBeEmmited = false;
-    const primaryWhite = '#FFFFFF';
-    const secondaryWhite = 'rgba(255,255,255,0.7)';
-    const backgroundColor = '#000';
+    
 
     /**
      * @todo João, criar uma interface para o 'keyBoard' para poder unificar o keyboard virtual
@@ -161,7 +161,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      */
     keyBoardInput.addListener('keyup. ', () => {
         if (!context.entityPlayer.components[hittedMark]) {
-            shootWaitingToBeEmmited = true;
+            context.shootWaitingToBeEmmited = true;
         }
     });
 
@@ -171,7 +171,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     if (virtualGamepad) {
         virtualGamepad.addListener('keyup.space', () => {
             if (!context.entityPlayer.components[hittedMark]) {
-                shootWaitingToBeEmmited = true;
+                context.shootWaitingToBeEmmited = true;
             }
         });
 
@@ -262,9 +262,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             context.isPlayerMoving = false;
         }
 
-        if (shootWaitingToBeEmmited && !context.entityPlayer.components[hittedMark]) {
+        if (context.shootWaitingToBeEmmited && !context.entityPlayer.components[hittedMark]) {
             emmitShoot(context.entityPlayer, entities);
-            shootWaitingToBeEmmited = false;
+            context.shootWaitingToBeEmmited = false;
         }
 
         /**

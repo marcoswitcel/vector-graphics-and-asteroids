@@ -16,4 +16,6 @@ export class GameContext {
     shipStandingFigure = makeShipStandingFigure();
     shipForwardFigure = makeShipForwardFigure();
     shipBackwardsFigure = makeShipBackwardsFigure();
+
+    shootWaitingToBeEmmited = false;
 }
