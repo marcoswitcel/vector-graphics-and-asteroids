@@ -2,6 +2,7 @@ import { distance, drawCircle, drawPolygon, makePolygonWithAbsolutePosition, rot
 import { Entity, fragmentationAllowed, hittedMark } from './entity.js';
 import { EventLoop } from './event-loop.js';
 import { makeAsteroid } from './figure.js';
+import { GameContext } from './game-context.js';
 import { KeyBoardInput } from './keyboard-input.js';
 import { createCanvas, fragmentAsteroid } from './utils.js';
 
@@ -35,9 +36,9 @@ let entities = Array(15).fill(0).map(() => {
     return entity;
 });
 
-const eventLoop = new EventLoop();
+const eventLoop = new EventLoop(new GameContext);
 
-eventLoop.add((time: number) => {
+eventLoop.add((context: GameContext, time: number) => {
     // Se presente o valor será processado uma vez e `clickedPosition` receberá null
     if (clickedPosition) {
         for (const entity of entities) {
@@ -49,7 +50,7 @@ eventLoop.add((time: number) => {
     }
 });
 
-eventLoop.add((time: number) => {
+eventLoop.add((context: GameContext, time: number) => {
     const hittedEntities = entities.filter(entity => entity.components[hittedMark]);
     if (hittedEntities.length === 0) return;
 
@@ -67,7 +68,7 @@ eventLoop.add((time: number) => {
     entities.push(...allFragments);
 });
 
-eventLoop.add((time: number) => {
+eventLoop.add((context: GameContext, time: number) => {
     for (const entity of entities) {
         entity.position.x += entity.velocity.x;
         entity.position.y += entity.velocity.y;
@@ -82,7 +83,7 @@ eventLoop.add((time: number) => {
 });
 
 // Renderiza
-eventLoop.add((time: number) => {
+eventLoop.add((context: GameContext, time: number) => {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -92,7 +93,7 @@ eventLoop.add((time: number) => {
 });
 
 // Renderiza informação visual da área de hit
-eventLoop.add((time: number) => {
+eventLoop.add((context: GameContext, time: number) => {
     if (!debugHitRadius) return;
     
     for (const entity of entities) {

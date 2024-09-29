@@ -1,5 +1,6 @@
 import { drawPolygon, makePolygonWithAbsolutePosition, rotatePolygon, scalePolygon, Vector2 } from './draw.js';
 import { EventLoop } from './event-loop.js';
+import { GameContext } from './game-context.js';
 import { createCanvas } from './utils.js';
 
 const canvas = createCanvas(500, 500, document.body);
@@ -28,10 +29,10 @@ drawPolygon(ctx, makePolygonWithAbsolutePosition({ x: -0.5, y: -0.5 }, scalePoly
 
 drawPolygon(ctx, makePolygonWithAbsolutePosition({ x: 0, y: 0 }, scalePolygon(polygon, 0.25, 0.45)));
 
-const eventLoop = new EventLoop();
+const eventLoop = new EventLoop(new GameContext);
 let rotation = 0;
 
-eventLoop.add((time: number) => {
+eventLoop.add((context: GameContext, time: number) => {
     ctx2.fillStyle = '#000';
     ctx2.fillRect(0, 0, canvas.width, canvas.height);
     position.x += 0.001;

@@ -2,6 +2,7 @@ import { centralizePoint, distance, drawCircle, drawComplexShape, drawLine, draw
 import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure } from './entity.js';
 import { EventLoop } from './event-loop.js';
 import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
+import { GameContext } from './game-context.js';
 import { KeyBoardInputInterface } from './keyboard-input-interface.js';
 import { KeyBoardInput } from './keyboard-input.js';
 import { SoundMixer } from './sounds/sound-mixer.js';
@@ -11,17 +12,12 @@ import { VirtualGamepad } from './virtual-gamepad.js';
 
 
 /**
- * @todo João, avaliar o que o mais mover para dentro dessa classe
- */
-class GameContext {}
-
-/**
  * Função que monta o estado e a sequência de execução da simulação.
  * 
  * @param canvas elemento canvas aonde deve ser renderizada a cena
  * @returns o `EventLoop` configurado com a lógica da simulação
  */
-export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: VirtualGamepad | null): EventLoop {
+export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: VirtualGamepad | null): EventLoop<GameContext> {
 
     const ctx = canvas.getContext('2d');
     if (ctx === null) throw 'Contexto nulo';
