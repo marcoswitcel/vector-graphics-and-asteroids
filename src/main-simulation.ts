@@ -55,6 +55,18 @@ const createAsteroidsWave = () => Array(3).fill(0).map(() => {
     return entity;
 });
 
+const emmitShoot = (context: GameContext, soundMixer: SoundMixer) => {
+    const radius = rotatePoint({ x: 0, y: 0.03 }, context.entityPlayer.angle);
+    const position = { x: context.entityPlayer.position.x + radius.x, y: context.entityPlayer.position.y + radius.y };
+    const velocity = rotatePoint({ x: 0, y: 1.2 }, context.entityPlayer.angle);
+    const shootEntity = new Entity(position, velocity, { x: 0, y: 0 }, context.entityPlayer.angle, 'shoot');
+    shootEntity.components[liveTimeInMilliseconds] = 1500;
+    context.entities.push(shootEntity);
+
+    // iniciando o som junto com a entidade que representa o 'disparo'
+    soundMixer.play('shoot', false, .05);
+}
+
 /**
  * Função que monta o estado e a sequência de execução da simulação.
  * 
@@ -101,18 +113,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     let debug = false;
     let debugHitRadius = false;
 
-
-    const emmitShoot = (context: GameContext, soundMixer: SoundMixer) => {
-        const radius = rotatePoint({ x: 0, y: 0.03 }, context.entityPlayer.angle);
-        const position = { x: context.entityPlayer.position.x + radius.x, y: context.entityPlayer.position.y + radius.y };
-        const velocity = rotatePoint({ x: 0, y: 1.2 }, context.entityPlayer.angle);
-        const shootEntity = new Entity(position, velocity, { x: 0, y: 0 }, context.entityPlayer.angle, 'shoot');
-        shootEntity.components[liveTimeInMilliseconds] = 1500;
-        context.entities.push(shootEntity);
-
-        // iniciando o som junto com a entidade que representa o 'disparo'
-        soundMixer.play('shoot', false, .05);
-    }
 
     const setInitialState = () => {
         /**
