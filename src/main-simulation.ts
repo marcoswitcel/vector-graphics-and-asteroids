@@ -11,6 +11,16 @@ import { countEntitiesByType, fragmentAsteroid, renderFigureInside, TextElement,
 import { VirtualGamepad } from './virtual-gamepad.js';
 
 
+const updateWebPageTitle = (state?: string) => {
+    let title = '';
+    
+    if (state) title += state + ' - ';
+
+    title += 'Gráficos vetoriais e asteroides';
+
+    updateWebPageTitleQueued(title);
+};
+
 /**
  * Função que monta o estado e a sequência de execução da simulação.
  * 
@@ -32,18 +42,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
     const soundMixer = new SoundMixer(soundResourceManager);
 
-    const updateWebPageTitle = (state?: string) => {
-        let title = '';
-        
-        if (state) {
-            title += state + ' - ';
-        }
-
-        title += 'Gráficos vetoriais e asteroides';
-
-        updateWebPageTitleQueued(title);
-    };
-    
     /**
      * @todo João, seria interessante organizar essas variáveis em algum tipo de GameObject
      * para que as variáveis de estado do jogo não fiquem espalhadas pelo arquivo e mal 
