@@ -50,11 +50,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * é que se tivermos algum tipo de classe aí sim poderemos ter múltiplas instâncias do
      * jogo rodando em uma mesma página.
      */
-    const playerAcceleration = { x: 0, y: 0.45 };
-    const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.07, 0.08);
-    const shipStandingFigure = makeShipStandingFigure();
-    const shipForwardFigure = makeShipForwardFigure();
-    const shipBackwardsFigure = makeShipBackwardsFigure();
     let textToDrawn: TextElement[] = [];
     const isMobileUi = virtualGamepad != null;
     // @todo João, eventualmente posso precisar saber quando a fonte carregou
@@ -89,14 +84,16 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         entity.components[fragmentationAllowed] = 4;
         return entity;
     });
-    let entities = [ entityPlayer ];
+    const context = new GameContext();
+    const eventLoop = new EventLoop(context);
+
+    
+    let entities = [ context.entityPlayer ];
     let shootWaitingToBeEmmited = false;
     const primaryWhite = '#FFFFFF';
     const secondaryWhite = 'rgba(255,255,255,0.7)';
     const backgroundColor = '#000';
 
-    const context = new GameContext();
-    const eventLoop = new EventLoop(context);
     /**
      * @todo João, criar uma interface para o 'keyBoard' para poder unificar o keyboard virtual
      * e o teclado físico, porém considerar habilitar os dois simultaneamente.
@@ -107,9 +104,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
 
     const emmitShoot = (player: Entity, entities: Entity[]) => {
-        const radius = rotatePoint({ x: 0, y: 0.03 }, entityPlayer.angle);
+        const radius = rotatePoint({ x: 0, y: 0.03 }, context.entityPlayer.angle);
         const position = { x: player.position.x + radius.x, y: player.position.y + radius.y };
-        const velocity = rotatePoint({ x: 0, y: 1.2 }, entityPlayer.angle);
+        const velocity = rotatePoint({ x: 0, y: 1.2 }, context.entityPlayer.angle);
         const shootEntity = new Entity(position, velocity, { x: 0, y: 0 }, player.angle, 'shoot');
         shootEntity.components[liveTimeInMilliseconds] = 1500;
         entities.push(shootEntity);
@@ -124,7 +121,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
          * porém por hora ainda tem alguns pontos em aberto sobre a evolução da
          * estrutura de 'ondas/fases'.
          */
-        const gameOver = !entities.includes(entityPlayer);
+        const gameOver = !entities.includes(context.entityPlayer);
         
         if (!gameOver) return;
 
@@ -136,14 +133,14 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         textToDrawn.length = 0;
 
         // @note melhorar esse processo, rotina de inicialização?
-        entityPlayer.components[hittedMark] = false;
-        entityPlayer.toBeRemoved = false;
-        entityPlayer.position = { x: 0, y: 0 };
-        entityPlayer.velocity = { x: 0, y: 0 };
-        entityPlayer.position = { x: 0, y: 0 };
-        entityPlayer.angle = 0;
+        context.entityPlayer.components[hittedMark] = false;
+        context.entityPlayer.toBeRemoved = false;
+        context.entityPlayer.position = { x: 0, y: 0 };
+        context.entityPlayer.velocity = { x: 0, y: 0 };
+        context.entityPlayer.position = { x: 0, y: 0 };
+        context.entityPlayer.angle = 0;
 
-        entities.push(entityPlayer);
+        entities.push(context.entityPlayer);
 
         // atualiza title
         updateWebPageTitle();
@@ -161,7 +158,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * continue pressionando o espaço.
      */
     keyBoardInput.addListener('keyup. ', () => {
-        if (!entityPlayer.components[hittedMark]) {
+        if (!context.entityPlayer.components[hittedMark]) {
             shootWaitingToBeEmmited = true;
         }
     });
@@ -171,7 +168,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      */
     if (virtualGamepad) {
         virtualGamepad.addListener('keyup.space', () => {
-            if (!entityPlayer.components[hittedMark]) {
+            if (!context.entityPlayer.components[hittedMark]) {
                 shootWaitingToBeEmmited = true;
             }
         });
@@ -202,7 +199,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     const switchPausedState = () => {
         // @todo João, criar um utilitário ou um 'variável global' para conter se está ou não
         // em status 'gameOver'
-        const gameOver = !entities.includes(entityPlayer);
+        const gameOver = !entities.includes(context.entityPlayer);
 
         if (gameOver) return;
 
@@ -237,34 +234,34 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     eventLoop.add((context: GameContext, timestamp: number, deltaTime: number) => {
         const angularVelocitySpaceShipTurn = 3.5;
         if (keyBoardInput.isKeyPressed('d')) {
-            entityPlayer.angle += -angularVelocitySpaceShipTurn * deltaTime;
+            context.entityPlayer.angle += -angularVelocitySpaceShipTurn * deltaTime;
         }
         if (keyBoardInput.isKeyPressed('a')) {
-            entityPlayer.angle += angularVelocitySpaceShipTurn * deltaTime;
+            context.entityPlayer.angle += angularVelocitySpaceShipTurn * deltaTime;
         }
         
         if (keyBoardInput.areBothKeysPressed('w', 's')) {
-            entityPlayer.acceleration.x = 0;
-            entityPlayer.acceleration.y = 0;
+            context.entityPlayer.acceleration.x = 0;
+            context.entityPlayer.acceleration.y = 0;
             context.isPlayerMoving = false;
         } else  if (keyBoardInput.isKeyPressed('w')) {
-            entityPlayer.acceleration = rotatePoint(playerAcceleration, entityPlayer.angle);
+            context.entityPlayer.acceleration = rotatePoint(context.playerAcceleration, context.entityPlayer.angle);
             context.isPlayerMoving = true;
             context.isPlayerMovingForward = true;
         } else if (keyBoardInput.isKeyPressed('s')) {
-            entityPlayer.acceleration = rotatePoint(playerAcceleration, entityPlayer.angle);
-            entityPlayer.acceleration.x *= -1;
-            entityPlayer.acceleration.y *= -1;
+            context.entityPlayer.acceleration = rotatePoint(context.playerAcceleration, context.entityPlayer.angle);
+            context.entityPlayer.acceleration.x *= -1;
+            context.entityPlayer.acceleration.y *= -1;
             context.isPlayerMoving = true;
             context.isPlayerMovingForward = false;
         } else {
-            entityPlayer.acceleration.x = 0;
-            entityPlayer.acceleration.y = 0;
+            context.entityPlayer.acceleration.x = 0;
+            context.entityPlayer.acceleration.y = 0;
             context.isPlayerMoving = false;
         }
 
-        if (shootWaitingToBeEmmited && !entityPlayer.components[hittedMark]) {
-            emmitShoot(entityPlayer, entities);
+        if (shootWaitingToBeEmmited && !context.entityPlayer.components[hittedMark]) {
+            emmitShoot(context.entityPlayer, entities);
             shootWaitingToBeEmmited = false;
         }
 
@@ -322,8 +319,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             /**
              * @todo João, ler nota acima
              */
-            if (distance(entity.position, entityPlayer.position) < (entity.hitRadius + entityPlayer.hitRadius)) {
-                entityPlayer.components[hittedMark] = true;
+            if (distance(entity.position, context.entityPlayer.position) < (entity.hitRadius + context.entityPlayer.hitRadius)) {
+                context.entityPlayer.components[hittedMark] = true;
             }
         }
     });
@@ -366,14 +363,14 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * Função responsável por fragmentar o player caso ele esteja marcado com `hittedMark === true`
      */
     eventLoop.add((context: GameContext, time: number) => {
-        if (!entityPlayer.components[hittedMark] || entityPlayer.toBeRemoved) return;
+        if (!context.entityPlayer.components[hittedMark] || context.entityPlayer.toBeRemoved) return;
 
-        entityPlayer.toBeRemoved = true;
-        entities = entities.filter(entity => entity !== entityPlayer);
+        context.entityPlayer.toBeRemoved = true;
+        entities = entities.filter(entity => entity !== context.entityPlayer);
         
         // Por hora é aí que está a figura da nave sem as chamas do propulsor
-        const shape = shipStandingFigure.shapes[0];
-        const drawInfo = shipStandingFigure.drawInfo[0];
+        const shape = context.shipStandingFigure.shapes[0];
+        const drawInfo = context.shipStandingFigure.drawInfo[0];
         const polygon = makePolygonWithAbsolutePosition(drawInfo.position, rotatePolygon(scalePolygon(shape.polygon, drawInfo.scale), drawInfo.angle));
 
         for (let i = 0; polygon.length > 1 && i < polygon.length; i++) {
@@ -381,10 +378,10 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             const nextIndex = i + 1 === polygon.length ? 0 : i + 1;
             let p1 = polygon[nextIndex];
 
-            let aP0 = makePointAbsolute(entityPlayer.position, scalePoint(p0, entityPlayer.scale));
-            let aP1 = makePointAbsolute(entityPlayer.position, scalePoint(p1, entityPlayer.scale));
+            let aP0 = makePointAbsolute(context.entityPlayer.position, scalePoint(p0, context.entityPlayer.scale));
+            let aP1 = makePointAbsolute(context.entityPlayer.position, scalePoint(p1, context.entityPlayer.scale));
             const position = {
-                ...entityPlayer.position
+                ...context.entityPlayer.position
             };
 
             position.x = (aP0.x - aP1.x) / 2 + aP1.x;
@@ -395,11 +392,11 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
                 y: (p0.y - p1.y) / 2 + p1.y,
             }
 
-            p0 = centralizePoint(rotatePoint(p0, entityPlayer.angle), newCenter);
-            p1 = centralizePoint(rotatePoint(p1, entityPlayer.angle), newCenter);
+            p0 = centralizePoint(rotatePoint(p0, context.entityPlayer.angle), newCenter);
+            p1 = centralizePoint(rotatePoint(p1, context.entityPlayer.angle), newCenter);
 
-            const velocity = rotatePoint({ ...entityPlayer.velocity  }, (i * Math.PI / 8));
-            const entity = new Entity(position, velocity, { x: 0, y: 0 }, entityPlayer.angle, 'fragments', 0.09, 0.08, -1.6 - 0.8 * i / polygon.length);
+            const velocity = rotatePoint({ ...context.entityPlayer.velocity  }, (i * Math.PI / 8));
+            const entity = new Entity(position, velocity, { x: 0, y: 0 }, context.entityPlayer.angle, 'fragments', 0.09, 0.08, -1.6 - 0.8 * i / polygon.length);
             entity.components[lineFigure] = [p0, p1];
 
             entities.push(entity);
@@ -475,8 +472,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         // Deixando a largura da linha escalável
         const lineWidth = Math.max(1, canvas.width * 0.002); 
         const playerFigure = context.isPlayerMoving
-            ? (context.isPlayerMovingForward ? shipForwardFigure : shipBackwardsFigure)
-            : shipStandingFigure;
+            ? (context.isPlayerMovingForward ? context.shipForwardFigure : context.shipBackwardsFigure)
+            : context.shipStandingFigure;
 
         for (const entity of entities) {
             if (entity.type === 'player') {
