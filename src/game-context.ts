@@ -18,4 +18,6 @@ export class GameContext {
     shipBackwardsFigure = makeShipBackwardsFigure();
 
     shootWaitingToBeEmmited = false;
+
+    entities = [ this.entityPlayer ];
 }

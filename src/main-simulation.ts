@@ -93,9 +93,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     const eventLoop = new EventLoop(context);
 
     
-    let entities = [ context.entityPlayer ];
-    
-
     /**
      * @todo João, criar uma interface para o 'keyBoard' para poder unificar o keyboard virtual
      * e o teclado físico, porém considerar habilitar os dois simultaneamente.
@@ -105,13 +102,13 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     let debugHitRadius = false;
 
 
-    const emmitShoot = (player: Entity, entities: Entity[]) => {
+    const emmitShoot = (context: GameContext, soundMixer: SoundMixer) => {
         const radius = rotatePoint({ x: 0, y: 0.03 }, context.entityPlayer.angle);
-        const position = { x: player.position.x + radius.x, y: player.position.y + radius.y };
+        const position = { x: context.entityPlayer.position.x + radius.x, y: context.entityPlayer.position.y + radius.y };
         const velocity = rotatePoint({ x: 0, y: 1.2 }, context.entityPlayer.angle);
-        const shootEntity = new Entity(position, velocity, { x: 0, y: 0 }, player.angle, 'shoot');
+        const shootEntity = new Entity(position, velocity, { x: 0, y: 0 }, context.entityPlayer.angle, 'shoot');
         shootEntity.components[liveTimeInMilliseconds] = 1500;
-        entities.push(shootEntity);
+        context.entities.push(shootEntity);
 
         // iniciando o som junto com a entidade que representa o 'disparo'
         soundMixer.play('shoot', false, .05);
@@ -123,13 +120,13 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
          * porém por hora ainda tem alguns pontos em aberto sobre a evolução da
          * estrutura de 'ondas/fases'.
          */
-        const gameOver = !entities.includes(context.entityPlayer);
+        const gameOver = !context.entities.includes(context.entityPlayer);
         
         if (!gameOver) return;
 
         context.asteroidsDestroyedCounter = 0;
         context.waveIndex = 0;
-        entities.length = 0;
+        context.entities.length = 0;
 
         // limpando textos
         textToDrawn.length = 0;
@@ -142,7 +139,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         context.entityPlayer.position = { x: 0, y: 0 };
         context.entityPlayer.angle = 0;
 
-        entities.push(context.entityPlayer);
+        context.entities.push(context.entityPlayer);
 
         // atualiza title
         updateWebPageTitle();
@@ -201,7 +198,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     const switchPausedState = () => {
         // @todo João, criar um utilitário ou um 'variável global' para conter se está ou não
         // em status 'gameOver'
-        const gameOver = !entities.includes(context.entityPlayer);
+        const gameOver = !context.entities.includes(context.entityPlayer);
 
         if (gameOver) return;
 
@@ -263,15 +260,15 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         }
 
         if (context.shootWaitingToBeEmmited && !context.entityPlayer.components[hittedMark]) {
-            emmitShoot(context.entityPlayer, entities);
+            emmitShoot(context, soundMixer);
             context.shootWaitingToBeEmmited = false;
         }
 
         /**
          * @todo João, achar um lugar melhora para esse funcionalidade a seguir
          */
-        if (countEntitiesByType(entities, 'asteroids') === 0) {
-            entities.push(...createAsteroidsWave());
+        if (countEntitiesByType(context.entities, 'asteroids') === 0) {
+            context.entities.push(...createAsteroidsWave());
             context.waveIndex++;
             /**
              * @todo João, ajustar para usar um formato de duração de exibição similar ao
@@ -292,7 +289,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
          * @note Remove as entidades com "liveTimeInMilliseconds" zerado,
          * embora não seja essa a única utilidade desse componente, por hora só é usado para isso
          */
-        entities = entities.filter(entity => {
+        context.entities = context.entities.filter(entity => {
             if (entity.components[liveTimeInMilliseconds] == undefined) return true;
 
             // @note Não deveria fazer isso no filter, mas... por hora fica assim
@@ -301,9 +298,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             return entity.components[liveTimeInMilliseconds] > 0;
         });
 
-        const shootEntities = entities.filter(entity => entity.type === 'shoot');
+        const shootEntities = context.entities.filter(entity => entity.type === 'shoot');
 
-        for (const entity of entities) {
+        for (const entity of context.entities) {
             if (entity.type !== 'asteroids') continue;
 
             for (const shootEntity of shootEntities) {
@@ -331,7 +328,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * Função responsável por fragmentar os asteróides onde `hittedMark === true`
      */
     eventLoop.add((context: GameContext, time: number) => {
-        const hittedAsteroids = entities.filter(entity => entity.components[hittedMark] && entity.type === 'asteroids');
+        const hittedAsteroids = context.entities.filter(entity => entity.components[hittedMark] && entity.type === 'asteroids');
         if (hittedAsteroids.length === 0) return;
 
         const allFragments: Entity[] = [];
@@ -357,8 +354,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             soundMixer.play('asteroid-explosion', false, 0.01 * volumeScale);
         }
 
-        entities = entities.filter(entity => !entity.components[hittedMark] || entity.type === 'player');
-        entities.push(...allFragments);
+        context.entities = context.entities.filter(entity => !entity.components[hittedMark] || entity.type === 'player');
+        context.entities.push(...allFragments);
     });
 
     /**
@@ -368,7 +365,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         if (!context.entityPlayer.components[hittedMark] || context.entityPlayer.toBeRemoved) return;
 
         context.entityPlayer.toBeRemoved = true;
-        entities = entities.filter(entity => entity !== context.entityPlayer);
+        context.entities = context.entities.filter(entity => entity !== context.entityPlayer);
         
         // Por hora é aí que está a figura da nave sem as chamas do propulsor
         const shape = context.shipStandingFigure.shapes[0];
@@ -401,7 +398,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             const entity = new Entity(position, velocity, { x: 0, y: 0 }, context.entityPlayer.angle, 'fragments', 0.09, 0.08, -1.6 - 0.8 * i / polygon.length);
             entity.components[lineFigure] = [p0, p1];
 
-            entities.push(entity);
+            context.entities.push(entity);
         }
 
         // som emitido quando nave explode
@@ -434,7 +431,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * acontece.
      */
     eventLoop.add((context: GameContext, timestamp: number, deltaTime: number) => {
-        for (const entity of entities) {
+        for (const entity of context.entities) {
             // computando velocidade
             entity.velocity.x += entity.acceleration.x * deltaTime;
             entity.velocity.y += entity.acceleration.y * deltaTime;
@@ -477,7 +474,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             ? (context.isPlayerMovingForward ? context.shipForwardFigure : context.shipBackwardsFigure)
             : context.shipStandingFigure;
 
-        for (const entity of entities) {
+        for (const entity of context.entities) {
             if (entity.type === 'player') {
                 // @todo João, avaliar essa solução, visualmente está correto, porém acredito que a função `renderFigureInside` apesar de funcionar
                 // trás uma complexidade desnecessária, acho que seria interessante nessa etapa apenas acumular as figuras que devem ser
@@ -548,7 +545,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         // Deixando a largura da linha escalável
         const lineWidth = Math.max(1, canvas.width * 0.002);
         
-        for (const entity of entities) {
+        for (const entity of context.entities) {
             if (entity.hitRadius) {
                 const color = entity.components[hittedMark] ? '#00FF00' : '#FF0000';
                 // @todo João, avaliar aqui se faz sentido fazer dessa forma
@@ -567,7 +564,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         // Deixando a largura da linha escalável
         const lineWidth = Math.max(1, canvas.width * 0.002);
         
-        for (const entity of entities) {
+        for (const entity of context.entities) {
             if (entity.type != 'player' && entity.type != 'asteroids') continue;
 
             const endPositionForAcceleration = {
