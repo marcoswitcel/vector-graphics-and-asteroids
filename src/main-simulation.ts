@@ -1,14 +1,71 @@
 import { centralizePoint, distance, drawCircle, drawComplexShape, drawLine, drawPolygon, drawText, makePointAbsolute, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePoint, scalePolygon, Vector2 } from './draw.js';
 import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure } from './entity.js';
 import { EventLoop } from './event-loop.js';
-import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
+import { makeAsteroid } from './figure.js';
+import { GameContext, resolutionScaleNonFullscreen } from './game-context.js';
 import { KeyBoardInputInterface } from './keyboard-input-interface.js';
 import { KeyBoardInput } from './keyboard-input.js';
 import { SoundMixer } from './sounds/sound-mixer.js';
 import { SoundResourceManager } from './sounds/sound-resource-manager.js';
-import { countEntitiesByType, fragmentAsteroid, renderFigureInside, TextElement, updateWebPageTitleQueued } from './utils.js';
+import { computeResolution, countEntitiesByType, fragmentAsteroid, isFullScreen, renderFigureInside, TextElement, updateWebPageTitleQueued } from './utils.js';
 import { VirtualGamepad } from './virtual-gamepad.js';
 
+const primaryWhite = '#FFFFFF';
+const secondaryWhite = 'rgba(255,255,255,0.7)';
+const backgroundColor = '#000';
+
+const updateWebPageTitle = (state?: string) => {
+    let title = '';
+    
+    if (state) title += state + ' - ';
+
+    title += 'Gráficos vetoriais e asteroides';
+
+    updateWebPageTitleQueued(title);
+};
+
+/**
+ * Função que monta a onda de asteróides
+ * @note João, definir os parâmetros necessários para poder customizar aspectos da
+ * onda de asteróides montada. Usar número pseudo-randômicos?
+ * @todo João, acho que seria legal adicionar parâmetros para controlar a velocidade
+ * base, tamanho base e quantidade de elementos. Isso pode permitir implementar
+ * a variedade de asteróides necessários.
+ * @returns lista de asteróides criados para a nova onda
+ */
+const createAsteroidsWave = () => Array(3).fill(0).map(() => {
+    const isVerticalBorder = Math.random() > 0.5;
+    const x = isVerticalBorder ? Math.random() * 2 - 1 : Math.round(Math.random()) * 2 - 1;
+    const y = isVerticalBorder ? Math.round(Math.random()) * 2 - 1 : Math.random() * 2 - 1;
+    const scale = 0.10 + Math.random() * 0.09;
+    const hitRadius = scale * 1.2;
+    const factor = 0.5;
+    const defaultVelocity = { x: -0.3 * factor, y: -0.54 * factor };
+    defaultVelocity.x *= Math.random() > 0.5 ? -1 : 1;
+    defaultVelocity.y *= Math.random() > 0.5 ? -1 : 1;
+    /**
+     * @note João, adicionei mais variedade visual variando o ângulo e
+     * a velocidade angular.
+     */
+    const angle = Math.random() * 180;
+    const angularVelocity = -0.6 * (Math.random() > 0.5 ? -1 : 1);
+
+    const entity = new Entity({ x, y }, defaultVelocity, { x: 0, y: 0 }, angle, 'asteroids', hitRadius, scale, angularVelocity);
+    entity.components[fragmentationAllowed] = 4;
+    return entity;
+});
+
+const emmitShoot = (context: GameContext, soundMixer: SoundMixer) => {
+    const radius = rotatePoint({ x: 0, y: 0.03 }, context.entityPlayer.angle);
+    const position = { x: context.entityPlayer.position.x + radius.x, y: context.entityPlayer.position.y + radius.y };
+    const velocity = rotatePoint({ x: 0, y: 1.2 }, context.entityPlayer.angle);
+    const shootEntity = new Entity(position, velocity, { x: 0, y: 0 }, context.entityPlayer.angle, 'shoot');
+    shootEntity.components[liveTimeInMilliseconds] = 1500;
+    context.entities.push(shootEntity);
+
+    // iniciando o som junto com a entidade que representa o 'disparo'
+    soundMixer.play('shoot', false, .05);
+}
 
 /**
  * Função que monta o estado e a sequência de execução da simulação.
@@ -16,7 +73,7 @@ import { VirtualGamepad } from './virtual-gamepad.js';
  * @param canvas elemento canvas aonde deve ser renderizada a cena
  * @returns o `EventLoop` configurado com a lógica da simulação
  */
-export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: VirtualGamepad | null): EventLoop {
+export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: VirtualGamepad | null): EventLoop<GameContext> {
 
     const ctx = canvas.getContext('2d');
     if (ctx === null) throw 'Contexto nulo';
@@ -31,18 +88,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
     const soundMixer = new SoundMixer(soundResourceManager);
 
-    const updateWebPageTitle = (state?: string) => {
-        let title = '';
-        
-        if (state) {
-            title += state + ' - ';
-        }
-
-        title += 'Gráficos vetoriais e asteroides';
-
-        updateWebPageTitleQueued(title);
-    };
-    
     /**
      * @todo João, seria interessante organizar essas variáveis em algum tipo de GameObject
      * para que as variáveis de estado do jogo não fiquem espalhadas pelo arquivo e mal 
@@ -51,57 +96,15 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * é que se tivermos algum tipo de classe aí sim poderemos ter múltiplas instâncias do
      * jogo rodando em uma mesma página.
      */
-    let moving = false;
-    let forward = false;
-    let asteroidsDestroyedCounter = 0;
-    let waveIndex = 0;
-    let isPaused = false;
-    const playerAcceleration = { x: 0, y: 0.45 };
-    const entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.07, 0.08);
-    const shipStandingFigure = makeShipStandingFigure();
-    const shipForwardFigure = makeShipForwardFigure();
-    const shipBackwardsFigure = makeShipBackwardsFigure();
     let textToDrawn: TextElement[] = [];
     const isMobileUi = virtualGamepad != null;
     // @todo João, eventualmente posso precisar saber quando a fonte carregou
     const fontName = '"Courier Prime", monospace';
-    /**
-     * Função que monta a onda de asteróides
-     * @note João, definir os parâmetros necessários para poder customizar aspectos da
-     * onda de asteróides montada. Usar número pseudo-randômicos?
-     * @todo João, acho que seria legal adicionar parâmetros para controlar a velocidade
-     * base, tamanho base e quantidade de elementos. Isso pode permitir implementar
-     * a variedade de asteróides necessários.
-     * @returns lista de asteróides criados para a nova onda
-     */
-    const createAsteroidsWave = () => Array(3).fill(0).map(() => {
-        const isVerticalBorder = Math.random() > 0.5;
-        const x = isVerticalBorder ? Math.random() * 2 - 1 : Math.round(Math.random()) * 2 - 1;
-        const y = isVerticalBorder ? Math.round(Math.random()) * 2 - 1 : Math.random() * 2 - 1;
-        const scale = 0.10 + Math.random() * 0.09;
-        const hitRadius = scale * 1.2;
-        const factor = 0.5;
-        const defaultVelocity = { x: -0.3 * factor, y: -0.54 * factor };
-        defaultVelocity.x *= Math.random() > 0.5 ? -1 : 1;
-        defaultVelocity.y *= Math.random() > 0.5 ? -1 : 1;
-        /**
-         * @note João, adicionei mais variedade visual variando o ângulo e
-         * a velocidade angular.
-         */
-        const angle = Math.random() * 180;
-        const angularVelocity = -0.6 * (Math.random() > 0.5 ? -1 : 1);
 
-        const entity = new Entity({ x, y }, defaultVelocity, { x: 0, y: 0 }, angle, 'asteroids', hitRadius, scale, angularVelocity);
-        entity.components[fragmentationAllowed] = 4;
-        return entity;
-    });
-    let entities = [ entityPlayer ];
-    let shootWaitingToBeEmmited = false;
-    const primaryWhite = '#FFFFFF';
-    const secondaryWhite = 'rgba(255,255,255,0.7)';
-    const backgroundColor = '#000';
+    const context = new GameContext();
+    const eventLoop = new EventLoop(context);
 
-    const eventLoop = new EventLoop();
+    
     /**
      * @todo João, criar uma interface para o 'keyBoard' para poder unificar o keyboard virtual
      * e o teclado físico, porém considerar habilitar os dois simultaneamente.
@@ -111,44 +114,32 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     let debugHitRadius = false;
 
 
-    const emmitShoot = (player: Entity, entities: Entity[]) => {
-        const radius = rotatePoint({ x: 0, y: 0.03 }, entityPlayer.angle);
-        const position = { x: player.position.x + radius.x, y: player.position.y + radius.y };
-        const velocity = rotatePoint({ x: 0, y: 1.2 }, entityPlayer.angle);
-        const shootEntity = new Entity(position, velocity, { x: 0, y: 0 }, player.angle, 'shoot');
-        shootEntity.components[liveTimeInMilliseconds] = 1500;
-        entities.push(shootEntity);
-
-        // iniciando o som junto com a entidade que representa o 'disparo'
-        soundMixer.play('shoot', false, .05);
-    }
-
     const setInitialState = () => {
         /**
          * @note seria interessante formalizar o estado interno da 'partida',
          * porém por hora ainda tem alguns pontos em aberto sobre a evolução da
          * estrutura de 'ondas/fases'.
          */
-        const gameOver = !entities.includes(entityPlayer);
+        const gameOver = !context.entities.includes(context.entityPlayer);
         
         if (!gameOver) return;
 
-        asteroidsDestroyedCounter = 0;
-        waveIndex = 0;
-        entities.length = 0;
+        context.asteroidsDestroyedCounter = 0;
+        context.waveIndex = 0;
+        context.entities.length = 0;
 
         // limpando textos
         textToDrawn.length = 0;
 
         // @note melhorar esse processo, rotina de inicialização?
-        entityPlayer.components[hittedMark] = false;
-        entityPlayer.toBeRemoved = false;
-        entityPlayer.position = { x: 0, y: 0 };
-        entityPlayer.velocity = { x: 0, y: 0 };
-        entityPlayer.position = { x: 0, y: 0 };
-        entityPlayer.angle = 0;
+        context.entityPlayer.components[hittedMark] = false;
+        context.entityPlayer.toBeRemoved = false;
+        context.entityPlayer.position = { x: 0, y: 0 };
+        context.entityPlayer.velocity = { x: 0, y: 0 };
+        context.entityPlayer.position = { x: 0, y: 0 };
+        context.entityPlayer.angle = 0;
 
-        entities.push(entityPlayer);
+        context.entities.push(context.entityPlayer);
 
         // atualiza title
         updateWebPageTitle();
@@ -166,8 +157,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * continue pressionando o espaço.
      */
     keyBoardInput.addListener('keyup. ', () => {
-        if (!entityPlayer.components[hittedMark]) {
-            shootWaitingToBeEmmited = true;
+        if (!context.entityPlayer.components[hittedMark]) {
+            context.shootWaitingToBeEmmited = true;
         }
     });
 
@@ -176,13 +167,26 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      */
     if (virtualGamepad) {
         virtualGamepad.addListener('keyup.space', () => {
-            if (!entityPlayer.components[hittedMark]) {
-                shootWaitingToBeEmmited = true;
+            if (!context.entityPlayer.components[hittedMark]) {
+                context.shootWaitingToBeEmmited = true;
             }
         });
 
         virtualGamepad.addListener('keyup.start', setInitialState);
     }
+
+    const pauseGame = () => {
+        eventLoop.stop();
+        // pausa todos os sons se houver algum executando
+        for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
+            soundHandler.stop();
+        }
+        
+        context.isPaused = true;
+        drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', fontName, 'center');
+
+        updateWebPageTitle('pausado');
+    };
 
     /**
      * @note Implementar a funcionalidade de pausa fez com que diversas questões
@@ -192,14 +196,14 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * despausar, isso porque o EventLoop busca o tempo a partir do timestamp do frame sendo desenhado,
      * acredito que o melhor seria criar mais um 'timestamp' para representar o tempo decorrido na simualação.
      */
-    const setPausedState = () => {
+    const switchPausedState = () => {
         // @todo João, criar um utilitário ou um 'variável global' para conter se está ou não
         // em status 'gameOver'
-        const gameOver = !entities.includes(entityPlayer);
+        const gameOver = !context.entities.includes(context.entityPlayer);
 
         if (gameOver) return;
 
-        if (isPaused) {
+        if (context.isPaused) {
             eventLoop.start();
             // executa sons pausados se houver algum
             for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
@@ -207,80 +211,92 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             }
 
             updateWebPageTitle();
+            context.isPaused = false;
         } else {
-            eventLoop.stop();
-            // pausa todos os sons se houver algum executando
-            for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
-                soundHandler.stop();
-            }
-
-            drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', fontName, 'center');
-
-            updateWebPageTitle('pausado');
+            pauseGame();
         }
-
-        isPaused = !isPaused;
     }
 
-    keyBoardInput.addListener('keyup.p', setPausedState);
+    keyBoardInput.addListener('keyup.p', switchPausedState);
     
     keyBoardInput.addListener('keyup.r', setInitialState);
 
     // @todo João, avaliar se não causa mais problemas do que vantagens tanto em desenvolvimento
     // como para o usuário final...
-    window.addEventListener('blur', setPausedState);
+    window.addEventListener('blur', pauseGame);
+
+    /**
+     * @todo João, validar melhor essa funcionalidade, não tenho certeza de que escutar o evento
+     * 'resize' é suficiente para saber se a nova resolução da 'window'
+     */
+    window.addEventListener('resize', () => {
+        // @todo João, se a aplicação estiver pausada o canvas é limpo e fica "transparente",
+        // por este motivo, caso o jogo esteja pausado, quando ocorre o evento de 'resize'
+        // repinto o fundo e escrevo 'pausado' novamente.
+        const newResolution = isFullScreen() ? computeResolution(1) : computeResolution(resolutionScaleNonFullscreen);
+        
+        canvas.width = newResolution;
+        canvas.height = newResolution;
+
+        if (context.isPaused) {
+            // pintando o fundo
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+            drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', fontName, 'center');
+        }
+    });
 
     /**
      * Função responsável pelo processamento de input
      * Primeira etapa do processo, entrada de input e aplicação das lógicas
      * definidas.
      */
-    eventLoop.add((timestamp: number, deltaTime: number) => {
+    eventLoop.add((context: GameContext, timestamp: number, deltaTime: number) => {
         const angularVelocitySpaceShipTurn = 3.5;
         if (keyBoardInput.isKeyPressed('d')) {
-            entityPlayer.angle += -angularVelocitySpaceShipTurn * deltaTime;
+            context.entityPlayer.angle += -angularVelocitySpaceShipTurn * deltaTime;
         }
         if (keyBoardInput.isKeyPressed('a')) {
-            entityPlayer.angle += angularVelocitySpaceShipTurn * deltaTime;
+            context.entityPlayer.angle += angularVelocitySpaceShipTurn * deltaTime;
         }
         
         if (keyBoardInput.areBothKeysPressed('w', 's')) {
-            entityPlayer.acceleration.x = 0;
-            entityPlayer.acceleration.y = 0;
-            moving = false;
+            context.entityPlayer.acceleration.x = 0;
+            context.entityPlayer.acceleration.y = 0;
+            context.isPlayerMoving = false;
         } else  if (keyBoardInput.isKeyPressed('w')) {
-            entityPlayer.acceleration = rotatePoint(playerAcceleration, entityPlayer.angle);
-            moving = true;
-            forward = true;
+            context.entityPlayer.acceleration = rotatePoint(context.playerAcceleration, context.entityPlayer.angle);
+            context.isPlayerMoving = true;
+            context.isPlayerMovingForward = true;
         } else if (keyBoardInput.isKeyPressed('s')) {
-            entityPlayer.acceleration = rotatePoint(playerAcceleration, entityPlayer.angle);
-            entityPlayer.acceleration.x *= -1;
-            entityPlayer.acceleration.y *= -1;
-            moving = true;
-            forward = false;
+            context.entityPlayer.acceleration = rotatePoint(context.playerAcceleration, context.entityPlayer.angle);
+            context.entityPlayer.acceleration.x *= -1;
+            context.entityPlayer.acceleration.y *= -1;
+            context.isPlayerMoving = true;
+            context.isPlayerMovingForward = false;
         } else {
-            entityPlayer.acceleration.x = 0;
-            entityPlayer.acceleration.y = 0;
-            moving = false;
+            context.entityPlayer.acceleration.x = 0;
+            context.entityPlayer.acceleration.y = 0;
+            context.isPlayerMoving = false;
         }
 
-        if (shootWaitingToBeEmmited && !entityPlayer.components[hittedMark]) {
-            emmitShoot(entityPlayer, entities);
-            shootWaitingToBeEmmited = false;
+        if (context.shootWaitingToBeEmmited && !context.entityPlayer.components[hittedMark]) {
+            emmitShoot(context, soundMixer);
+            context.shootWaitingToBeEmmited = false;
         }
 
         /**
          * @todo João, achar um lugar melhora para esse funcionalidade a seguir
-         * @todo João, escrever um utilitário para contar e um para pegar entidades de um tipo
          */
-        if (countEntitiesByType(entities, 'asteroids') === 0) {
-            entities.push(...createAsteroidsWave());
-            waveIndex++;
+        if (countEntitiesByType(context.entities, 'asteroids') === 0) {
+            context.entities.push(...createAsteroidsWave());
+            context.waveIndex++;
             /**
              * @todo João, ajustar para usar um formato de duração de exibição similar ao
              * dos 'disparos' da navinha.
              */
-            const text = new TextElement('Onda ' + waveIndex, { x: 0, y: 0.5, }, 'white', 0.06, fontName, 'center');
+            const text = new TextElement('Onda ' + context.waveIndex, { x: 0, y: 0.5, }, 'white', 0.06, fontName, 'center');
             text.setVisibleUntil(timestamp + 2000);
             textToDrawn.push(text);
         }
@@ -290,12 +306,12 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * Função responsável pela detecção de colisões
      * Aqui é feito a detecção da colisão e registrado para o posterior processamento
      */
-    eventLoop.add((time: number, deltaTime: number) => {
+    eventLoop.add((context: GameContext, time: number, deltaTime: number) => {
         /**
          * @note Remove as entidades com "liveTimeInMilliseconds" zerado,
          * embora não seja essa a única utilidade desse componente, por hora só é usado para isso
          */
-        entities = entities.filter(entity => {
+        context.entities = context.entities.filter(entity => {
             if (entity.components[liveTimeInMilliseconds] == undefined) return true;
 
             // @note Não deveria fazer isso no filter, mas... por hora fica assim
@@ -304,9 +320,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             return entity.components[liveTimeInMilliseconds] > 0;
         });
 
-        const shootEntities = entities.filter(entity => entity.type === 'shoot');
+        const shootEntities = context.entities.filter(entity => entity.type === 'shoot');
 
-        for (const entity of entities) {
+        for (const entity of context.entities) {
             if (entity.type !== 'asteroids') continue;
 
             for (const shootEntity of shootEntities) {
@@ -324,8 +340,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             /**
              * @todo João, ler nota acima
              */
-            if (distance(entity.position, entityPlayer.position) < (entity.hitRadius + entityPlayer.hitRadius)) {
-                entityPlayer.components[hittedMark] = true;
+            if (distance(entity.position, context.entityPlayer.position) < (entity.hitRadius + context.entityPlayer.hitRadius)) {
+                context.entityPlayer.components[hittedMark] = true;
             }
         }
     });
@@ -333,8 +349,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     /**
      * Função responsável por fragmentar os asteróides onde `hittedMark === true`
      */
-    eventLoop.add((time: number) => {
-        const hittedAsteroids = entities.filter(entity => entity.components[hittedMark] && entity.type === 'asteroids');
+    eventLoop.add((context: GameContext, time: number) => {
+        const hittedAsteroids = context.entities.filter(entity => entity.components[hittedMark] && entity.type === 'asteroids');
         if (hittedAsteroids.length === 0) return;
 
         const allFragments: Entity[] = [];
@@ -349,7 +365,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             /**
              * @note implementação temporária, reavaliar se aqui é o melhor lugar para incrementar o contador
              */
-            asteroidsDestroyedCounter++;
+            context.asteroidsDestroyedCounter++;
 
             /**
              * @note sempre que um asteroide é destruído um som é emitido, por hora
@@ -360,22 +376,22 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             soundMixer.play('asteroid-explosion', false, 0.01 * volumeScale);
         }
 
-        entities = entities.filter(entity => !entity.components[hittedMark] || entity.type === 'player');
-        entities.push(...allFragments);
+        context.entities = context.entities.filter(entity => !entity.components[hittedMark] || entity.type === 'player');
+        context.entities.push(...allFragments);
     });
 
     /**
      * Função responsável por fragmentar o player caso ele esteja marcado com `hittedMark === true`
      */
-    eventLoop.add((time: number) => {
-        if (!entityPlayer.components[hittedMark] || entityPlayer.toBeRemoved) return;
+    eventLoop.add((context: GameContext, time: number) => {
+        if (!context.entityPlayer.components[hittedMark] || context.entityPlayer.toBeRemoved) return;
 
-        entityPlayer.toBeRemoved = true;
-        entities = entities.filter(entity => entity !== entityPlayer);
+        context.entityPlayer.toBeRemoved = true;
+        context.entities = context.entities.filter(entity => entity !== context.entityPlayer);
         
         // Por hora é aí que está a figura da nave sem as chamas do propulsor
-        const shape = shipStandingFigure.shapes[0];
-        const drawInfo = shipStandingFigure.drawInfo[0];
+        const shape = context.shipStandingFigure.shapes[0];
+        const drawInfo = context.shipStandingFigure.drawInfo[0];
         const polygon = makePolygonWithAbsolutePosition(drawInfo.position, rotatePolygon(scalePolygon(shape.polygon, drawInfo.scale), drawInfo.angle));
 
         for (let i = 0; polygon.length > 1 && i < polygon.length; i++) {
@@ -383,10 +399,10 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             const nextIndex = i + 1 === polygon.length ? 0 : i + 1;
             let p1 = polygon[nextIndex];
 
-            let aP0 = makePointAbsolute(entityPlayer.position, scalePoint(p0, entityPlayer.scale));
-            let aP1 = makePointAbsolute(entityPlayer.position, scalePoint(p1, entityPlayer.scale));
+            let aP0 = makePointAbsolute(context.entityPlayer.position, scalePoint(p0, context.entityPlayer.scale));
+            let aP1 = makePointAbsolute(context.entityPlayer.position, scalePoint(p1, context.entityPlayer.scale));
             const position = {
-                ...entityPlayer.position
+                ...context.entityPlayer.position
             };
 
             position.x = (aP0.x - aP1.x) / 2 + aP1.x;
@@ -397,14 +413,14 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
                 y: (p0.y - p1.y) / 2 + p1.y,
             }
 
-            p0 = centralizePoint(rotatePoint(p0, entityPlayer.angle), newCenter);
-            p1 = centralizePoint(rotatePoint(p1, entityPlayer.angle), newCenter);
+            p0 = centralizePoint(rotatePoint(p0, context.entityPlayer.angle), newCenter);
+            p1 = centralizePoint(rotatePoint(p1, context.entityPlayer.angle), newCenter);
 
-            const velocity = rotatePoint({ ...entityPlayer.velocity  }, (i * Math.PI / 8));
-            const entity = new Entity(position, velocity, { x: 0, y: 0 }, entityPlayer.angle, 'fragments', 0.09, 0.08, -1.6 - 0.8 * i / polygon.length);
+            const velocity = rotatePoint({ ...context.entityPlayer.velocity  }, (i * Math.PI / 8));
+            const entity = new Entity(position, velocity, { x: 0, y: 0 }, context.entityPlayer.angle, 'fragments', 0.09, 0.08, -1.6 - 0.8 * i / polygon.length);
             entity.components[lineFigure] = [p0, p1];
 
-            entities.push(entity);
+            context.entities.push(entity);
         }
 
         // som emitido quando nave explode
@@ -423,8 +439,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         // salvando maior pontuação
         // @note esse código deve ser movido para uma rotina própria
         const highestScore = parseInt(localStorage.getItem('highestScore') || '0', 10);
-        if (asteroidsDestroyedCounter > highestScore || isNaN(highestScore)) {
-            localStorage.setItem('highestScore', asteroidsDestroyedCounter.toString());
+        if (context.asteroidsDestroyedCounter > highestScore || isNaN(highestScore)) {
+            localStorage.setItem('highestScore', context.asteroidsDestroyedCounter.toString());
         }
     });
 
@@ -436,8 +452,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * anotar que é aqui onde a restrição do espaço a um ambiente com as laterais conectadas
      * acontece.
      */
-    eventLoop.add((timestamp: number, deltaTime: number) => {
-        for (const entity of entities) {
+    eventLoop.add((context: GameContext, timestamp: number, deltaTime: number) => {
+        for (const entity of context.entities) {
             // computando velocidade
             entity.velocity.x += entity.acceleration.x * deltaTime;
             entity.velocity.y += entity.acceleration.y * deltaTime;
@@ -470,17 +486,17 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * requisições de renderização seja incluída para poder aplicar efeitos de
      * forma mais sustentável e eficiente, mas hoje é só isso que é necessário.
      */
-    eventLoop.add((time: number) => {
+    eventLoop.add((context: GameContext, time: number) => {
         ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Deixando a largura da linha escalável
         const lineWidth = Math.max(1, canvas.width * 0.002); 
-        const playerFigure = moving
-            ? (forward ? shipForwardFigure : shipBackwardsFigure)
-            : shipStandingFigure;
+        const playerFigure = context.isPlayerMoving
+            ? (context.isPlayerMovingForward ? context.shipForwardFigure : context.shipBackwardsFigure)
+            : context.shipStandingFigure;
 
-        for (const entity of entities) {
+        for (const entity of context.entities) {
             if (entity.type === 'player') {
                 // @todo João, avaliar essa solução, visualmente está correto, porém acredito que a função `renderFigureInside` apesar de funcionar
                 // trás uma complexidade desnecessária, acho que seria interessante nessa etapa apenas acumular as figuras que devem ser
@@ -523,7 +539,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
          * Nesse primeiro momento os textos serão desenhados separadamente,
          * mas poderiam passar pelo sistema de entidades.
          */
-        drawText(ctx, `${asteroidsDestroyedCounter}`, { x: -0.97, y: 0.91 }, 0.06, '#FFFFFF', fontName, 'left');
+        drawText(ctx, `${context.asteroidsDestroyedCounter}`, { x: -0.97, y: 0.91 }, 0.06, '#FFFFFF', fontName, 'left');
 
         /**
          * @todo João, implementar um contador de 'ondas' e um mecanismo para adicionar textos flutuantes
@@ -545,13 +561,13 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * Renderiza informação visual da área de hit
      * Quando apertado 2 no teclado esse recurso é ativado ou desativado
      */
-    eventLoop.add((time: number) => {
+    eventLoop.add((context: GameContext, time: number) => {
         if (!debugHitRadius) return;
 
         // Deixando a largura da linha escalável
         const lineWidth = Math.max(1, canvas.width * 0.002);
         
-        for (const entity of entities) {
+        for (const entity of context.entities) {
             if (entity.hitRadius) {
                 const color = entity.components[hittedMark] ? '#00FF00' : '#FF0000';
                 // @todo João, avaliar aqui se faz sentido fazer dessa forma
@@ -564,13 +580,13 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     });
 
     // Renderiza informação visual de debug
-    eventLoop.add((time: number) => {
+    eventLoop.add((context: GameContext, time: number) => {
         if (!debug) return;
 
         // Deixando a largura da linha escalável
         const lineWidth = Math.max(1, canvas.width * 0.002);
         
-        for (const entity of entities) {
+        for (const entity of context.entities) {
             if (entity.type != 'player' && entity.type != 'asteroids') continue;
 
             const endPositionForAcceleration = {

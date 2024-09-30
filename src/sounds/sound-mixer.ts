@@ -99,6 +99,8 @@ export class SoundHandle {
     /**
      * @todo João, esse é o único método que precisa ser trabalhado para poder
      * retornar o SoundHandle nas requisições ao método SoundMixer.play()
+     * @note Melhorado esse processo de descarte dos handlers para incluir o processo de descarte de `HTMLAudioElements`
+     * como sugerido nesse link: https://stackoverflow.com/questions/8864617/how-do-i-remove-properly-html5-audio-without-appending-to-dom 
      */
     public releaseResources() {
         const audioElement = this.audioElement;
@@ -179,9 +181,7 @@ export class SoundMixer {
     }
 
     /**
-     * @todo João, melhorar esse processo de descarte dos handlers para incluir o processo de descarte de `HTMLAudioElements`
-     * como sugerido nesse link: https://stackoverflow.com/questions/8864617/how-do-i-remove-properly-html5-audio-without-appending-to-dom -- OK
-     * @todo João, ainda sinto que esse processo não está claro ou seguro, não sem bem qual o problema, reanalsiar
+     * @todo João, ainda sinto que esse processo não está claro ou seguro, não sei bem qual o problema, reanalisar
      */
     public clear(): void {
         const playingSounds: Set<SoundHandle> = new Set();

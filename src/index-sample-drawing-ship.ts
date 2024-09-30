@@ -2,6 +2,7 @@ import { drawComplexShape, rotatePoint } from './draw.js';
 import { Entity } from './entity.js';
 import { EventLoop } from './event-loop.js';
 import { makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
+import { GameContext } from './game-context.js';
 import { KeyBoardInput } from './keyboard-input.js';
 import { createCanvas } from './utils.js';
 
@@ -16,12 +17,12 @@ const shipStandingFigure = makeShipStandingFigure();
 const shipForwardFigure = makeShipForwardFigure();
 const shipBackwardsFigure = makeShipBackwardsFigure();
 
-const eventLoop = new EventLoop();
+const eventLoop = new EventLoop(new GameContext);
 const keyBoardInput = new KeyBoardInput({ autoStart: true });
 let moving = false;
 let forward = false;
 
-eventLoop.add((time: number, deltaTime: number) => {
+eventLoop.add((context: GameContext, time: number, deltaTime: number) => {
     if (keyBoardInput.areBothKeysPressed('w', 's')) {
         moving = false;
     } else if (keyBoardInput.isKeyPressed('w')) {
@@ -64,7 +65,7 @@ eventLoop.add((time: number, deltaTime: number) => {
 });
 
 // Renderiza
-eventLoop.add((time: number) => {
+eventLoop.add((context: GameContext, time: number) => {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
