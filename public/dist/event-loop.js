@@ -4,7 +4,7 @@
  * a parte as métricas.
  */
 export class EventLoop {
-    constructor() {
+    constructor(context) {
         this.running = false;
         this.handlerId = 0;
         this.handlers = new Set();
@@ -22,7 +22,7 @@ export class EventLoop {
                 const deltaTime = this.lastTimestamp ? (timestamp - this.lastTimestamp) / 1000 : 0;
                 this.lastTimestamp = timestamp;
                 for (const handler of this.handlers) {
-                    handler(timestamp, deltaTime);
+                    handler(this.context, timestamp, deltaTime);
                 }
                 if (this.running) {
                     requestAnimationFrame(this.handleTick);
@@ -33,6 +33,7 @@ export class EventLoop {
                 this.running = false;
             }
         };
+        this.context = context;
     }
     start() {
         if (this.running)
