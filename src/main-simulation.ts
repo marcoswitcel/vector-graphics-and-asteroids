@@ -181,7 +181,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
             soundHandler.stop();
         }
-
+        
+        context.isPaused = true;
         drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', fontName, 'center');
 
         updateWebPageTitle('pausado');
@@ -210,11 +211,10 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             }
 
             updateWebPageTitle();
+            context.isPaused = false;
         } else {
             pauseGame();
         }
-
-        context.isPaused = !context.isPaused;
     }
 
     keyBoardInput.addListener('keyup.p', switchPausedState);
@@ -231,13 +231,20 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      */
     window.addEventListener('resize', () => {
         // @todo João, se a aplicação estiver pausada o canvas é limpo e fica "transparente",
-        // seria interessante pelo menos colorir o background e escrever pausado novamente.
-        // Porém, por hora só tenho acesso ao EventLoop aqui, e nesse caso, só sei dizer se
-        // o loop está parado. O que geralmente indica 'pausa'
+        // por este motivo, caso o jogo esteja pausado, quando ocorre o evento de 'resize'
+        // repinto o fundo e escrevo 'pausado' novamente.
         const newResolution = isFullScreen() ? computeResolution(1) : computeResolution(resolutionScaleNonFullscreen);
         
         canvas.width = newResolution;
         canvas.height = newResolution;
+
+        if (context.isPaused) {
+            // pintando o fundo
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+            drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', fontName, 'center');
+        }
     });
 
     /**
