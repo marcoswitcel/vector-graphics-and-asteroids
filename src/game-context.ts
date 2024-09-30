@@ -1,5 +1,8 @@
 import { Entity } from './entity.js';
 import { makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
+import { isMobileBrowser } from './utils.js';
+
+export const resolutionScaleNonFullscreen = isMobileBrowser() ? 1 : 0.96;
 
 /**
  * @todo João, avaliar o que o mais mover para dentro dessa classe

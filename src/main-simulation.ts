@@ -1,13 +1,13 @@
 import { centralizePoint, distance, drawCircle, drawComplexShape, drawLine, drawPolygon, drawText, makePointAbsolute, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePoint, scalePolygon, Vector2 } from './draw.js';
 import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure } from './entity.js';
 import { EventLoop } from './event-loop.js';
-import { makeAsteroid, makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
-import { GameContext } from './game-context.js';
+import { makeAsteroid } from './figure.js';
+import { GameContext, resolutionScaleNonFullscreen } from './game-context.js';
 import { KeyBoardInputInterface } from './keyboard-input-interface.js';
 import { KeyBoardInput } from './keyboard-input.js';
 import { SoundMixer } from './sounds/sound-mixer.js';
 import { SoundResourceManager } from './sounds/sound-resource-manager.js';
-import { countEntitiesByType, fragmentAsteroid, renderFigureInside, TextElement, updateWebPageTitleQueued } from './utils.js';
+import { computeResolution, countEntitiesByType, fragmentAsteroid, isFullScreen, renderFigureInside, TextElement, updateWebPageTitleQueued } from './utils.js';
 import { VirtualGamepad } from './virtual-gamepad.js';
 
 const primaryWhite = '#FFFFFF';
@@ -224,6 +224,21 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     // @todo João, avaliar se não causa mais problemas do que vantagens tanto em desenvolvimento
     // como para o usuário final...
     window.addEventListener('blur', pauseGame);
+
+    /**
+     * @todo João, validar melhor essa funcionalidade, não tenho certeza de que escutar o evento
+     * 'resize' é suficiente para saber se a nova resolução da 'window'
+     */
+    window.addEventListener('resize', () => {
+        // @todo João, se a aplicação estiver pausada o canvas é limpo e fica "transparente",
+        // seria interessante pelo menos colorir o background e escrever pausado novamente.
+        // Porém, por hora só tenho acesso ao EventLoop aqui, e nesse caso, só sei dizer se
+        // o loop está parado. O que geralmente indica 'pausa'
+        const newResolution = isFullScreen() ? computeResolution(1) : computeResolution(resolutionScaleNonFullscreen);
+        
+        canvas.width = newResolution;
+        canvas.height = newResolution;
+    });
 
     /**
      * Função responsável pelo processamento de input
