@@ -5,7 +5,7 @@ import { makeAsteroid } from './figure.js';
 import { GameContext, resolutionScaleNonFullscreen } from './game-context.js';
 import { KeyBoardInputInterface } from './keyboard-input-interface.js';
 import { KeyBoardInput } from './keyboard-input.js';
-import { SoundMixer } from './sounds/sound-mixer.js';
+import { SoundHandleState, SoundMixer } from './sounds/sound-mixer.js';
 import { SoundResourceManager } from './sounds/sound-resource-manager.js';
 import { computeResolution, countEntitiesByType, fragmentAsteroid, isFullScreen, renderFigureInside, TextElement, updateWebPageTitleQueued } from './utils.js';
 import { VirtualGamepad } from './virtual-gamepad.js';
@@ -112,6 +112,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     const keyBoardInput: KeyBoardInputInterface = virtualGamepad != null ? virtualGamepad : new KeyBoardInput({ autoStart: true });
     let debug = false;
     let debugHitRadius = false;
+    let debugSound = false;
 
 
     const setInitialState = () => {
@@ -150,6 +151,10 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     });
     keyBoardInput.addListener('keyup.2', () => {
         debugHitRadius = !debugHitRadius;
+    });
+
+    keyBoardInput.addListener('keyup.3', () => {
+        debugSound = !debugSound;
     });
 
     /**
@@ -605,6 +610,23 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
             // @todo João, ajustar manipulação 'global' do estilo da linha
             ctx.setLineDash([]);
+        }
+    });
+
+    eventLoop.add((context: GameContext, time: number) => {
+        if (!debugSound) return;
+
+        // Deixando a largura da linha escalável
+        const lineWidth = Math.max(1, canvas.width * 0.002);
+        
+        let i = 0;
+        for (const soundHandle of soundMixer.getPlayingSoundsIter()) {
+            const color = '#00FF00';
+            const fontSize = 0.02;
+            const lineHeight = 1.6;
+            const text = new TextElement(soundHandle.getDescription(), { x: -0.95, y: 0.85 - (fontSize * lineHeight * i), }, color, fontSize, fontName, 'start');
+            drawText(ctx, text.text, text.position, text.fontSize, text.color, text.fontFamily, text.align);
+            i++;
         }
     });
     
