@@ -1,5 +1,5 @@
 import { centralizePoint, distance, drawCircle, drawComplexShape, drawLine, drawPolygon, drawText, makePointAbsolute, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePoint, scalePolygon, Vector2 } from './draw.js';
-import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure } from './entity.js';
+import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure, makeDefaultPlayer } from './entity.js';
 import { EventLoop } from './event-loop.js';
 import { makeAsteroid } from './figure.js';
 import { GameContext, resolutionScaleNonFullscreen } from './game-context.js';
@@ -121,10 +121,10 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
          * porém por hora ainda tem alguns pontos em aberto sobre a evolução da
          * estrutura de 'ondas/fases'.
          */
-        const gameOver = !context.entities.includes(context.entityPlayer);
-        
-        if (!gameOver) return;
+    
+        if (!context.isGameOver) return;
 
+        context.isGameOver = false;
         context.asteroidsDestroyedCounter = 0;
         context.waveIndex = 0;
         context.entities.length = 0;
@@ -132,14 +132,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         // limpando textos
         textToDrawn.length = 0;
 
-        // @note melhorar esse processo, rotina de inicialização?
-        context.entityPlayer.components[hittedMark] = false;
-        context.entityPlayer.toBeRemoved = false;
-        context.entityPlayer.position = { x: 0, y: 0 };
-        context.entityPlayer.velocity = { x: 0, y: 0 };
-        context.entityPlayer.position = { x: 0, y: 0 };
-        context.entityPlayer.angle = 0;
-
+        context.entityPlayer = makeDefaultPlayer();
         context.entities.push(context.entityPlayer);
 
         // atualiza title
@@ -202,11 +195,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * acredito que o melhor seria criar mais um 'timestamp' para representar o tempo decorrido na simualação.
      */
     const switchPausedState = () => {
-        // @todo João, criar um utilitário ou um 'variável global' para conter se está ou não
-        // em status 'gameOver'
-        const gameOver = !context.entities.includes(context.entityPlayer);
-
-        if (gameOver) return;
+        if (context.isGameOver) return;
 
         if (context.isPaused) {
             eventLoop.start();
@@ -430,6 +419,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
         // som emitido quando nave explode
         soundMixer.play('ship-explosion', false, 0.3);
+
+        // game over screen
+        context.isGameOver = true;
 
         const textGameOver = new TextElement('Fim de jogo', { x: 0, y: 0, }, 'white', 0.06, fontName, 'center');
         const restartKey = isMobileUi ? "start" : "r";

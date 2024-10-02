@@ -40,3 +40,7 @@ export class Entity {
         this.components = {};
     }
 }
+
+export function makeDefaultPlayer(): Entity {
+    return new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.07, 0.08); 
+}
