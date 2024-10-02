@@ -621,6 +621,16 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             i++;
         }
     });
+
+    /**
+     * @note deixarei um sistema para fazer asserts
+     */
+    eventLoop.add((context: GameContext, time: number) => {
+        // no máximo uma entidade player na arena
+        console.assert(context.entities.filter(e => e.type === 'player').length <= 1);
+        // exclusivos
+        console.assert(!context.isGameOver || !context.isPaused);
+    });
     
     return eventLoop;
 }
