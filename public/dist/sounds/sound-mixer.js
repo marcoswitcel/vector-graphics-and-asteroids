@@ -88,6 +88,13 @@ export class SoundHandle {
         audioElement.srcObject = null;
         this.state = SoundHandleState.RELEASED;
     }
+    /**
+     * @todo João, terminar de implementar uma forma de busca o nome e o resourceLocation
+     * @returns
+     */
+    getDescription() {
+        return (this.audioElement.getAttribute('src') || '[Sem nome]') + ` - ${(this.currentTime / this.duration * 100).toFixed(2)}%`;
+    }
 }
 export class SoundMixer {
     constructor(soundResourceManager) {

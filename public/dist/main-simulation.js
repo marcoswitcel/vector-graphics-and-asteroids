@@ -1,5 +1,5 @@
 import { centralizePoint, distance, drawCircle, drawComplexShape, drawLine, drawPolygon, drawText, makePointAbsolute, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePoint, scalePolygon } from './draw.js';
-import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure } from './entity.js';
+import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure, makeDefaultPlayer } from './entity.js';
 import { EventLoop } from './event-loop.js';
 import { makeAsteroid } from './figure.js';
 import { GameContext, resolutionScaleNonFullscreen } from './game-context.js';
@@ -93,27 +93,22 @@ export function createMainSimulation(canvas, virtualGamepad) {
     const keyBoardInput = virtualGamepad != null ? virtualGamepad : new KeyBoardInput({ autoStart: true });
     let debug = false;
     let debugHitRadius = false;
+    let debugSound = false;
     const setInitialState = () => {
         /**
          * @note seria interessante formalizar o estado interno da 'partida',
          * porém por hora ainda tem alguns pontos em aberto sobre a evolução da
          * estrutura de 'ondas/fases'.
          */
-        const gameOver = !context.entities.includes(context.entityPlayer);
-        if (!gameOver)
+        if (!context.isGameOver)
             return;
+        context.isGameOver = false;
         context.asteroidsDestroyedCounter = 0;
         context.waveIndex = 0;
         context.entities.length = 0;
         // limpando textos
         textToDrawn.length = 0;
-        // @note melhorar esse processo, rotina de inicialização?
-        context.entityPlayer.components[hittedMark] = false;
-        context.entityPlayer.toBeRemoved = false;
-        context.entityPlayer.position = { x: 0, y: 0 };
-        context.entityPlayer.velocity = { x: 0, y: 0 };
-        context.entityPlayer.position = { x: 0, y: 0 };
-        context.entityPlayer.angle = 0;
+        context.entityPlayer = makeDefaultPlayer();
         context.entities.push(context.entityPlayer);
         // atualiza title
         updateWebPageTitle();
@@ -123,6 +118,9 @@ export function createMainSimulation(canvas, virtualGamepad) {
     });
     keyBoardInput.addListener('keyup.2', () => {
         debugHitRadius = !debugHitRadius;
+    });
+    keyBoardInput.addListener('keyup.3', () => {
+        debugSound = !debugSound;
     });
     /**
      * @todo João, avaliar e implementar um mecanismo para emitir disparos caso o usuário
@@ -163,10 +161,7 @@ export function createMainSimulation(canvas, virtualGamepad) {
      * acredito que o melhor seria criar mais um 'timestamp' para representar o tempo decorrido na simualação.
      */
     const switchPausedState = () => {
-        // @todo João, criar um utilitário ou um 'variável global' para conter se está ou não
-        // em status 'gameOver'
-        const gameOver = !context.entities.includes(context.entityPlayer);
-        if (gameOver)
+        if (context.isGameOver)
             return;
         if (context.isPaused) {
             eventLoop.start();
@@ -361,6 +356,8 @@ export function createMainSimulation(canvas, virtualGamepad) {
         }
         // som emitido quando nave explode
         soundMixer.play('ship-explosion', false, 0.3);
+        // game over screen
+        context.isGameOver = true;
         const textGameOver = new TextElement('Fim de jogo', { x: 0, y: 0, }, 'white', 0.06, fontName, 'center');
         const restartKey = isMobileUi ? "start" : "r";
         const textReplayExplanation = new TextElement(`Aperte "${restartKey}" para jogar novamente`, { x: 0, y: -0.15, }, 'white', 0.03, fontName, 'center');
@@ -526,6 +523,30 @@ export function createMainSimulation(canvas, virtualGamepad) {
             // @todo João, ajustar manipulação 'global' do estilo da linha
             ctx.setLineDash([]);
         }
+    });
+    eventLoop.add((context, time) => {
+        if (!debugSound)
+            return;
+        // Deixando a largura da linha escalável
+        const lineWidth = Math.max(1, canvas.width * 0.002);
+        let i = 0;
+        for (const soundHandle of soundMixer.getPlayingSoundsIter()) {
+            const color = '#00FF00';
+            const fontSize = 0.02;
+            const lineHeight = 1.6;
+            const text = new TextElement(soundHandle.getDescription(), { x: -0.95, y: 0.85 - (fontSize * lineHeight * i), }, color, fontSize, fontName, 'start');
+            drawText(ctx, text.text, text.position, text.fontSize, text.color, text.fontFamily, text.align);
+            i++;
+        }
+    });
+    /**
+     * @note deixarei um sistema para fazer asserts
+     */
+    eventLoop.add((context, time) => {
+        // no máximo uma entidade player na arena
+        console.assert(context.entities.filter(e => e.type === 'player').length <= 1);
+        // exclusivos
+        console.assert(!context.isGameOver || !context.isPaused);
     });
     return eventLoop;
 }

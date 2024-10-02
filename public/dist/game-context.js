@@ -1,4 +1,4 @@
-import { Entity } from './entity.js';
+import { makeDefaultPlayer } from './entity.js';
 import { makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
 import { isMobileBrowser } from './utils.js';
 export const resolutionScaleNonFullscreen = isMobileBrowser() ? 1 : 0.96;
@@ -8,7 +8,7 @@ export const resolutionScaleNonFullscreen = isMobileBrowser() ? 1 : 0.96;
 export class GameContext {
     constructor() {
         this.playerAcceleration = { x: 0, y: 0.45 };
-        this.entityPlayer = new Entity({ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, 0, 'player', 0.07, 0.08);
+        this.entityPlayer = makeDefaultPlayer();
         this.isPlayerMoving = false;
         this.isPlayerMovingForward = false;
         this.shootWaitingToBeEmmited = false;
@@ -18,6 +18,8 @@ export class GameContext {
         this.entities = [this.entityPlayer];
         this.asteroidsDestroyedCounter = 0;
         this.waveIndex = 0;
+        // @todo João, considerar converter esses estados em um enum
         this.isPaused = false;
+        this.isGameOver = false;
     }
 }
