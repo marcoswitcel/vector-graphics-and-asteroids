@@ -611,14 +611,20 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         if (!debugSound) return;
 
         // Deixando a largura da linha escalável
-        const lineWidth = Math.max(1, canvas.width * 0.002);
+        const color = '#00FF00';
+        const fontSize = 0.02;
+        const lineHeight = 1.6;
+        const textYOffset = 0.82;
         
+        {
+            const title = `Total: ${soundMixer.getTotalSounds()}`;
+            const text = new TextElement(title, { x: -0.95, y: textYOffset + (fontSize * lineHeight * 1), }, color, fontSize, fontName, 'start');
+            drawText(ctx, text.text, text.position, text.fontSize, text.color, text.fontFamily, text.align);
+        }
+
         let i = 0;
         for (const soundHandle of soundMixer.getPlayingSoundsIter()) {
-            const color = '#00FF00';
-            const fontSize = 0.02;
-            const lineHeight = 1.6;
-            const text = new TextElement(soundHandle.getDescription(), { x: -0.95, y: 0.85 - (fontSize * lineHeight * i), }, color, fontSize, fontName, 'start');
+            const text = new TextElement(soundHandle.getDescription(), { x: -0.95, y: textYOffset - (fontSize * lineHeight * i), }, color, fontSize, fontName, 'start');
             drawText(ctx, text.text, text.position, text.fontSize, text.color, text.fontFamily, text.align);
             i++;
         }
