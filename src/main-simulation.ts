@@ -174,6 +174,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     }
 
     const pauseGame = () => {
+        if (context.isGameOver) return;
+
         eventLoop.stop();
         // pausa todos os sons se houver algum executando
         for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
