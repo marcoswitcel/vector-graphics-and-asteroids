@@ -188,6 +188,10 @@ export class SoundMixer {
         return this.playingSounds[Symbol.iterator]();
     }
 
+    public getTotalSounds(): number {
+        return this.playingSounds.size;
+    }
+
     /**
      * @todo João, ainda sinto que esse processo não está claro ou seguro, não sei bem qual o problema, reanalisar
      */

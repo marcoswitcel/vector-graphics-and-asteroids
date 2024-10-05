@@ -174,6 +174,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     }
 
     const pauseGame = () => {
+        if (context.isGameOver) return;
+
         eventLoop.stop();
         // pausa todos os sons se houver algum executando
         for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
@@ -214,6 +216,15 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     keyBoardInput.addListener('keyup.p', switchPausedState);
     
     keyBoardInput.addListener('keyup.r', setInitialState);
+
+    keyBoardInput.addListener('keyup.k', () => {
+        const highestScore = parseInt(localStorage.getItem('highestScore') || '0', 10);
+        // @todo João, realizar ajuste para não precisar do timestamp
+        const text = new TextElement('Maior pontuação até o momento: ' + highestScore, { x: 0, y: 0.65, }, 'white', 0.03, fontName, 'center');
+        // text.setVisibleUntil(timestamp + 2000);
+        
+        textToDrawn.push(text);
+    });
 
     // @todo João, avaliar se não causa mais problemas do que vantagens tanto em desenvolvimento
     // como para o usuário final...
@@ -567,11 +578,16 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         for (const entity of context.entities) {
             if (entity.hitRadius) {
                 const color = entity.components[hittedMark] ? '#00FF00' : '#FF0000';
+                // @todo João, ajustar manipulação 'global' do estilo da linha
+                ctx.setLineDash([lineWidth * 2, lineWidth * 2]);
+                
                 // @todo João, avaliar aqui se faz sentido fazer dessa forma
-                // drawCircle(ctx, entity.position, entity.hitRadius, color);
                 renderFigureInside(entity, [], ctx, (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => {
                     drawCircle(ctx, position, entity.hitRadius, color,lineWidth);
                 });
+
+                // @todo João, ajustar manipulação 'global' do estilo da linha
+                ctx.setLineDash([]);
             }
         }
     });
@@ -609,14 +625,20 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         if (!debugSound) return;
 
         // Deixando a largura da linha escalável
-        const lineWidth = Math.max(1, canvas.width * 0.002);
+        const color = '#00FF00';
+        const fontSize = 0.02;
+        const lineHeight = 1.6;
+        const textYOffset = 0.82;
         
+        {
+            const title = `Total: ${soundMixer.getTotalSounds()}`;
+            const text = new TextElement(title, { x: -0.95, y: textYOffset + (fontSize * lineHeight * 1), }, color, fontSize, fontName, 'start');
+            drawText(ctx, text.text, text.position, text.fontSize, text.color, text.fontFamily, text.align);
+        }
+
         let i = 0;
         for (const soundHandle of soundMixer.getPlayingSoundsIter()) {
-            const color = '#00FF00';
-            const fontSize = 0.02;
-            const lineHeight = 1.6;
-            const text = new TextElement(soundHandle.getDescription(), { x: -0.95, y: 0.85 - (fontSize * lineHeight * i), }, color, fontSize, fontName, 'start');
+            const text = new TextElement(soundHandle.getDescription(), { x: -0.95, y: textYOffset - (fontSize * lineHeight * i), }, color, fontSize, fontName, 'start');
             drawText(ctx, text.text, text.position, text.fontSize, text.color, text.fontFamily, text.align);
             i++;
         }
