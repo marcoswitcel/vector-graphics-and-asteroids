@@ -569,11 +569,16 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         for (const entity of context.entities) {
             if (entity.hitRadius) {
                 const color = entity.components[hittedMark] ? '#00FF00' : '#FF0000';
+                // @todo João, ajustar manipulação 'global' do estilo da linha
+                ctx.setLineDash([lineWidth * 2, lineWidth * 2]);
+                
                 // @todo João, avaliar aqui se faz sentido fazer dessa forma
-                // drawCircle(ctx, entity.position, entity.hitRadius, color);
                 renderFigureInside(entity, [], ctx, (ctx: CanvasRenderingContext2D, polygon: readonly Vector2[], position: Vector2, entity: Entity) => {
                     drawCircle(ctx, position, entity.hitRadius, color,lineWidth);
                 });
+
+                // @todo João, ajustar manipulação 'global' do estilo da linha
+                ctx.setLineDash([]);
             }
         }
     });
