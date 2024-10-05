@@ -217,6 +217,15 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     
     keyBoardInput.addListener('keyup.r', setInitialState);
 
+    keyBoardInput.addListener('keyup.k', () => {
+        const highestScore = parseInt(localStorage.getItem('highestScore') || '0', 10);
+        // @todo João, realizar ajuste para não precisar do timestamp
+        const text = new TextElement('Maior pontuação até o momento: ' + highestScore, { x: 0, y: 0.65, }, 'white', 0.03, fontName, 'center');
+        // text.setVisibleUntil(timestamp + 2000);
+        
+        textToDrawn.push(text);
+    });
+
     // @todo João, avaliar se não causa mais problemas do que vantagens tanto em desenvolvimento
     // como para o usuário final...
     window.addEventListener('blur', pauseGame);
