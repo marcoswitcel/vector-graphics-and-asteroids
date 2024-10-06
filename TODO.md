@@ -26,7 +26,6 @@
 ## Coisas a melhorar / Concluir
 
 - [ ] Escolher sons bons para a simulação principal e adicioná-los nos momentos apropriados. Sons como: disparos, um ou mais caso seja necessário variação; som de explosão, quando acerta o meteoro e quando a nave explode.
-- [ ] Corrigir o bug dos fragmentos da nave não estarem girando a partir do seu centro.
 - [ ] Melhorar a forma como os asteróides são adicionados, o sistema de "ondas" de asteróides
 não possuí variedade nem progressão de dificuldade/entretenimento. (A simulação deve começar mais fácil, dando mais chance para reagir e aprender a se mover)
 - [ ] Testar e alterar os valores da aceleração, velocidade angular para rotação para que o movimento, aceleração, capacidade de fazer curvas fiquem bons.
@@ -40,6 +39,11 @@ não possuí variedade nem progressão de dificuldade/entretenimento. (A simula�
 - [ ] Implementar algum mecanismo que permita aplicar "efeitos" aos sons que serão adicionados
 
 ## Lista de Bugs
+
+- [ ] Tive a impressão de presenciar uma falha no sistema de input, o que vi foi o seguinte: a nave não estava respondendo aos meus inputs no teclado de forma alguma, tenho a impressão que reiniciei a aplicação e o problema seguiu, depois de um tempo voltou a funcionar. Muito estranho e sem cenário confirmado por enquanto.
+- [ ] A fragmentação da nave quando é destruída não está implementada corretamente, os fragmentos nem sempre rotacionam baseado no seu centro.
+
+## Performance
 
 * Por algum motivo os asteróides (possivelmente tudo), estão apresentando
 uma animação não suave. Eles aparentam estar saltando "pra frente e pra trás"
