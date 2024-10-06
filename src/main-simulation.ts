@@ -219,9 +219,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
     keyBoardInput.addListener('keyup.k', () => {
         const highestScore = parseInt(localStorage.getItem('highestScore') || '0', 10);
-        // @todo João, realizar ajuste para não precisar do timestamp
         const text = new TextElement('Maior pontuação até o momento: ' + highestScore, { x: 0, y: 0.65, }, 'white', 0.03, fontName, 'center');
-        // text.setVisibleUntil(timestamp + 2000);
+        text.setVisibleUntil(2000);
         
         textToDrawn.push(text);
     });
@@ -297,12 +296,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         if (countEntitiesByType(context.entities, 'asteroids') === 0) {
             context.entities.push(...createAsteroidsWave());
             context.waveIndex++;
-            /**
-             * @todo João, ajustar para usar um formato de duração de exibição similar ao
-             * dos 'disparos' da navinha.
-             */
+            
             const text = new TextElement('Onda ' + context.waveIndex, { x: 0, y: 0.5, }, 'white', 0.06, fontName, 'center');
-            text.setVisibleUntil(timestamp + 2000);
+            text.setVisibleUntil(2000);
             textToDrawn.push(text);
         }
     });
@@ -494,7 +490,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * requisições de renderização seja incluída para poder aplicar efeitos de
      * forma mais sustentável e eficiente, mas hoje é só isso que é necessário.
      */
-    eventLoop.add((context: GameContext, time: number) => {
+    eventLoop.add((context: GameContext, time: number, deltaTime: number) => {
         ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -554,12 +550,18 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
          * que somem sozinho, possivelmente com 'fade-in' e 'fade-out'
          */
         for (const text of textToDrawn) {
-            if (text.visibleUntil && time > text.visibleUntil) continue;
+            // atualiza tempo de vida dos elementos textuais
+            if (typeof text.visibleUntil === 'number') {
+                text.visibleUntil -= 1000 * deltaTime;
+
+                if (text.visibleUntil <= 0) continue;
+            }
+
             drawText(ctx, text.text, text.position, text.fontSize, text.color, text.fontFamily, text.align);
         }
 
         // limpando
-        textToDrawn = textToDrawn.filter(text => !text.visibleUntil || text.visibleUntil > time);
+        textToDrawn = textToDrawn.filter(text => text.visibleUntil === undefined || text.visibleUntil > 0);
         
         // acionando cleanup do soundMixer
         soundMixer.clear();
