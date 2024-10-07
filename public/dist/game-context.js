@@ -12,6 +12,7 @@ export class GameContext {
         this.isPlayerMoving = false;
         this.isPlayerMovingForward = false;
         this.shootWaitingToBeEmmited = false;
+        this.lastShootEmmited = 0;
         this.shipStandingFigure = makeShipStandingFigure();
         this.shipForwardFigure = makeShipForwardFigure();
         this.shipBackwardsFigure = makeShipBackwardsFigure();
