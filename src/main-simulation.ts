@@ -13,6 +13,7 @@ import { VirtualGamepad } from './virtual-gamepad.js';
 const primaryWhite = '#FFFFFF';
 const secondaryWhite = 'rgba(255,255,255,0.7)';
 const backgroundColor = '#000';
+const shootEmmitionWindow = 333;
 
 const updateWebPageTitle = (state?: string) => {
     let title = '';
@@ -285,9 +286,29 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             context.isPlayerMoving = false;
         }
 
+        /**
+         * @todo João, talvez seria uma boa ideia unificar a lógica de emissão de disparos
+         * e usar apenas a propriedade 'lastShootEmmited' para controlar quando atirar. Seria possível
+         * remover o listener do evento 'keydown'
+         */
         if (context.shootWaitingToBeEmmited && !context.entityPlayer.components[hittedMark]) {
             emmitShoot(context, soundMixer);
+            context.lastShootEmmited = timestamp;
             context.shootWaitingToBeEmmited = false;
+        }
+
+        /**
+         * @todo João, ajustar para funcionar no mobile também, é necessário ajustar 
+         * o identificar da 'key'
+         */
+        if (!context.entityPlayer.components[hittedMark] && keyBoardInput.isKeyPressed(' ')) {
+            // @note João, o timestamp é afetado pela 'pausa' então seria legal ajustar para decrementar 
+            // conforme o jogo executa e aí disparar ao final
+            const elapsedTime = timestamp - context.lastShootEmmited;
+            if (elapsedTime > shootEmmitionWindow) {
+                context.lastShootEmmited = timestamp;
+                emmitShoot(context, soundMixer);
+            } 
         }
 
         /**

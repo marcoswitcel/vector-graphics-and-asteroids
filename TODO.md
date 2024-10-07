@@ -25,6 +25,7 @@
 
 ## Coisas a melhorar / Concluir
 
+- [ ] Ajustar para que keyboards usem as mesmas teclas de referência quando possível
 - [ ] Escolher sons bons para a simulação principal e adicioná-los nos momentos apropriados. Sons como: disparos, um ou mais caso seja necessário variação; som de explosão, quando acerta o meteoro e quando a nave explode.
 - [ ] Melhorar a forma como os asteróides são adicionados, o sistema de "ondas" de asteróides
 não possuí variedade nem progressão de dificuldade/entretenimento. (A simulação deve começar mais fácil, dando mais chance para reagir e aprender a se mover)
