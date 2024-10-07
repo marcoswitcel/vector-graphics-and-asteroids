@@ -13,6 +13,7 @@ export class GameContext {
     isPlayerMoving = false;
     isPlayerMovingForward = false;
     shootWaitingToBeEmmited = false;
+    lastShootEmmited = 0;
     
     shipStandingFigure = makeShipStandingFigure();
     shipForwardFigure = makeShipForwardFigure();
