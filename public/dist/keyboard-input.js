@@ -20,12 +20,12 @@ export class KeyBoardInput {
             return;
         this.listening = true;
         this.target.addEventListener('keydown', event => {
-            this.keyState.set(event.key, true);
-            this.eventTarget.dispatchEvent(new Event(`keydown.${event.key}`));
+            this.keyState.set(event.code, true);
+            this.eventTarget.dispatchEvent(new Event(`keydown.${event.code}`));
         });
         this.target.addEventListener('keyup', event => {
-            this.keyState.set(event.key, false);
-            this.eventTarget.dispatchEvent(new Event(`keyup.${event.key}`));
+            this.keyState.set(event.code, false);
+            this.eventTarget.dispatchEvent(new Event(`keyup.${event.code}`));
         });
         window.addEventListener('blur', this.onLostFocus);
     }

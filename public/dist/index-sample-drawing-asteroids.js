@@ -10,7 +10,7 @@ const canvas = createCanvas(500, 500, document.body);
 const ctx = canvas.getContext('2d');
 let debugHitRadius = false;
 let clickedPosition = null;
-keyBoardInput.addListener('keyup.2', () => {
+keyBoardInput.addListener('keyup.Digit2', () => {
     debugHitRadius = !debugHitRadius;
 });
 canvas.addEventListener('click', event => {
