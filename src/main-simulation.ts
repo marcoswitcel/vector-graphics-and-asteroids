@@ -151,10 +151,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         debugSound = !debugSound;
     });
 
-    /**
-     * @todo João, avaliar e implementar um mecanismo para emitir disparos caso o usuário
-     * continue pressionando o espaço.
-     */
     keyBoardInput.addListener('keyup. ', () => {
         if (!context.entityPlayer.components[hittedMark]) {
             context.shootWaitingToBeEmmited = true;
