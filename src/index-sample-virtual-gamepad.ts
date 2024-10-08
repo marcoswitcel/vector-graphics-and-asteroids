@@ -19,19 +19,19 @@ for (const vKey of vKeys) {
 
 requestAnimationFrame(function updatePosition(time) {
 
-    if (gamepad.isKeyPressed('a')) {
+    if (gamepad.isKeyPressed('KeyA')) {
         square.style.left = parseInt(getComputedStyle(square).left) - 1 + 'px';
     }
 
-    if (gamepad.isKeyPressed('d')) {
+    if (gamepad.isKeyPressed('KeyD')) {
         square.style.left = parseInt(getComputedStyle(square).left) + 1 + 'px';
     }
 
-    if (gamepad.isKeyPressed('w')) {
+    if (gamepad.isKeyPressed('KeyW')) {
         square.style.top = parseInt(getComputedStyle(square).top) - 1 + 'px';
     }
 
-    if (gamepad.isKeyPressed('s')) {
+    if (gamepad.isKeyPressed('KeyS')) {
         square.style.top = parseInt(getComputedStyle(square).top) + 1 + 'px';
     }
 

@@ -10,13 +10,13 @@ import { KeyBoardInputInterface } from './keyboard-input-interface.js';
 const htmlMarkup = `
 <div class="c-gamepad-root">
     <div class="c-gamepad-directionals">
-        <button class="c-gamepad-root__button a" type="button">a</button>
-        <button class="c-gamepad-root__button s" type="button">s</button>
-        <button class="c-gamepad-root__button w" type="button">w</button>
-        <button class="c-gamepad-root__button d" type="button">d</button>
+        <button class="c-gamepad-root__button KeyA" type="button">a</button>
+        <button class="c-gamepad-root__button KeyS" type="button">s</button>
+        <button class="c-gamepad-root__button KeyW" type="button">w</button>
+        <button class="c-gamepad-root__button KeyD" type="button">d</button>
     </div>
-    <button class="c-gamepad-root__button start" type="button">start</button>
-    <button class="c-gamepad-root__button space" type="button">space</button>
+    <button class="c-gamepad-root__button vStart" type="button">start</button>
+    <button class="c-gamepad-root__button Space" type="button">space</button>
 </div>
 `;
 
@@ -55,7 +55,7 @@ const cssStyle = `
     transition: all 0.1s ease-out;
     box-shadow: inset 0 0 17px rgba(255, 255, 255, 0.9);
 }
-.c-gamepad-root__button.a, .c-gamepad-root__button.d {
+.c-gamepad-root__button.KeyA, .c-gamepad-root__button.KeyD {
     height: 0.61in;
     width: 0.45in;
     transform: translateY(-50%);
@@ -64,29 +64,29 @@ const cssStyle = `
     background-color: rgba(212, 212, 212, .5);
     box-shadow: inset 0 0 17px rgba(0, 0, 0, 0.1);
 }
-.c-gamepad-root__button.space {
+.c-gamepad-root__button.Space {
     border-radius: 50%;
     width: 0.75in;
     height: 0.75in;
     align-self: center;
 }
-.c-gamepad-root__button.space.active {
+.c-gamepad-root__button.Space.active {
     transform: scale(0.97); 
 }
-.c-gamepad-root__button.start {
+.c-gamepad-root__button.vStart {
     align-self: center;
     height: 0.31in;
 }
 `;
 
 
-type VirtualKeys = 'a' | 'w' | 's' | 'd' | 'space' | 'start';
+type VirtualKeys = 'KeyA' | 'KeyW' | 'KeyS' | 'KeyD' | 'Space' | 'vStart';
 type KeyStateObject = { [key in VirtualKeys]: boolean };
 
-export const vKeys: VirtualKeys[] = [ 'a', 'w', 's', 'd', 'space', 'start' ];
+export const vKeys: VirtualKeys[] = [ 'KeyA', 'KeyW', 'KeyS', 'KeyD', 'Space', 'vStart' ];
 
 export class VirtualGamepad implements KeyBoardInputInterface {
-    private keyState: KeyStateObject = { a: false, w: false, s: false, d: false, space: false, start: false, };
+    private keyState: KeyStateObject = { KeyA: false, KeyW: false, KeyS: false, KeyD: false, Space: false, vStart: false, };
     private target: HTMLElement;
     private eventTarget: EventTarget;
     private gamepadRoot: HTMLElement | null;

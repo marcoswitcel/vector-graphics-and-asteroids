@@ -140,18 +140,18 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         updateWebPageTitle();
     };
 
-    keyBoardInput.addListener('keyup.1', () => {
+    keyBoardInput.addListener('keyup.Digit1', () => {
         debug = !debug;
     });
-    keyBoardInput.addListener('keyup.2', () => {
+    keyBoardInput.addListener('keyup.Digit2', () => {
         debugHitRadius = !debugHitRadius;
     });
 
-    keyBoardInput.addListener('keyup.3', () => {
+    keyBoardInput.addListener('keyup.Digit3', () => {
         debugSound = !debugSound;
     });
 
-    keyBoardInput.addListener('keyup. ', () => {
+    keyBoardInput.addListener('keyup.Space', () => {
         if (!context.entityPlayer.components[hittedMark]) {
             context.shootWaitingToBeEmmited = true;
         }
@@ -161,13 +161,13 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * @todo João, terminar de normalizar os nomes das teclas
      */
     if (virtualGamepad) {
-        virtualGamepad.addListener('keyup.space', () => {
+        virtualGamepad.addListener('keyup.Space', () => {
             if (!context.entityPlayer.components[hittedMark]) {
                 context.shootWaitingToBeEmmited = true;
             }
         });
 
-        virtualGamepad.addListener('keyup.start', setInitialState);
+        virtualGamepad.addListener('keyup.vStart', setInitialState);
     }
 
     const pauseGame = () => {
@@ -210,11 +210,11 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         }
     }
 
-    keyBoardInput.addListener('keyup.p', switchPausedState);
+    keyBoardInput.addListener('keyup.KeyP', switchPausedState);
     
-    keyBoardInput.addListener('keyup.r', setInitialState);
+    keyBoardInput.addListener('keyup.KeyR', setInitialState);
 
-    keyBoardInput.addListener('keyup.k', () => {
+    keyBoardInput.addListener('keyup.KeyK', () => {
         const highestScore = parseInt(localStorage.getItem('highestScore') || '0', 10);
         const text = new TextElement('Maior pontuação até o momento: ' + highestScore, { x: 0, y: 0.65, }, 'white', 0.03, fontName, 'center');
         text.setVisibleUntil(2000);
@@ -255,22 +255,22 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      */
     eventLoop.add((context: GameContext, timestamp: number, deltaTime: number) => {
         const angularVelocitySpaceShipTurn = 3.5;
-        if (keyBoardInput.isKeyPressed('d')) {
+        if (keyBoardInput.isKeyPressed('KeyD')) {
             context.entityPlayer.angle += -angularVelocitySpaceShipTurn * deltaTime;
         }
-        if (keyBoardInput.isKeyPressed('a')) {
+        if (keyBoardInput.isKeyPressed('KeyA')) {
             context.entityPlayer.angle += angularVelocitySpaceShipTurn * deltaTime;
         }
         
-        if (keyBoardInput.areBothKeysPressed('w', 's')) {
+        if (keyBoardInput.areBothKeysPressed('KeyW', 'KeyS')) {
             context.entityPlayer.acceleration.x = 0;
             context.entityPlayer.acceleration.y = 0;
             context.isPlayerMoving = false;
-        } else  if (keyBoardInput.isKeyPressed('w')) {
+        } else  if (keyBoardInput.isKeyPressed('KeyW')) {
             context.entityPlayer.acceleration = rotatePoint(context.playerAcceleration, context.entityPlayer.angle);
             context.isPlayerMoving = true;
             context.isPlayerMovingForward = true;
-        } else if (keyBoardInput.isKeyPressed('s')) {
+        } else if (keyBoardInput.isKeyPressed('KeyS')) {
             context.entityPlayer.acceleration = rotatePoint(context.playerAcceleration, context.entityPlayer.angle);
             context.entityPlayer.acceleration.x *= -1;
             context.entityPlayer.acceleration.y *= -1;
@@ -297,7 +297,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
          * @todo João, ajustar para funcionar no mobile também, é necessário ajustar 
          * o identificar da 'key'
          */
-        if (!context.entityPlayer.components[hittedMark] && keyBoardInput.isKeyPressed(' ')) {
+        if (!context.entityPlayer.components[hittedMark] && keyBoardInput.isKeyPressed('Space')) {
             // @note João, o timestamp é afetado pela 'pausa' então seria legal ajustar para decrementar 
             // conforme o jogo executa e aí disparar ao final
             const elapsedTime = timestamp - context.lastShootEmmited;

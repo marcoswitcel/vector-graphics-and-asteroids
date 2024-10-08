@@ -13,7 +13,7 @@ const ctx = canvas.getContext('2d');
 let debugHitRadius = false;
 let clickedPosition: Vector2 | null = null;
 
-keyBoardInput.addListener('keyup.2', () => {
+keyBoardInput.addListener('keyup.Digit2', () => {
     debugHitRadius = !debugHitRadius;
 });
 

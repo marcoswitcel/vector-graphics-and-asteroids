@@ -23,14 +23,14 @@ let moving = false;
 let forward = false;
 
 eventLoop.add((context: GameContext, time: number, deltaTime: number) => {
-    if (keyBoardInput.areBothKeysPressed('w', 's')) {
+    if (keyBoardInput.areBothKeysPressed('KeyW', 'KeyS')) {
         moving = false;
-    } else if (keyBoardInput.isKeyPressed('w')) {
+    } else if (keyBoardInput.isKeyPressed('KeyW')) {
         entity.velocity.x += entity.acceleration.x * deltaTime;
         entity.velocity.y += entity.acceleration.y * deltaTime;
         moving = true;
         forward = true;
-    } else if (keyBoardInput.isKeyPressed('s')) {
+    } else if (keyBoardInput.isKeyPressed('KeyS')) {
         entity.velocity.x -= entity.acceleration.x * deltaTime;
         entity.velocity.y -= entity.acceleration.y * deltaTime;
         moving = true;
@@ -40,11 +40,11 @@ eventLoop.add((context: GameContext, time: number, deltaTime: number) => {
     }
     
     const angularVelocitySpaceShipTurn = 2.4;
-    if (keyBoardInput.isKeyPressed('d')) {
+    if (keyBoardInput.isKeyPressed('KeyD')) {
         entity.angle += -(angularVelocitySpaceShipTurn * deltaTime);
         entity.acceleration = rotatePoint(playerAcceleration, entity.angle);
     }
-    if (keyBoardInput.isKeyPressed('a')) {
+    if (keyBoardInput.isKeyPressed('KeyA')) {
         entity.angle += (angularVelocitySpaceShipTurn * deltaTime);
         entity.acceleration = rotatePoint(playerAcceleration, entity.angle);
     }
