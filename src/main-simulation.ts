@@ -157,16 +157,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         }
     });
 
-    /**
-     * @todo João, terminar de normalizar os nomes das teclas
-     */
     if (virtualGamepad) {
-        virtualGamepad.addListener('keyup.Space', () => {
-            if (!context.entityPlayer.components[hittedMark]) {
-                context.shootWaitingToBeEmmited = true;
-            }
-        });
-
         virtualGamepad.addListener('keyup.vStart', setInitialState);
     }
 
