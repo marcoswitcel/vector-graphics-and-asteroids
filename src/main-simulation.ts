@@ -222,21 +222,22 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * 'resize' é suficiente para saber se a nova resolução da 'window'
      */
     window.addEventListener('resize', () => {
-        // @todo João, se a aplicação estiver pausada o canvas é limpo e fica "transparente",
-        // por este motivo, caso o jogo esteja pausado, quando ocorre o evento de 'resize'
-        // repinto o fundo e escrevo 'pausado' novamente.
         const newResolution = isFullScreen() ? computeResolution(1) : computeResolution(resolutionScaleNonFullscreen);
         
         canvas.width = newResolution;
         canvas.height = newResolution;
+        
+        if (!context.isPaused) return;
+        
+        /** 
+         * @note Se a aplicação estiver pausada o canvas é limpo e fica "transparente",
+         * por este motivo, caso o jogo esteja pausado, quando ocorre o evento de 'resize'
+         * repinto o fundo e escrevo 'pausado' novamente.
+        */
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        if (context.isPaused) {
-            // pintando o fundo
-            ctx.fillStyle = backgroundColor;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-            drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', fontName, 'center');
-        }
+        drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', fontName, 'center');
     });
 
     /**
