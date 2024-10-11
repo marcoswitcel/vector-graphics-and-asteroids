@@ -13,7 +13,6 @@ if (ctx === null || ctx2 === null) throw 'Contexto nulo';
 ctx.fillStyle = '#000';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-// @todo João, definir o formato para trabalhar com os polígonos
 const polygon: Vector2[] = [
     { x: 0, y: 1 },
     { x: 1, y: -1 },
