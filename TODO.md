@@ -44,7 +44,7 @@ não possuí variedade nem progressão de dificuldade/entretenimento. (A simula�
 ## Lista de Bugs
 
 - [ ] Tive a impressão de presenciar uma falha no sistema de input, o que vi foi o seguinte: a nave não estava respondendo aos meus inputs no teclado de forma alguma, tenho a impressão que reiniciei a aplicação e o problema seguiu, depois de um tempo voltou a funcionar. Muito estranho e sem cenário confirmado por enquanto.
-- [ ] A fragmentação da nave quando é destruída não está implementada corretamente, os fragmentos nem sempre rotacionam baseado no seu centro.
+- [X] A fragmentação da nave quando é destruída não está implementada corretamente, os fragmentos nem sempre rotacionam baseado no seu centro.
 
 ## Performance
 

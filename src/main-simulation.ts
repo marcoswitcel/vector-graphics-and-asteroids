@@ -418,13 +418,16 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             position.x = (aP0.x - aP1.x) / 2 + aP1.x;
             position.y = (aP0.y - aP1.y) / 2 + aP1.y;
 
+            p0 = rotatePoint(p0, context.entityPlayer.angle);
+            p1 = rotatePoint(p1, context.entityPlayer.angle);
+
             const newCenter = {
                 x: (p0.x - p1.x) / 2 + p1.x,
                 y: (p0.y - p1.y) / 2 + p1.y,
             }
 
-            p0 = centralizePoint(rotatePoint(p0, context.entityPlayer.angle), newCenter);
-            p1 = centralizePoint(rotatePoint(p1, context.entityPlayer.angle), newCenter);
+            p0 = centralizePoint(p0, newCenter);
+            p1 = centralizePoint(p1, newCenter);
 
             const velocity = rotatePoint({ ...context.entityPlayer.velocity  }, (i * Math.PI / 8));
             const entity = new Entity(position, velocity, { x: 0, y: 0 }, context.entityPlayer.angle, 'fragments', 0.09, 0.08, -1.6 - 0.8 * i / polygon.length);
