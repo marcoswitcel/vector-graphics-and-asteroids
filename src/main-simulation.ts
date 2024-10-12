@@ -405,9 +405,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         const polygon = makePolygonWithAbsolutePosition(drawInfo.position, rotatePolygon(scalePolygon(shape.polygon, drawInfo.scale), drawInfo.angle));
 
         for (let i = 0; polygon.length > 1 && i < polygon.length; i++) {
-            let p0 = polygon[i];
+            let p0 = rotatePoint(polygon[i], context.entityPlayer.angle);
             const nextIndex = i + 1 === polygon.length ? 0 : i + 1;
-            let p1 = polygon[nextIndex];
+            let p1 = rotatePoint(polygon[nextIndex], context.entityPlayer.angle);
 
             let aP0 = makePointAbsolute(context.entityPlayer.position, scalePoint(p0, context.entityPlayer.scale));
             let aP1 = makePointAbsolute(context.entityPlayer.position, scalePoint(p1, context.entityPlayer.scale));
@@ -417,9 +417,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
             position.x = (aP0.x - aP1.x) / 2 + aP1.x;
             position.y = (aP0.y - aP1.y) / 2 + aP1.y;
-
-            p0 = rotatePoint(p0, context.entityPlayer.angle);
-            p1 = rotatePoint(p1, context.entityPlayer.angle);
 
             const newCenter = {
                 x: (p0.x - p1.x) / 2 + p1.x,
