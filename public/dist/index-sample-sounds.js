@@ -74,9 +74,6 @@ globalVolumeRangeElement.addEventListener('input', () => {
     }
 });
 updateDisplayVolume();
-/**
- * @todo João, reorganizar e otimizar
- */
 const map = new Map();
 const updateList = () => {
     for (const soundHandle of soundMixer.getPlayingSoundsIter()) {

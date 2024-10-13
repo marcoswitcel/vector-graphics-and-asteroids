@@ -3,6 +3,8 @@ export const liveTimeInMilliseconds = Symbol('liveTimeInMilliseconds');
 export const hittedMark = Symbol('hittedMark');
 export const fragmentationAllowed = Symbol('fragmentationAllowed');
 export const lineFigure = Symbol('lineFigure');
+export const maxAngularVelocitySpaceShip = 7;
+export const angularAccelerationSpaceShip = maxAngularVelocitySpaceShip / 0.45; // @note leva 0.45 segundo(s) pra chegar no máximo
 /**
  * @note João, considerar criar um atributo para indicar que a entidade deve ser
  * removida ao final do frame e começar a usar este mesmo atributo para evitar
@@ -11,7 +13,7 @@ export const lineFigure = Symbol('lineFigure');
  * outra história.
  */
 export class Entity {
-    constructor(position, velocity, acceleration, angle, type = 'entity', hitRadius = 0, scale = 0.01, angularVelocity = 0) {
+    constructor(position, velocity, acceleration, angle, type = 'entity', hitRadius = 0, scale = 0.01, angularVelocity = 0, angularAcceleration = 0) {
         this.position = position;
         this.velocity = velocity;
         this.acceleration = acceleration;
@@ -20,6 +22,7 @@ export class Entity {
         this.hitRadius = hitRadius;
         this.scale = scale;
         this.angularVelocity = angularVelocity;
+        this.angularAcceleration = angularAcceleration;
         this.toBeRemoved = false;
         this.components = {};
     }
