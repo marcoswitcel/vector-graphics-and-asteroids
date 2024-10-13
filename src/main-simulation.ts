@@ -1,5 +1,5 @@
 import { centralizePoint, distance, drawCircle, drawComplexShape, drawLine, drawPolygon, drawText, makePointAbsolute, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePoint, scalePolygon, Vector2 } from './draw.js';
-import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure, makeDefaultPlayer } from './entity.js';
+import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure, makeDefaultPlayer, maxAngularVelocitySpaceShip, angularAccelerationSpaceShip } from './entity.js';
 import { EventLoop } from './event-loop.js';
 import { makeAsteroid } from './figure.js';
 import { GameContext, resolutionScaleNonFullscreen } from './game-context.js';
@@ -15,8 +15,6 @@ const secondaryWhite = 'rgba(255,255,255,0.7)';
 const backgroundColor = '#000';
 const shootEmmitionWindow = 333;
 
-// @todo João, mover para o lugar correto
-const maxAngularVelocitySpaceShipTurn = 3.5;
 
 const updateWebPageTitle = (state?: string) => {
     let title = '';
@@ -250,11 +248,17 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      */
     eventLoop.add((context: GameContext, timestamp: number, deltaTime: number) => {
         if (keyBoardInput.isKeyPressed('KeyD')) {
-            context.entityPlayer.angularAcceleration = -maxAngularVelocitySpaceShipTurn * 2;
+            context.entityPlayer.angularAcceleration = -angularAccelerationSpaceShip;
+            if (context.entityPlayer.angularVelocity > 0) {
+                context.entityPlayer.angularVelocity = 0;
+            }
         }
         
         if (keyBoardInput.isKeyPressed('KeyA')) {
-            context.entityPlayer.angularAcceleration = maxAngularVelocitySpaceShipTurn * 2;
+            context.entityPlayer.angularAcceleration = angularAccelerationSpaceShip;
+            if (context.entityPlayer.angularVelocity < 0) {
+                context.entityPlayer.angularVelocity = 0;
+            }
         }
         
         if (!keyBoardInput.isKeyPressed('KeyD') && !keyBoardInput.isKeyPressed('KeyA')) {
@@ -499,8 +503,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             entity.angle += entity.angularVelocity * deltaTime;
 
             
-            if (entity.type === 'player' && Math.abs(entity.angularVelocity) > maxAngularVelocitySpaceShipTurn) {
-                entity.angularVelocity = maxAngularVelocitySpaceShipTurn * (entity.angularVelocity / Math.abs(entity.angularVelocity));
+            if (entity.type === 'player' && Math.abs(entity.angularVelocity) > maxAngularVelocitySpaceShip) {
+                entity.angularVelocity = maxAngularVelocitySpaceShip * (entity.angularVelocity / Math.abs(entity.angularVelocity));
             }
         }
     });

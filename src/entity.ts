@@ -8,6 +8,9 @@ export const lineFigure = Symbol('lineFigure');
 
 export type EntityType = 'player' | 'shoot' | 'asteroids' | 'fragments' | 'entity';
 
+export const maxAngularVelocitySpaceShip = 5;
+export const angularAccelerationSpaceShip = maxAngularVelocitySpaceShip * 2; // @note leva meio segundo pra chegar no máximo
+
 /**
  * @note João, considerar criar um atributo para indicar que a entidade deve ser
  * removida ao final do frame e começar a usar este mesmo atributo para evitar
