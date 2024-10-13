@@ -8,8 +8,8 @@ export const lineFigure = Symbol('lineFigure');
 
 export type EntityType = 'player' | 'shoot' | 'asteroids' | 'fragments' | 'entity';
 
-export const maxAngularVelocitySpaceShip = 8;
-export const angularAccelerationSpaceShip = maxAngularVelocitySpaceShip * 2; // @note leva meio segundo pra chegar no máximo
+export const maxAngularVelocitySpaceShip = 7;
+export const angularAccelerationSpaceShip = maxAngularVelocitySpaceShip / 0.45; // @note leva meio segundo pra chegar no máximo
 
 /**
  * @note João, considerar criar um atributo para indicar que a entidade deve ser
