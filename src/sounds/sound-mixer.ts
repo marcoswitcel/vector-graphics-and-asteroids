@@ -16,6 +16,8 @@ export class SoundHandle {
     private state: SoundHandleState = SoundHandleState.NOT_STARTED;
     private currentMixer: SoundMixer;
     private loop: boolean = false;
+    // @todo João, avaliar se não faz sentido por uma propriedade 'autoremove' para controlar se o som deve
+    // ser apagado quando terminar de executar. Acredito que adicionaria uma flexibilidade extra.
 
     constructor(audioElement: HTMLAudioElement, currentMixer: SoundMixer, loop: boolean = false, volume: number = 1, state: SoundHandleState = SoundHandleState.NOT_STARTED) {
         this.audioElement = audioElement;
@@ -205,6 +207,22 @@ export class SoundMixer {
             }
         }
         this.playingSounds = playingSounds;
+    }
+
+    /**
+     * @note Talvez daria pra otimizar essa função, porém fazer o controle manual do 'status'
+     * do som é mais trabalho e propenso a erros. Então sem a necessidade de otimizar é melhor não fazer.
+     * @param state 
+     * @returns 
+     */
+    public countSoundsInState(state: SoundHandleState) {
+        let i = 0;
+        
+        for (const sound of this.playingSounds.values()) {
+            if (sound.status == state) i++;
+        }
+
+        return i;
     }
 }
 

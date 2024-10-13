@@ -91,9 +91,6 @@ globalVolumeRangeElement.addEventListener('input', () => {
 
 updateDisplayVolume();
 
-/**
- * @todo João, reorganizar e otimizar
- */
 const map: Map<SoundHandle, ListItemComponent> = new Map();
 const updateList = () => {
     for (const soundHandle of soundMixer.getPlayingSoundsIter()) {

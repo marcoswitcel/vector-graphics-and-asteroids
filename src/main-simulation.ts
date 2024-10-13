@@ -1,5 +1,5 @@
 import { centralizePoint, distance, drawCircle, drawComplexShape, drawLine, drawPolygon, drawText, makePointAbsolute, makePolygonWithAbsolutePosition, rotatePoint, rotatePolygon, scalePoint, scalePolygon, Vector2 } from './draw.js';
-import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure, makeDefaultPlayer } from './entity.js';
+import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure, makeDefaultPlayer, maxAngularVelocitySpaceShip, angularAccelerationSpaceShip } from './entity.js';
 import { EventLoop } from './event-loop.js';
 import { makeAsteroid } from './figure.js';
 import { GameContext, resolutionScaleNonFullscreen } from './game-context.js';
@@ -14,6 +14,7 @@ const primaryWhite = '#FFFFFF';
 const secondaryWhite = 'rgba(255,255,255,0.7)';
 const backgroundColor = '#000';
 const shootEmmitionWindow = 333;
+
 
 const updateWebPageTitle = (state?: string) => {
     let title = '';
@@ -222,21 +223,22 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * 'resize' é suficiente para saber se a nova resolução da 'window'
      */
     window.addEventListener('resize', () => {
-        // @todo João, se a aplicação estiver pausada o canvas é limpo e fica "transparente",
-        // por este motivo, caso o jogo esteja pausado, quando ocorre o evento de 'resize'
-        // repinto o fundo e escrevo 'pausado' novamente.
         const newResolution = isFullScreen() ? computeResolution(1) : computeResolution(resolutionScaleNonFullscreen);
         
         canvas.width = newResolution;
         canvas.height = newResolution;
+        
+        if (!context.isPaused) return;
+        
+        /** 
+         * @note Se a aplicação estiver pausada o canvas é limpo e fica "transparente",
+         * por este motivo, caso o jogo esteja pausado, quando ocorre o evento de 'resize'
+         * repinto o fundo e escrevo 'pausado' novamente.
+        */
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        if (context.isPaused) {
-            // pintando o fundo
-            ctx.fillStyle = backgroundColor;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-            drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', fontName, 'center');
-        }
+        drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', fontName, 'center');
     });
 
     /**
@@ -245,12 +247,23 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * definidas.
      */
     eventLoop.add((context: GameContext, timestamp: number, deltaTime: number) => {
-        const angularVelocitySpaceShipTurn = 3.5;
         if (keyBoardInput.isKeyPressed('KeyD')) {
-            context.entityPlayer.angle += -angularVelocitySpaceShipTurn * deltaTime;
+            context.entityPlayer.angularAcceleration = -angularAccelerationSpaceShip;
+            if (context.entityPlayer.angularVelocity > 0) {
+                context.entityPlayer.angularVelocity = 0;
+            }
         }
+        
         if (keyBoardInput.isKeyPressed('KeyA')) {
-            context.entityPlayer.angle += angularVelocitySpaceShipTurn * deltaTime;
+            context.entityPlayer.angularAcceleration = angularAccelerationSpaceShip;
+            if (context.entityPlayer.angularVelocity < 0) {
+                context.entityPlayer.angularVelocity = 0;
+            }
+        }
+        
+        if (!keyBoardInput.isKeyPressed('KeyD') && !keyBoardInput.isKeyPressed('KeyA')) {
+            context.entityPlayer.angularAcceleration = 0; // @todo João, ajustar para desacelerar devagar
+            context.entityPlayer.angularVelocity = 0;
         }
         
         if (keyBoardInput.areBothKeysPressed('KeyW', 'KeyS')) {
@@ -404,9 +417,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         const polygon = makePolygonWithAbsolutePosition(drawInfo.position, rotatePolygon(scalePolygon(shape.polygon, drawInfo.scale), drawInfo.angle));
 
         for (let i = 0; polygon.length > 1 && i < polygon.length; i++) {
-            let p0 = polygon[i];
+            let p0 = rotatePoint(polygon[i], context.entityPlayer.angle);
             const nextIndex = i + 1 === polygon.length ? 0 : i + 1;
-            let p1 = polygon[nextIndex];
+            let p1 = rotatePoint(polygon[nextIndex], context.entityPlayer.angle);
 
             let aP0 = makePointAbsolute(context.entityPlayer.position, scalePoint(p0, context.entityPlayer.scale));
             let aP1 = makePointAbsolute(context.entityPlayer.position, scalePoint(p1, context.entityPlayer.scale));
@@ -422,8 +435,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
                 y: (p0.y - p1.y) / 2 + p1.y,
             }
 
-            p0 = centralizePoint(rotatePoint(p0, context.entityPlayer.angle), newCenter);
-            p1 = centralizePoint(rotatePoint(p1, context.entityPlayer.angle), newCenter);
+            p0 = centralizePoint(p0, newCenter);
+            p1 = centralizePoint(p1, newCenter);
 
             const velocity = rotatePoint({ ...context.entityPlayer.velocity  }, (i * Math.PI / 8));
             const entity = new Entity(position, velocity, { x: 0, y: 0 }, context.entityPlayer.angle, 'fragments', 0.09, 0.08, -1.6 - 0.8 * i / polygon.length);
@@ -486,7 +499,13 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
                 entity.position.y = (yAbs - 2 * diff) * (entity.position.y / yAbs * -1);
             }
 
+            entity.angularVelocity += entity.angularAcceleration * deltaTime;
             entity.angle += entity.angularVelocity * deltaTime;
+
+            
+            if (entity.type === 'player' && Math.abs(entity.angularVelocity) > maxAngularVelocitySpaceShip) {
+                entity.angularVelocity = maxAngularVelocitySpaceShip * (entity.angularVelocity / Math.abs(entity.angularVelocity));
+            }
         }
     });
 
@@ -641,7 +660,10 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         const textYOffset = 0.82;
         
         {
-            const title = `Total: ${soundMixer.getTotalSounds()}`;
+            const title = `Total: ${soundMixer.getTotalSounds()} ` +
+                `| Tocando: ${soundMixer.countSoundsInState(SoundHandleState.PLAYING)} ` +
+                `| Pausados: ${soundMixer.countSoundsInState(SoundHandleState.STOPED)}`;
+
             const text = new TextElement(title, { x: -0.95, y: textYOffset + (fontSize * lineHeight * 1), }, color, fontSize, fontName, 'start');
             drawText(ctx, text.text, text.position, text.fontSize, text.color, text.fontFamily, text.align);
         }
