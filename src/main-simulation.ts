@@ -642,7 +642,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         const textYOffset = 0.82;
         
         {
-            const title = `Total: ${soundMixer.getTotalSounds()}`;
+            const title = `Total: ${soundMixer.getTotalSounds()} Pausados: ${soundMixer.countSoundsInState(SoundHandleState.STOPED)}`;
             const text = new TextElement(title, { x: -0.95, y: textYOffset + (fontSize * lineHeight * 1), }, color, fontSize, fontName, 'start');
             drawText(ctx, text.text, text.position, text.fontSize, text.color, text.fontFamily, text.align);
         }
