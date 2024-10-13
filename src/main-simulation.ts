@@ -15,6 +15,9 @@ const secondaryWhite = 'rgba(255,255,255,0.7)';
 const backgroundColor = '#000';
 const shootEmmitionWindow = 333;
 
+// @todo João, mover para o lugar correto
+const maxAngularVelocitySpaceShipTurn = 3.5;
+
 const updateWebPageTitle = (state?: string) => {
     let title = '';
     
@@ -246,12 +249,17 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * definidas.
      */
     eventLoop.add((context: GameContext, timestamp: number, deltaTime: number) => {
-        const angularVelocitySpaceShipTurn = 3.5;
         if (keyBoardInput.isKeyPressed('KeyD')) {
-            context.entityPlayer.angle += -angularVelocitySpaceShipTurn * deltaTime;
+            context.entityPlayer.angularAcceleration = -maxAngularVelocitySpaceShipTurn * 2;
         }
+        
         if (keyBoardInput.isKeyPressed('KeyA')) {
-            context.entityPlayer.angle += angularVelocitySpaceShipTurn * deltaTime;
+            context.entityPlayer.angularAcceleration = maxAngularVelocitySpaceShipTurn * 2;
+        }
+        
+        if (!keyBoardInput.isKeyPressed('KeyD') && !keyBoardInput.isKeyPressed('KeyA')) {
+            context.entityPlayer.angularAcceleration = 0; // @todo João, ajustar para desacelerar devagar
+            context.entityPlayer.angularVelocity = 0;
         }
         
         if (keyBoardInput.areBothKeysPressed('KeyW', 'KeyS')) {
@@ -487,7 +495,13 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
                 entity.position.y = (yAbs - 2 * diff) * (entity.position.y / yAbs * -1);
             }
 
+            entity.angularVelocity += entity.angularAcceleration * deltaTime;
             entity.angle += entity.angularVelocity * deltaTime;
+
+            
+            if (entity.type === 'player' && Math.abs(entity.angularVelocity) > maxAngularVelocitySpaceShipTurn) {
+                entity.angularVelocity = maxAngularVelocitySpaceShipTurn * (entity.angularVelocity / Math.abs(entity.angularVelocity));
+            }
         }
     });
 

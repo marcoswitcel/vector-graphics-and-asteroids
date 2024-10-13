@@ -24,10 +24,11 @@ export class Entity {
     public hitRadius: number;
     public scale: number;
     public angularVelocity: number;
+    public angularAcceleration: number;
     public toBeRemoved: boolean;
     public components: { [createdAtTimestamp]?: number, [liveTimeInMilliseconds]?: number, [hittedMark]?: boolean, [fragmentationAllowed]?: number, [lineFigure]?: Vector2[] };
 
-    constructor(position: Vector2, velocity: Vector2, acceleration: Vector2, angle: number, type: EntityType = 'entity', hitRadius = 0, scale = 0.01, angularVelocity = 0) {
+    constructor(position: Vector2, velocity: Vector2, acceleration: Vector2, angle: number, type: EntityType = 'entity', hitRadius = 0, scale = 0.01, angularVelocity = 0, angularAcceleration = 0) {
         this.position = position;
         this.velocity = velocity;
         this.acceleration = acceleration;
@@ -36,6 +37,7 @@ export class Entity {
         this.hitRadius = hitRadius;
         this.scale = scale;
         this.angularVelocity = angularVelocity;
+        this.angularAcceleration = angularAcceleration;
         this.toBeRemoved = false;
         this.components = {};
     }
