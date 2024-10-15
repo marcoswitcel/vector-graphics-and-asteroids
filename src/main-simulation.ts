@@ -108,8 +108,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
     
     /**
-     * @todo João, criar uma interface para o 'keyBoard' para poder unificar o keyboard virtual
-     * e o teclado físico, porém considerar habilitar os dois simultaneamente.
+     * @note João, considerar habilitar os dois teclados simultaneamente.
      */
     const keyBoardInput: KeyBoardInputInterface = virtualGamepad != null ? virtualGamepad : new KeyBoardInput({ autoStart: true });
     let debug = false;
@@ -262,7 +261,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         }
         
         if (!keyBoardInput.isKeyPressed('KeyD') && !keyBoardInput.isKeyPressed('KeyA')) {
-            context.entityPlayer.angularAcceleration = 0; // @todo João, ajustar para desacelerar devagar
+            context.entityPlayer.angularAcceleration = 0;
             context.entityPlayer.angularVelocity = 0;
         }
         
@@ -297,10 +296,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             context.shootWaitingToBeEmmited = false;
         }
 
-        /**
-         * @todo João, ajustar para funcionar no mobile também, é necessário ajustar 
-         * o identificar da 'key'
-         */
         if (!context.entityPlayer.components[hittedMark] && keyBoardInput.isKeyPressed('Space')) {
             // @note João, o timestamp é afetado pela 'pausa' então seria legal ajustar para decrementar 
             // conforme o jogo executa e aí disparar ao final
@@ -573,8 +568,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         drawText(ctx, `${context.asteroidsDestroyedCounter}`, { x: -0.97, y: 0.91 }, 0.06, '#FFFFFF', fontName, 'left');
 
         /**
-         * @todo João, implementar um contador de 'ondas' e um mecanismo para adicionar textos flutuantes
-         * que somem sozinho, possivelmente com 'fade-in' e 'fade-out'
+         * @note João, 'fade-in' e 'fade-out' seriam um recurso interessante para usar nos textos flutuantes
          */
         for (const text of textToDrawn) {
             // atualiza tempo de vida dos elementos textuais
