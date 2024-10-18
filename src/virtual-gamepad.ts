@@ -1,11 +1,5 @@
 import { KeyBoardInputInterface } from './keyboard-input-interface.js';
 
-/**
- * @todo João, aumentar tamanho dos botões, testar usar polegadas como unidade de medida -- ok
- * @todo João, ajustar para acionar o botão ao passar o dedo por cima do botão - ok
- * @todo João, ajustar para o feedback visual ocorrer ao passar o dedo em cima do botão -- ok
- * @todo João, subir os botões direcionais um pouco mais, mudar a cor, considerar adicionar um padding entre eles e alinhar o botão de espaço.
- */
 
 const htmlMarkup = `
 <div class="c-gamepad-root">
