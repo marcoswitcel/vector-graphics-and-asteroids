@@ -199,7 +199,7 @@ export class VirtualGamepad implements KeyBoardInputInterface {
     addListener(name: string, handler: (event: Event) => void) {
         // @todo João, checar se faz sentido deixar esse warn aqui
         const vKey = name.replace(/(keydown\.|keyup\.)/i, '');
-        if (!(vKeys as string[]).includes(vKey)) console.warn(`[virtual-gampead] Key '${vKey}' não reconhecida. Evento: ${name}`);
+        if (!(vKeys as string[]).includes(vKey)) console.warn(`[virtual-gamepad] Key '${vKey}' não reconhecida. Evento: ${name}`);
 
         this.eventTarget.addEventListener(name, handler);
     }
