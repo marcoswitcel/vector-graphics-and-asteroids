@@ -1,3 +1,4 @@
+import { isPlayable } from './utils.js';
 
 export class SoundResourceEntry {
     resourceLocation: string;
@@ -61,19 +62,4 @@ export class SoundResourceManager {
             entry.startLoading();
         });
     }
-}
-
-/**
- * Função que criar uma promise para trabalhar com o áudio carregado com
- * `HTMLAudioElement`
- * @param audio elemento contendo o áudio fonte
- * @param fullyLoaded 
- * @returns 
- */
-function isPlayable(audio : HTMLAudioElement, fullyLoaded = true) : Promise<HTMLAudioElement> {
-    const doneEvent = fullyLoaded ? 'canplaythrough' : 'canplay';
-    return new Promise((resolve, reject) => {
-        audio.addEventListener(doneEvent, () => resolve(audio));
-        audio.addEventListener('error', () => reject(audio));
-    });
 }

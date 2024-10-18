@@ -1,4 +1,5 @@
 import { SoundResourceEntry, SoundResourceManager } from './sound-resource-manager.js';
+import { between } from './utils.js';
 
 export enum SoundHandleState {
     NOT_STARTED,
@@ -226,6 +227,3 @@ export class SoundMixer {
     }
 }
 
-function between(value: number, min: number, max: number) {
-    return Math.max(Math.min(value, max), min)
-}
