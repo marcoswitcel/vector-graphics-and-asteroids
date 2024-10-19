@@ -2,7 +2,7 @@ import { centralizePoint, distance, drawCircle, drawComplexShape, drawLine, draw
 import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure, makeDefaultPlayer, maxAngularVelocitySpaceShip, angularAccelerationSpaceShip } from './entity.js';
 import { EventLoop } from './event-loop.js';
 import { makeAsteroid } from './figure.js';
-import { GameContext, resolutionScaleNonFullscreen } from './game-context.js';
+import { GameContext, GameState, resolutionScaleNonFullscreen } from './game-context.js';
 import { KeyBoardInputInterface } from './keyboard-input-interface.js';
 import { KeyBoardInput } from './keyboard-input.js';
 import { SoundHandleState, SoundMixer } from './sounds/sound-mixer.js';
@@ -123,9 +123,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
          * estrutura de 'ondas/fases'.
          */
     
-        if (!context.isGameOver) return;
+        if (context.state !== GameState.GAME_OVER) return;
 
-        context.isGameOver = false;
+        context.state = GameState.RUNNING;
         context.asteroidsDestroyedCounter = 0;
         context.waveIndex = 0;
         context.entities.length = 0;
@@ -162,7 +162,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     }
 
     const pauseGame = () => {
-        if (context.isGameOver) return;
+        if (context.state === GameState.GAME_OVER) return;
 
         eventLoop.stop();
         // pausa todos os sons se houver algum executando
@@ -170,7 +170,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             soundHandler.stop();
         }
         
-        context.isPaused = true;
+        context.state = GameState.PAUSED;
         drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', fontName, 'center');
 
         updateWebPageTitle('pausado');
@@ -185,9 +185,9 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
      * acredito que o melhor seria criar mais um 'timestamp' para representar o tempo decorrido na simualação.
      */
     const switchPausedState = () => {
-        if (context.isGameOver) return;
+        if (context.state === GameState.GAME_OVER) return;
 
-        if (context.isPaused) {
+        if (context.state === GameState.PAUSED) {
             eventLoop.start();
             // executa sons pausados se houver algum
             for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
@@ -195,7 +195,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             }
 
             updateWebPageTitle();
-            context.isPaused = false;
+            context.state = GameState.RUNNING;
         } else {
             pauseGame();
         }
@@ -227,7 +227,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         canvas.width = newResolution;
         canvas.height = newResolution;
         
-        if (!context.isPaused) return;
+        if (context.state !== GameState.PAUSED) return;
         
         /** 
          * @note Se a aplicação estiver pausada o canvas é limpo e fica "transparente",
@@ -444,7 +444,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         soundMixer.play('ship-explosion', false, 0.3);
 
         // game over screen
-        context.isGameOver = true;
+        context.state = GameState.GAME_OVER;
 
         const textGameOver = new TextElement('Fim de jogo', { x: 0, y: 0, }, 'white', 0.06, fontName, 'center');
         const restartKey = isMobileUi ? "start" : "r";
@@ -676,8 +676,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     eventLoop.add((context: GameContext, time: number) => {
         // no máximo uma entidade player na arena
         console.assert(context.entities.filter(e => e.type === 'player').length <= 1);
-        // exclusivos
-        console.assert(!context.isGameOver || !context.isPaused);
     });
     
     return eventLoop;

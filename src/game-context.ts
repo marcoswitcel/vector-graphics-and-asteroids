@@ -4,6 +4,12 @@ import { isMobileBrowser } from './utils.js';
 
 export const resolutionScaleNonFullscreen = isMobileBrowser() ? 1 : 0.96;
 
+export enum GameState {
+    RUNNING,
+    PAUSED,
+    GAME_OVER,
+}
+
 /**
  * @todo João, avaliar o que o mais mover para dentro dessa classe
  */
@@ -23,7 +29,5 @@ export class GameContext {
     asteroidsDestroyedCounter = 0;
     waveIndex = 0;
 
-    // @todo João, considerar converter esses estados em um enum
-    isPaused = false;
-    isGameOver = false;
+    state = GameState.RUNNING;
 }
