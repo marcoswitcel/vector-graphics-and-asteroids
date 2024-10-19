@@ -37,6 +37,11 @@ export class KeyBoardInput implements KeyBoardInputInterface {
         throw "KeyBoardInput#stopListening não implentado ainda";
     }
 
+    public removeListener() {
+        // @todo João, falta implementar
+        throw "KeyBoardInput#removeListener não implentado ainda";
+    }
+
     public isKeyPressed(key: string) {
         return this.keyState.has(key) && !!this.keyState.get(key);
     }
@@ -45,8 +50,8 @@ export class KeyBoardInput implements KeyBoardInputInterface {
         return !!this.keyState.get(key1) && !!this.keyState.get(key2);
     }
 
-    public addListener(eventTypeName: string, callback: () => void) {
-        this.eventTarget.addEventListener(eventTypeName, callback);
+    public addListener(eventTypeName: string, handler: (event: Event) => void) {
+        this.eventTarget.addEventListener(eventTypeName, handler);
     }
 
     private onLostFocus = () => {

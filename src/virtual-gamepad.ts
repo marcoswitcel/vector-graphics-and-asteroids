@@ -198,18 +198,17 @@ export class VirtualGamepad implements KeyBoardInputInterface {
         this.eventTarget.addEventListener(name, handler);
     }
 
-    removeListeners(name: string, handler: (event: Event) => void) {
-        // @todo João, implementar
-        throw new Error("Não implementado");
-    }
-
     isKeyPressed(vKey: VirtualKeys) {
         return this.keyState[vKey];
     }
 
-    stopListening(): void {
-        // @todo João, implementar
-        throw new Error("Não implementado");
+    stopListening() {
+        throw new Error('Não implementado')
+    }
+
+    removeListener(name: string, handler: (event: Event) => void): void {
+        // @note João, não testado
+        this.eventTarget.removeEventListener(name, handler)
     }
 
     areBothKeysPressed(vKey1: VirtualKeys, vKey2: VirtualKeys): boolean {
