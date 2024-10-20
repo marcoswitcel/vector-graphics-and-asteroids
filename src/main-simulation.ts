@@ -213,8 +213,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         textToDrawn.push(text);
     });
 
-    // @todo João, avaliar se não causa mais problemas do que vantagens tanto em desenvolvimento
-    // como para o usuário final...
     window.addEventListener('blur', pauseGame);
 
     /**

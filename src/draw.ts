@@ -174,7 +174,7 @@ export class ComplexShape {
 }
 
 /**
- * @todo João, testar mais
+ * Desenha 'formas complexas'
  */
 export function drawComplexShape(ctx: CanvasRenderingContext2D, complexShape: ComplexShape, position: Vector2, scale: number, angle: number, strokeStyle = '#FFFFFF', lineWidth = 1) {
     for (let index = 0; index < complexShape.shapes.length; index++) {
