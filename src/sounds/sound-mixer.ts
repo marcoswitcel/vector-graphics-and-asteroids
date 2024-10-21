@@ -201,6 +201,7 @@ export class SoundMixer {
     public clear(): void {
         const playingSounds: Set<SoundHandle> = new Set();
         for (const it of this.playingSounds) {
+            // @todo João, considerar o status 'SoundHandleState.RELEASED' pelo caso de alguém fazer o release manual
             if (it.status !== SoundHandleState.ENDED && it.status !== SoundHandleState.BLOCKED) {
                 playingSounds.add(it);
             } else {

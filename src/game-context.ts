@@ -10,9 +10,6 @@ export enum GameState {
     GAME_OVER,
 }
 
-/**
- * @todo João, avaliar o que o mais mover para dentro dessa classe
- */
 export class GameContext {
     playerAcceleration = { x: 0, y: 0.45 };
     entityPlayer = makeDefaultPlayer();
