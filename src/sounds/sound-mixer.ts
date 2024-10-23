@@ -17,12 +17,12 @@ export class SoundHandle {
     private state: SoundHandleState = SoundHandleState.NOT_STARTED;
     private currentMixer: SoundMixer;
     private loop: boolean = false;
-    // @todo João, avaliar se não faz sentido por uma propriedade 'autoremove' para controlar se o som deve
-    // ser apagado quando terminar de executar. Acredito que adicionaria uma flexibilidade extra.
+    private cleanUpWhenIsDoneOrError: boolean = false;
 
-    constructor(audioElement: HTMLAudioElement, currentMixer: SoundMixer, loop: boolean = false, volume: number = 1, state: SoundHandleState = SoundHandleState.NOT_STARTED) {
+    constructor(audioElement: HTMLAudioElement, currentMixer: SoundMixer, loop: boolean = false, volume: number = 1, state: SoundHandleState = SoundHandleState.NOT_STARTED, cleanUpWhenIsDoneOrError: boolean = false) {
         this.audioElement = audioElement;
         this.currentMixer = currentMixer;
+        this.cleanUpWhenIsDoneOrError = cleanUpWhenIsDoneOrError;
         this.setVolume(volume);
         this.state = state;
         this.loop = loop;
@@ -98,10 +98,16 @@ export class SoundHandle {
     public get src(): string {
         return this.audioElement.src;
     }
+    
+    public get canCleanUp(): boolean {
+        return this.cleanUpWhenIsDoneOrError;
+    }
 
     /**
      * @todo João, esse é o único método que precisa ser trabalhado para poder
      * retornar o SoundHandle nas requisições ao método SoundMixer.play()
+     * @note João, reavaliar mas acho que agora pode ser usado de forma segura
+     * @todo João, testar usar sons gerenciados manualmente
      * @note Melhorado esse processo de descarte dos handlers para incluir o processo de descarte de `HTMLAudioElements`
      * como sugerido nesse link: https://stackoverflow.com/questions/8864617/how-do-i-remove-properly-html5-audio-without-appending-to-dom 
      */
@@ -142,8 +148,9 @@ export class SoundMixer {
      * @param name nome do sons a ser tocado
      * @param loop som deve ser tocado em loop
      * @param volume volume do áudio a ser tocado (padrão 1)
+     * @param autoremove marca se o som deve ser removido automaticamente quando acabar ou der erro (padrão true)
      */
-    public play(name: string, loop: boolean = false, volume: number = 1) {
+    public play(name: string, loop: boolean = false, volume: number = 1, autoremove = true) {
         if (this.soundResourceManager.entries.has(name)) {
             const soundResEntry = this.soundResourceManager.entries.get(name) as SoundResourceEntry;
             if (soundResEntry.readyToPlay) {
@@ -156,7 +163,7 @@ export class SoundMixer {
                  * @todo João, avaliar se não seria mais flexível adicionar um listener para executar
                  * quando o som finalizasse e não estivesse em loop, aí ele poderia se remover sozinho.
                  */
-                const soundHandle = new SoundHandle(audioElement, this, loop, 1);
+                const soundHandle = new SoundHandle(audioElement, this, loop, 1, SoundHandleState.NOT_STARTED, autoremove);
                 soundHandle.setVolume(volume);
                 soundHandle.play();
 
@@ -199,16 +206,17 @@ export class SoundMixer {
      * @todo João, ainda sinto que esse processo não está claro ou seguro, não sei bem qual o problema, reanalisar
      */
     public clear(): void {
-        const playingSounds: Set<SoundHandle> = new Set();
+        const allSounds: Set<SoundHandle> = new Set();
         for (const it of this.playingSounds) {
-            // @todo João, considerar o status 'SoundHandleState.RELEASED' pelo caso de alguém fazer o release manual
-            if (it.status !== SoundHandleState.ENDED && it.status !== SoundHandleState.BLOCKED) {
-                playingSounds.add(it);
-            } else {
+            if (it.status === SoundHandleState.RELEASED) continue;
+            
+            if (it.canCleanUp && (it.status === SoundHandleState.ENDED || it.status === SoundHandleState.BLOCKED)) {
                 it.releaseResources();
+            } else {
+                allSounds.add(it);
             }
         }
-        this.playingSounds = playingSounds;
+        this.playingSounds = allSounds;
     }
 
     /**
