@@ -141,16 +141,13 @@ export class SoundMixer {
     }
 
     /**
-     * Função que inicia a execução do som
-     * @todo João, talvez deva expandir para receber um pedido mais específico,
-     * tipo receber o volume e a posição do áudio e também deveria retornar um identificador para acompanhar
-     * os status do som
+     * Função que inicia a execução de um som
      * @param name nome do sons a ser tocado
      * @param loop som deve ser tocado em loop
      * @param volume volume do áudio a ser tocado (padrão 1)
      * @param autoremove marca se o som deve ser removido automaticamente quando acabar ou der erro (padrão true)
      */
-    public play(name: string, loop: boolean = false, volume: number = 1, autoremove = true) {
+    public play(name: string, loop: boolean = false, volume: number = 1, autoremove = true): SoundHandle | null {
         if (this.soundResourceManager.entries.has(name)) {
             const soundResEntry = this.soundResourceManager.entries.get(name) as SoundResourceEntry;
             if (soundResEntry.readyToPlay) {
@@ -168,6 +165,8 @@ export class SoundMixer {
                 soundHandle.play();
 
                 this.playingSounds.add(soundHandle);
+                
+                return soundHandle;
             } else if (soundResEntry.errorLoading) {
                 console.warn(`[[ SoundMixer.play ]] O som registrado para o nome: '${name}' não carregou corretamente, essa requisição será ignorada`);
             } else {
@@ -176,6 +175,8 @@ export class SoundMixer {
         } else {
             console.warn(`[[ SoundMixer.play ]] Não há som registrado para o nome: '${name}'`);
         }
+
+        return null;
     }
 
     /**
