@@ -152,9 +152,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     });
 
     keyBoardInput.addListener('keyup.Space', () => {
-        if (!context.entityPlayer.components[hittedMark]) {
-            context.shootWaitingToBeEmmited = true;
-        }
+        context.lastShootEmmited = 0;
     });
 
     if (virtualGamepad) {
@@ -281,17 +279,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             context.entityPlayer.acceleration.x = 0;
             context.entityPlayer.acceleration.y = 0;
             context.isPlayerMoving = false;
-        }
-
-        /**
-         * @todo João, talvez seria uma boa ideia unificar a lógica de emissão de disparos
-         * e usar apenas a propriedade 'lastShootEmmited' para controlar quando atirar. Seria possível
-         * remover o listener do evento 'keydown'
-         */
-        if (context.shootWaitingToBeEmmited && !context.entityPlayer.components[hittedMark]) {
-            emmitShoot(context, soundMixer);
-            context.lastShootEmmited = timestamp;
-            context.shootWaitingToBeEmmited = false;
         }
 
         if (!context.entityPlayer.components[hittedMark] && keyBoardInput.isKeyPressed('Space')) {

@@ -15,7 +15,6 @@ export class GameContext {
     entityPlayer = makeDefaultPlayer();
     isPlayerMoving = false;
     isPlayerMovingForward = false;
-    shootWaitingToBeEmmited = false;
     lastShootEmmited = 0;
     
     shipStandingFigure = makeShipStandingFigure();
