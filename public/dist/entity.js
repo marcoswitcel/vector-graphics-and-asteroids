@@ -3,8 +3,8 @@ export const liveTimeInMilliseconds = Symbol('liveTimeInMilliseconds');
 export const hittedMark = Symbol('hittedMark');
 export const fragmentationAllowed = Symbol('fragmentationAllowed');
 export const lineFigure = Symbol('lineFigure');
-export const maxAngularVelocitySpaceShip = 7;
-export const angularAccelerationSpaceShip = maxAngularVelocitySpaceShip / 0.45; // @note leva 0.45 segundo(s) pra chegar no máximo
+export const maxAngularVelocitySpaceShip = 6;
+export const angularAccelerationSpaceShip = maxAngularVelocitySpaceShip / 0.55; // @note leva 0.55 segundo(s) pra chegar no máximo
 /**
  * @note João, considerar criar um atributo para indicar que a entidade deve ser
  * removida ao final do frame e começar a usar este mesmo atributo para evitar

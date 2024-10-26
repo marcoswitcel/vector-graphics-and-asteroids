@@ -1,9 +1,3 @@
-/**
- * @todo João, aumentar tamanho dos botões, testar usar polegadas como unidade de medida -- ok
- * @todo João, ajustar para acionar o botão ao passar o dedo por cima do botão - ok
- * @todo João, ajustar para o feedback visual ocorrer ao passar o dedo em cima do botão -- ok
- * @todo João, subir os botões direcionais um pouco mais, mudar a cor, considerar adicionar um padding entre eles e alinhar o botão de espaço.
- */
 const htmlMarkup = `
 <div class="c-gamepad-root">
     <div class="c-gamepad-directionals">
@@ -162,18 +156,21 @@ export class VirtualGamepad {
         throw new Error("Não implementado");
     }
     addListener(name, handler) {
+        // @todo João, checar se faz sentido deixar esse warn aqui
+        const vKey = name.replace(/(keydown\.|keyup\.)/i, '');
+        if (!vKeys.includes(vKey))
+            console.warn(`[virtual-gamepad] Key '${vKey}' não reconhecida. Evento: ${name}`);
         this.eventTarget.addEventListener(name, handler);
-    }
-    removeListeners(name, handler) {
-        // @todo João, implementar
-        throw new Error("Não implementado");
     }
     isKeyPressed(vKey) {
         return this.keyState[vKey];
     }
     stopListening() {
-        // @todo João, implementar
-        throw new Error("Não implementado");
+        throw new Error('Não implementado');
+    }
+    removeListener(name, handler) {
+        // @note João, não testado
+        this.eventTarget.removeEventListener(name, handler);
     }
     areBothKeysPressed(vKey1, vKey2) {
         return this.keyState[vKey1] && this.keyState[vKey2];

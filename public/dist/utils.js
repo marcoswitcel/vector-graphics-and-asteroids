@@ -147,8 +147,9 @@ export function isMobileBrowser() {
     return userAgentsKnownToBeMobile.test(navigator.userAgent);
 }
 /**
- * @todo João, documentar o porquê
- * @param title
+ * Utilitário que atualzia o título da página de forma menos bloqueante.
+ * @note Talvez seria melhor usar o event loop ao invés da microtask queue
+ * @param title novo título da página
  */
 export function updateWebPageTitleQueued(title) {
     queueMicrotask(() => {

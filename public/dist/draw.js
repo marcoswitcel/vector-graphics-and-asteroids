@@ -141,7 +141,7 @@ export class ComplexShape {
     }
 }
 /**
- * @todo João, testar mais
+ * Desenha 'formas complexas'
  */
 export function drawComplexShape(ctx, complexShape, position, scale, angle, strokeStyle = '#FFFFFF', lineWidth = 1) {
     for (let index = 0; index < complexShape.shapes.length; index++) {

@@ -7,6 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { isPlayable } from './utils.js';
 export class SoundResourceEntry {
     constructor(resourceLocation, autoStart = false) {
         this.readyToPlay = false;
@@ -64,18 +65,4 @@ export class SoundResourceManager {
             entry.startLoading();
         });
     }
-}
-/**
- * Função que criar uma promise para trabalhar com o áudio carregado com
- * `HTMLAudioElement`
- * @param audio elemento contendo o áudio fonte
- * @param fullyLoaded
- * @returns
- */
-function isPlayable(audio, fullyLoaded = true) {
-    const doneEvent = fullyLoaded ? 'canplaythrough' : 'canplay';
-    return new Promise((resolve, reject) => {
-        audio.addEventListener(doneEvent, () => resolve(audio));
-        audio.addEventListener('error', () => reject(audio));
-    });
 }

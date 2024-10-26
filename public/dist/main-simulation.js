@@ -2,7 +2,7 @@ import { centralizePoint, distance, drawCircle, drawComplexShape, drawLine, draw
 import { Entity, liveTimeInMilliseconds, hittedMark, fragmentationAllowed, lineFigure, makeDefaultPlayer, maxAngularVelocitySpaceShip, angularAccelerationSpaceShip } from './entity.js';
 import { EventLoop } from './event-loop.js';
 import { makeAsteroid } from './figure.js';
-import { GameContext, resolutionScaleNonFullscreen } from './game-context.js';
+import { GameContext, GameState, resolutionScaleNonFullscreen } from './game-context.js';
 import { KeyBoardInput } from './keyboard-input.js';
 import { SoundHandleState, SoundMixer } from './sounds/sound-mixer.js';
 import { SoundResourceManager } from './sounds/sound-resource-manager.js';
@@ -88,8 +88,7 @@ export function createMainSimulation(canvas, virtualGamepad) {
     const context = new GameContext();
     const eventLoop = new EventLoop(context);
     /**
-     * @todo João, criar uma interface para o 'keyBoard' para poder unificar o keyboard virtual
-     * e o teclado físico, porém considerar habilitar os dois simultaneamente.
+     * @note João, considerar habilitar os dois teclados simultaneamente.
      */
     const keyBoardInput = virtualGamepad != null ? virtualGamepad : new KeyBoardInput({ autoStart: true });
     let debug = false;
@@ -101,9 +100,9 @@ export function createMainSimulation(canvas, virtualGamepad) {
          * porém por hora ainda tem alguns pontos em aberto sobre a evolução da
          * estrutura de 'ondas/fases'.
          */
-        if (!context.isGameOver)
+        if (context.state !== GameState.GAME_OVER)
             return;
-        context.isGameOver = false;
+        context.state = GameState.RUNNING;
         context.asteroidsDestroyedCounter = 0;
         context.waveIndex = 0;
         context.entities.length = 0;
@@ -124,22 +123,20 @@ export function createMainSimulation(canvas, virtualGamepad) {
         debugSound = !debugSound;
     });
     keyBoardInput.addListener('keyup.Space', () => {
-        if (!context.entityPlayer.components[hittedMark]) {
-            context.shootWaitingToBeEmmited = true;
-        }
+        context.lastShootEmmited = 0;
     });
     if (virtualGamepad) {
         virtualGamepad.addListener('keyup.vStart', setInitialState);
     }
     const pauseGame = () => {
-        if (context.isGameOver)
+        if (context.state === GameState.GAME_OVER)
             return;
         eventLoop.stop();
         // pausa todos os sons se houver algum executando
         for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
             soundHandler.stop();
         }
-        context.isPaused = true;
+        context.state = GameState.PAUSED;
         drawText(ctx, 'pausado', { x: 0, y: 0 }, 0.06, '#FFFFFF', fontName, 'center');
         updateWebPageTitle('pausado');
     };
@@ -152,16 +149,16 @@ export function createMainSimulation(canvas, virtualGamepad) {
      * acredito que o melhor seria criar mais um 'timestamp' para representar o tempo decorrido na simualação.
      */
     const switchPausedState = () => {
-        if (context.isGameOver)
+        if (context.state === GameState.GAME_OVER)
             return;
-        if (context.isPaused) {
+        if (context.state === GameState.PAUSED) {
             eventLoop.start();
             // executa sons pausados se houver algum
             for (const soundHandler of soundMixer.getPlayingSoundsIter()) {
                 soundHandler.play();
             }
             updateWebPageTitle();
-            context.isPaused = false;
+            context.state = GameState.RUNNING;
         }
         else {
             pauseGame();
@@ -175,8 +172,6 @@ export function createMainSimulation(canvas, virtualGamepad) {
         text.setVisibleUntil(2000);
         textToDrawn.push(text);
     });
-    // @todo João, avaliar se não causa mais problemas do que vantagens tanto em desenvolvimento
-    // como para o usuário final...
     window.addEventListener('blur', pauseGame);
     /**
      * @todo João, validar melhor essa funcionalidade, não tenho certeza de que escutar o evento
@@ -186,7 +181,7 @@ export function createMainSimulation(canvas, virtualGamepad) {
         const newResolution = isFullScreen() ? computeResolution(1) : computeResolution(resolutionScaleNonFullscreen);
         canvas.width = newResolution;
         canvas.height = newResolution;
-        if (!context.isPaused)
+        if (context.state !== GameState.PAUSED)
             return;
         /**
          * @note Se a aplicação estiver pausada o canvas é limpo e fica "transparente",
@@ -216,7 +211,7 @@ export function createMainSimulation(canvas, virtualGamepad) {
             }
         }
         if (!keyBoardInput.isKeyPressed('KeyD') && !keyBoardInput.isKeyPressed('KeyA')) {
-            context.entityPlayer.angularAcceleration = 0; // @todo João, ajustar para desacelerar devagar
+            context.entityPlayer.angularAcceleration = 0;
             context.entityPlayer.angularVelocity = 0;
         }
         if (keyBoardInput.areBothKeysPressed('KeyW', 'KeyS')) {
@@ -241,20 +236,6 @@ export function createMainSimulation(canvas, virtualGamepad) {
             context.entityPlayer.acceleration.y = 0;
             context.isPlayerMoving = false;
         }
-        /**
-         * @todo João, talvez seria uma boa ideia unificar a lógica de emissão de disparos
-         * e usar apenas a propriedade 'lastShootEmmited' para controlar quando atirar. Seria possível
-         * remover o listener do evento 'keydown'
-         */
-        if (context.shootWaitingToBeEmmited && !context.entityPlayer.components[hittedMark]) {
-            emmitShoot(context, soundMixer);
-            context.lastShootEmmited = timestamp;
-            context.shootWaitingToBeEmmited = false;
-        }
-        /**
-         * @todo João, ajustar para funcionar no mobile também, é necessário ajustar
-         * o identificar da 'key'
-         */
         if (!context.entityPlayer.components[hittedMark] && keyBoardInput.isKeyPressed('Space')) {
             // @note João, o timestamp é afetado pela 'pausa' então seria legal ajustar para decrementar 
             // conforme o jogo executa e aí disparar ao final
@@ -379,7 +360,7 @@ export function createMainSimulation(canvas, virtualGamepad) {
         // som emitido quando nave explode
         soundMixer.play('ship-explosion', false, 0.3);
         // game over screen
-        context.isGameOver = true;
+        context.state = GameState.GAME_OVER;
         const textGameOver = new TextElement('Fim de jogo', { x: 0, y: 0, }, 'white', 0.06, fontName, 'center');
         const restartKey = isMobileUi ? "start" : "r";
         const textReplayExplanation = new TextElement(`Aperte "${restartKey}" para jogar novamente`, { x: 0, y: -0.15, }, 'white', 0.03, fontName, 'center');
@@ -492,8 +473,7 @@ export function createMainSimulation(canvas, virtualGamepad) {
          */
         drawText(ctx, `${context.asteroidsDestroyedCounter}`, { x: -0.97, y: 0.91 }, 0.06, '#FFFFFF', fontName, 'left');
         /**
-         * @todo João, implementar um contador de 'ondas' e um mecanismo para adicionar textos flutuantes
-         * que somem sozinho, possivelmente com 'fade-in' e 'fade-out'
+         * @note João, 'fade-in' e 'fade-out' seriam um recurso interessante para usar nos textos flutuantes
          */
         for (const text of textToDrawn) {
             // atualiza tempo de vida dos elementos textuais
@@ -585,8 +565,6 @@ export function createMainSimulation(canvas, virtualGamepad) {
     eventLoop.add((context, time) => {
         // no máximo uma entidade player na arena
         console.assert(context.entities.filter(e => e.type === 'player').length <= 1);
-        // exclusivos
-        console.assert(!context.isGameOver || !context.isPaused);
     });
     return eventLoop;
 }

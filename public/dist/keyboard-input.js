@@ -33,13 +33,17 @@ export class KeyBoardInput {
         // @todo João, falta implementar
         throw "KeyBoardInput#stopListening não implentado ainda";
     }
+    removeListener() {
+        // @todo João, falta implementar
+        throw "KeyBoardInput#removeListener não implentado ainda";
+    }
     isKeyPressed(key) {
         return this.keyState.has(key) && !!this.keyState.get(key);
     }
     areBothKeysPressed(key1, key2) {
         return !!this.keyState.get(key1) && !!this.keyState.get(key2);
     }
-    addListener(eventTypeName, callback) {
-        this.eventTarget.addEventListener(eventTypeName, callback);
+    addListener(eventTypeName, handler) {
+        this.eventTarget.addEventListener(eventTypeName, handler);
     }
 }
