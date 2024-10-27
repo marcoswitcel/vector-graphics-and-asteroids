@@ -90,14 +90,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
     const soundMixer = new SoundMixer(soundResourceManager);
 
-    /**
-     * @todo João, seria interessante organizar essas variáveis em algum tipo de GameObject
-     * para que as variáveis de estado do jogo não fiquem espalhadas pelo arquivo e mal 
-     * documentadas de certo modo, pois no final do dia é só uma variável global que pode
-     * referir a qualquer parte do processo de execução do jogo. Outro motivo interessante 
-     * é que se tivermos algum tipo de classe aí sim poderemos ter múltiplas instâncias do
-     * jogo rodando em uma mesma página.
-     */
     let textToDrawn: TextElement[] = [];
     const isMobileUi = virtualGamepad != null;
     // @todo João, eventualmente posso precisar saber quando a fonte carregou
