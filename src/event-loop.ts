@@ -2,9 +2,10 @@
 type EventHandler<Context> = (context: Context, timestamp: number, deltaTime: number) => void;
 
 /**
- * @todo João, analisar se interessante adicionar um profiler de memória
+ * @note João, analisar se interessante adicionar um profiler de memória
  * e tempo ao `EventLoop` para ativamente coletar e talvez exibir um um frame
- * a parte as métricas.
+ * a parte as métricas. Considerar usar perfomance.now(), pois como é um recurso de desenvolvimento,
+ * posso deixar como opcional e na minha máquina vou pode ver funcionando pois sei que meu ambiente suporta.
  */
 export class EventLoop<Context> {
     private context: Context;
