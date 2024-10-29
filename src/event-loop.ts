@@ -1,6 +1,8 @@
 
 type EventHandler<Context> = (context: Context, timestamp: number, deltaTime: number) => void;
 
+const isPerformanceCheckAvailable = performance && typeof performance.now == 'function';
+
 /**
  * @note João, analisar se interessante adicionar um profiler de memória
  * e tempo ao `EventLoop` para ativamente coletar e talvez exibir um um frame
@@ -13,6 +15,11 @@ export class EventLoop<Context> {
     private handlerId: number = 0;
     private handlers: Set<EventHandler<Context>> = new Set();
     private lastTimestamp: number = 0;
+
+    // performance
+    private maxDt: number = 0;
+    private minDt: number = 0;
+    private currentDt: number = 0;
 
     constructor(context: Context) {
         this.context = context;
@@ -65,8 +72,23 @@ export class EventLoop<Context> {
             const deltaTime = this.lastTimestamp ? (timestamp - this.lastTimestamp) / 1000 : 0;
             this.lastTimestamp = timestamp;
 
+            let startTime = 0;
+
+            if (isPerformanceCheckAvailable) {
+                startTime = performance.now();
+            }
+
             for (const handler of this.handlers) {
                 handler(this.context, timestamp, deltaTime);
+            }
+
+            if (isPerformanceCheckAvailable) {
+                const currentDt = performance.now() - startTime;
+                
+                this.minDt = Math.min(this.minDt, currentDt); // @note João, min não funciona bem ainda
+                this.maxDt = Math.max(this.maxDt, currentDt);
+
+                this.currentDt = currentDt;
             }
             
             if (this.running) {
