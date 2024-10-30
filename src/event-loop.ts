@@ -14,11 +14,12 @@ export class EventLoop<Context> {
     private running: boolean = false;
     private handlerId: number = 0;
     private handlers: Set<EventHandler<Context>> = new Set();
+    private performanceHandler: ((minDt: number, maxDt: number, currentDt: number) => void) | null = null;
     private lastTimestamp: number = 0;
 
     // performance
     private maxDt: number = 0;
-    private minDt: number = 0;
+    private minDt: number = Infinity;
     private currentDt: number = 0;
 
     constructor(context: Context) {
@@ -57,6 +58,10 @@ export class EventLoop<Context> {
         this.handlers.add(handler);
     }
 
+    public setPerformanceHandler(handler: (minDt: number, maxDt: number, currentDt: number) => void) {
+        this.performanceHandler = handler;
+    }
+
     private handleTick = (timestamp: number) => {
         console.assert(typeof timestamp === 'number', 'Deveria ser um número (garantindo que não é undefined)');
 
@@ -85,10 +90,14 @@ export class EventLoop<Context> {
             if (isPerformanceCheckAvailable) {
                 const currentDt = performance.now() - startTime;
                 
-                this.minDt = Math.min(this.minDt, currentDt); // @note João, min não funciona bem ainda
+                this.minDt = Math.min(this.minDt, currentDt);
                 this.maxDt = Math.max(this.maxDt, currentDt);
 
                 this.currentDt = currentDt;
+
+                if (this.performanceHandler) {
+                    this.performanceHandler(this.minDt, this.maxDt, this.currentDt);
+                }
             }
             
             if (this.running) {

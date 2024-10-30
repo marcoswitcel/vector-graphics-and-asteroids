@@ -106,6 +106,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     let debug = false;
     let debugHitRadius = false;
     let debugSound = false;
+    let debugPerformance = false;
 
 
     const setInitialState = () => {
@@ -141,6 +142,10 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
     keyBoardInput.addListener('keyup.Digit3', () => {
         debugSound = !debugSound;
+    });
+
+    keyBoardInput.addListener('keyup.Digit4', () => {
+        debugPerformance = !debugPerformance;
     });
 
     keyBoardInput.addListener('keyup.Space', () => {
@@ -645,6 +650,12 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             drawText(ctx, text.text, text.position, text.fontSize, text.color, text.fontFamily, text.align);
             i++;
         }
+    });
+
+    eventLoop.setPerformanceHandler((minDt, maxDt, currentDt) => {
+        if (!debugPerformance) return;
+
+        drawText(ctx, `minDt: ${minDt.toFixed(2)}, maxDt: ${maxDt.toFixed(2)}, currentDt: ${currentDt.toFixed(2)}`, { x: 0,  y: 0.95 }, 0.02, '#0F0', fontName, 'center');
     });
 
     /**
