@@ -14,13 +14,14 @@ export class EventLoop<Context> {
     private running: boolean = false;
     private handlerId: number = 0;
     private handlers: Set<EventHandler<Context>> = new Set();
-    private performanceHandler: ((minDt: number, maxDt: number, currentDt: number) => void) | null = null;
+    private performanceHandler: ((minDt: number, maxDt: number, currentDt: number, average: number) => void) | null = null;
     private lastTimestamp: number = 0;
 
     // performance
     private maxDt: number = 0;
     private minDt: number = Infinity;
     private currentDt: number = 0;
+    private lastNDts: number[] = [];
 
     constructor(context: Context) {
         this.context = context;
@@ -58,7 +59,7 @@ export class EventLoop<Context> {
         this.handlers.add(handler);
     }
 
-    public setPerformanceHandler(handler: (minDt: number, maxDt: number, currentDt: number) => void) {
+    public setPerformanceHandler(handler: (minDt: number, maxDt: number, currentDt: number, average: number) => void) {
         this.performanceHandler = handler;
     }
 
@@ -95,8 +96,15 @@ export class EventLoop<Context> {
 
                 this.currentDt = currentDt;
 
+                this.lastNDts.push(currentDt);
+
+                if (this.lastNDts.length > 60) {
+                    this.lastNDts.shift();
+                }
+
                 if (this.performanceHandler) {
-                    this.performanceHandler(this.minDt, this.maxDt, this.currentDt);
+                    const average = this.lastNDts.reduce((p, a) => p + a, 0) / this.lastNDts.length;
+                    this.performanceHandler(this.minDt, this.maxDt, this.currentDt, average);
                 }
             }
             
