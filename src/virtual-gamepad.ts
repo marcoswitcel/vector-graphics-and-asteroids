@@ -79,6 +79,11 @@ type KeyStateObject = { [key in VirtualKeys]: boolean };
 
 export const vKeys: VirtualKeys[] = [ 'KeyA', 'KeyW', 'KeyS', 'KeyD', 'Space', 'vStart' ];
 
+/**
+ * Essa classe representa o gamepad virtual projetado na tela no caso de detectar o dispositivo como
+ * 'mobile'. Poderia ser adaptada para outro layouts de controles ou até mesmo deixada mais configurável,
+ * mas tal trabalho ainda não foi feito. 
+ */
 export class VirtualGamepad implements KeyBoardInputInterface {
     private keyState: KeyStateObject = { KeyA: false, KeyW: false, KeyS: false, KeyD: false, Space: false, vStart: false, };
     private target: HTMLElement;
