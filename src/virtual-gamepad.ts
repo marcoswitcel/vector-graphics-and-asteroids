@@ -119,7 +119,7 @@ export class VirtualGamepad implements KeyBoardInputInterface {
         
         if (this.gamepadRoot) {
             if (setupListeners) {
-                this.setupKeyListeners();
+                this.startListening();
             }
             this.gamepadRoot.setAttribute('data-gamepad', '');
             this.gamepadRoot.remove();
@@ -129,10 +129,9 @@ export class VirtualGamepad implements KeyBoardInputInterface {
 
     /**
      * 
-     * @todo João, implementar um 'cleanKeyListeners'
      * @param gamepadRoot 
      */
-    setupKeyListeners() {
+    startListening() {
         if (this.gamepadRoot == null) return;
         if (this.isListenersSetupDone) return;
         if (!this.isHTMLSetupDone) return;
@@ -188,11 +187,6 @@ export class VirtualGamepad implements KeyBoardInputInterface {
                 this.keyState[vKey] = false;
             }
         })
-    }
-
-    startListening() {
-        // @todo João, implementar
-        throw new Error("Não implementado");
     }
 
     addListener(name: string, handler: (event: Event) => void) {
