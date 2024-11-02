@@ -152,6 +152,32 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         context.lastShootEmmited = 0;
     });
 
+    
+    const volumeReportText = new TextElement('', { x: 0, y: 0.65, }, '#0F0', 0.03, fontName, 'center');
+    keyBoardInput.addListener('keyup.Minus', () => {
+        soundMixer.setVolume(soundMixer.getVolume() - 0.1);
+        
+        if (!volumeReportText.visibleUntil || volumeReportText.visibleUntil <= 0) {
+            textToDrawn.push(volumeReportText);  
+        } 
+
+        volumeReportText.text = `Volume: ${(soundMixer.getVolume() * 100).toFixed(0)}%`
+        volumeReportText.setVisibleUntil(500);
+        
+    });
+
+    keyBoardInput.addListener('keyup.+', () => {
+        soundMixer.setVolume(soundMixer.getVolume() + 0.1);
+
+        if (!volumeReportText.visibleUntil || volumeReportText.visibleUntil <= 0) {
+            textToDrawn.push(volumeReportText);  
+        } 
+
+        volumeReportText.text = `Volume: ${(soundMixer.getVolume() * 100).toFixed(0)}%`
+        volumeReportText.setVisibleUntil(500);
+        
+    });
+
     if (virtualGamepad) {
         virtualGamepad.addListener('keyup.vStart', setInitialState);
     }
