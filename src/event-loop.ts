@@ -18,9 +18,21 @@ export class EventLoop<Context> {
     private lastTimestamp: number = 0;
 
     // performance
+    /**
+     * Em milisegundos(ms)
+     */
     private maxDt: number = 0;
+    /**
+     * Em milisegundos(ms)
+     */
     private minDt: number = Infinity;
+    /**
+     * Em milisegundos(ms)
+     */
     private currentDt: number = 0;
+    /**
+     * Em milisegundos(ms)
+     */
     private lastNDts: number[] = [];
 
     constructor(context: Context) {
