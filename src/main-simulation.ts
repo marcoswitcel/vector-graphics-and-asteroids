@@ -655,6 +655,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     eventLoop.setPerformanceHandler((minDt, maxDt, currentDt, average) => {
         if (!debugPerformance) return;
 
+        if (keyBoardInput.isKeyPressed('KeyL')) eventLoop.resetPerformanceStatus();
+
         drawText(ctx, `minDt: ${minDt.toFixed(2)}, maxDt: ${maxDt.toFixed(2)}, currentDt: ${currentDt.toFixed(2)}, average: ${average.toFixed(2)}`, { x: 0,  y: 0.95 }, 0.02, '#0F0', fontName, 'center');
     });
 

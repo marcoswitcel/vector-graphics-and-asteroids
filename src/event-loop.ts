@@ -63,6 +63,13 @@ export class EventLoop<Context> {
         this.performanceHandler = handler;
     }
 
+    public resetPerformanceStatus() {
+        this.maxDt = 0;
+        this.minDt = Infinity;
+        this.currentDt = 0;
+        this.lastNDts = [];
+    }
+
     private handleTick = (timestamp: number) => {
         console.assert(typeof timestamp === 'number', 'Deveria ser um número (garantindo que não é undefined)');
 
