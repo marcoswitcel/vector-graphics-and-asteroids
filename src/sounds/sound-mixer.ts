@@ -126,9 +126,12 @@ export class SoundHandle {
 
 export class SoundMixer {
 
+    /**
+     * O volume varia entre 0 e 1
+     */
     private globalVolume: number = 1;
     private soundResourceManager: SoundResourceManager;
-    private playingSounds: Set<SoundHandle> = new Set;
+    private allSounds: Set<SoundHandle> = new Set;
     
     constructor(soundResourceManager?: SoundResourceManager) {
         if (soundResourceManager) {
@@ -162,7 +165,7 @@ export class SoundMixer {
                 soundHandle.setVolume(volume);
                 soundHandle.play();
 
-                this.playingSounds.add(soundHandle);
+                this.allSounds.add(soundHandle);
                 
                 return soundHandle;
             } else if (soundResEntry.errorLoading) {
@@ -184,7 +187,7 @@ export class SoundMixer {
     public setVolume(volume: number) {
         this.globalVolume = between(volume, 0, 1);
 
-        this.playingSounds.forEach((soundHandle) => {
+        this.allSounds.forEach((soundHandle) => {
             soundHandle.globalVolumeChanged();
         });
     }
@@ -194,11 +197,11 @@ export class SoundMixer {
     }
 
     public getPlayingSoundsIter(): IterableIterator<SoundHandle> {
-        return this.playingSounds[Symbol.iterator]();
+        return this.allSounds[Symbol.iterator]();
     }
 
     public getTotalSounds(): number {
-        return this.playingSounds.size;
+        return this.allSounds.size;
     }
 
     /**
@@ -206,7 +209,7 @@ export class SoundMixer {
      */
     public clear(): void {
         const allSounds: Set<SoundHandle> = new Set();
-        for (const it of this.playingSounds) {
+        for (const it of this.allSounds) {
             if (it.status === SoundHandleState.RELEASED) continue;
             
             if (it.canCleanUp && (it.status === SoundHandleState.ENDED || it.status === SoundHandleState.BLOCKED)) {
@@ -215,7 +218,7 @@ export class SoundMixer {
                 allSounds.add(it);
             }
         }
-        this.playingSounds = allSounds;
+        this.allSounds = allSounds;
     }
 
     /**
@@ -227,7 +230,7 @@ export class SoundMixer {
     public countSoundsInState(state: SoundHandleState) {
         let i = 0;
         
-        for (const sound of this.playingSounds.values()) {
+        for (const sound of this.allSounds.values()) {
             if (sound.status == state) i++;
         }
 
