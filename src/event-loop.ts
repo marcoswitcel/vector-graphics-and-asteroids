@@ -2,6 +2,7 @@
 type EventHandler<Context> = (context: Context, timestamp: number, deltaTime: number) => void;
 
 const isPerformanceCheckAvailable = performance && typeof performance.now == 'function';
+const MAX_SAMPLES_FOR_AVERAGE = 120;
 
 /**
  * @note João, analisar se interessante adicionar um profiler de memória
@@ -117,7 +118,7 @@ export class EventLoop<Context> {
 
                 this.lastNDts.push(currentDt);
 
-                if (this.lastNDts.length > 60) {
+                if (this.lastNDts.length > MAX_SAMPLES_FOR_AVERAGE) {
                     this.lastNDts.shift();
                 }
 
