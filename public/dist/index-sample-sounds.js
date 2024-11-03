@@ -40,11 +40,6 @@ soundResourceManager.add('wooden', './resource/audio/Wooden Train Whistle.mp3');
 soundResourceManager.add('penClicking', './resource/audio/Pen Clicking.mp3');
 soundResourceManager.loadAll();
 const soundMixer = new SoundMixer(soundResourceManager);
-/**
- * @todo João, acredito que implementar uma forma de traquear os sons executando a partir de quem requisita o som seria legal
- * Reposta: Talvez o SoundHandle possar atender esse papel, mas acredito que para isso
- * seria necessário revisar os métodos e deixá-lo mais seguro para uso externo do SoundMixer
- */
 const playCartoonButtonElement = document.getElementById('cartoonMetalThunk');
 const playWoodenButtonElement = document.getElementById('woodenTrainWhistle');
 const playPenClickingElement = document.getElementById('penClicking');

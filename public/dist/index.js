@@ -5,7 +5,7 @@ import { VirtualGamepad } from './virtual-gamepad.js';
 const GAME_RESOLUTION = computeResolution(resolutionScaleNonFullscreen);
 const canvas = createCanvas(GAME_RESOLUTION, GAME_RESOLUTION, document.body);
 /**
- * @todo João, acredito que seria interessante explicar na tela que clicando
+ * @note João, acredito que seria interessante explicar na tela que clicando
  * duas vezes o jogo entrará em modo fullscreen e clicando novamente ele sairá.
  */
 canvas.addEventListener('dblclick', () => {

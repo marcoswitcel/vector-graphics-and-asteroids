@@ -84,8 +84,6 @@ export class SoundHandle {
         return this.cleanUpWhenIsDoneOrError;
     }
     /**
-     * @todo João, esse é o único método que precisa ser trabalhado para poder
-     * retornar o SoundHandle nas requisições ao método SoundMixer.play()
      * @note João, reavaliar mas acho que agora pode ser usado de forma segura
      * @todo João, testar usar sons gerenciados manualmente
      * @note Melhorado esse processo de descarte dos handlers para incluir o processo de descarte de `HTMLAudioElements`
@@ -174,7 +172,7 @@ export class SoundMixer {
         return this.playingSounds.size;
     }
     /**
-     * @todo João, ainda sinto que esse processo não está claro ou seguro, não sei bem qual o problema, reanalisar
+     * Método chamado para fazer o release dos sons finalizados
      */
     clear() {
         const allSounds = new Set();

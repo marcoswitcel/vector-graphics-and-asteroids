@@ -20,12 +20,26 @@ export class KeyBoardInput {
             return;
         this.listening = true;
         this.target.addEventListener('keydown', event => {
-            this.keyState.set(event.code, true);
-            this.eventTarget.dispatchEvent(new Event(`keydown.${event.code}`));
+            let keyIdentifier = event.code;
+            // @todo João, isso é um ajuste temporário até decidir o que fazer nesses casos...
+            // o caso em questão é que teclas secundárias são identificadas pela propriedade 'key'
+            // e não pela 'code' como estava sendo feito até então... pensar melhor sobre isso...
+            if (event.shiftKey && keyIdentifier === 'Equal') {
+                keyIdentifier = event.key;
+            }
+            this.keyState.set(keyIdentifier, true);
+            this.eventTarget.dispatchEvent(new Event(`keydown.${keyIdentifier}`));
         });
         this.target.addEventListener('keyup', event => {
-            this.keyState.set(event.code, false);
-            this.eventTarget.dispatchEvent(new Event(`keyup.${event.code}`));
+            let keyIdentifier = event.code;
+            // @todo João, isso é um ajuste temporário até decidir o que fazer nesses casos...
+            // o caso em questão é que teclas secundárias são identificadas pela propriedade 'key'
+            // e não pela 'code' como estava sendo feito até então... pensar melhor sobre isso...
+            if (event.shiftKey && keyIdentifier === 'Equal') {
+                keyIdentifier = event.key;
+            }
+            this.keyState.set(keyIdentifier, false);
+            this.eventTarget.dispatchEvent(new Event(`keyup.${keyIdentifier}`));
         });
         window.addEventListener('blur', this.onLostFocus);
     }

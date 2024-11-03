@@ -69,6 +69,11 @@ const cssStyle = `
 }
 `;
 export const vKeys = ['KeyA', 'KeyW', 'KeyS', 'KeyD', 'Space', 'vStart'];
+/**
+ * Essa classe representa o gamepad virtual projetado na tela no caso de detectar o dispositivo como
+ * 'mobile'. Poderia ser adaptada para outro layouts de controles ou até mesmo deixada mais configurável,
+ * mas tal trabalho ainda não foi feito.
+ */
 export class VirtualGamepad {
     constructor(target) {
         this.keyState = { KeyA: false, KeyW: false, KeyS: false, KeyD: false, Space: false, vStart: false, };
@@ -91,7 +96,7 @@ export class VirtualGamepad {
         this.gamepadRoot = html.querySelector('.c-gamepad-root');
         if (this.gamepadRoot) {
             if (setupListeners) {
-                this.setupKeyListeners();
+                this.startListening();
             }
             this.gamepadRoot.setAttribute('data-gamepad', '');
             this.gamepadRoot.remove();
@@ -100,10 +105,9 @@ export class VirtualGamepad {
     }
     /**
      *
-     * @todo João, implementar um 'cleanKeyListeners'
      * @param gamepadRoot
      */
-    setupKeyListeners() {
+    startListening() {
         if (this.gamepadRoot == null)
             return;
         if (this.isListenersSetupDone)
@@ -150,10 +154,6 @@ export class VirtualGamepad {
                 this.keyState[vKey] = false;
             }
         });
-    }
-    startListening() {
-        // @todo João, implementar
-        throw new Error("Não implementado");
     }
     addListener(name, handler) {
         // @todo João, checar se faz sentido deixar esse warn aqui

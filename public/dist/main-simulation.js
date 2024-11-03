@@ -73,14 +73,6 @@ export function createMainSimulation(canvas, virtualGamepad) {
     soundResourceManager.add('ship-explosion', './resource/audio/fx/NenadSimic - Muffled Distant Explosion.wav');
     soundResourceManager.loadAll();
     const soundMixer = new SoundMixer(soundResourceManager);
-    /**
-     * @todo João, seria interessante organizar essas variáveis em algum tipo de GameObject
-     * para que as variáveis de estado do jogo não fiquem espalhadas pelo arquivo e mal
-     * documentadas de certo modo, pois no final do dia é só uma variável global que pode
-     * referir a qualquer parte do processo de execução do jogo. Outro motivo interessante
-     * é que se tivermos algum tipo de classe aí sim poderemos ter múltiplas instâncias do
-     * jogo rodando em uma mesma página.
-     */
     let textToDrawn = [];
     const isMobileUi = virtualGamepad != null;
     // @todo João, eventualmente posso precisar saber quando a fonte carregou
@@ -94,6 +86,7 @@ export function createMainSimulation(canvas, virtualGamepad) {
     let debug = false;
     let debugHitRadius = false;
     let debugSound = false;
+    let debugPerformance = false;
     const setInitialState = () => {
         /**
          * @note seria interessante formalizar o estado interno da 'partida',
@@ -122,8 +115,28 @@ export function createMainSimulation(canvas, virtualGamepad) {
     keyBoardInput.addListener('keyup.Digit3', () => {
         debugSound = !debugSound;
     });
+    keyBoardInput.addListener('keyup.Digit4', () => {
+        debugPerformance = !debugPerformance;
+    });
     keyBoardInput.addListener('keyup.Space', () => {
         context.lastShootEmmited = 0;
+    });
+    const volumeReportText = new TextElement('', { x: 0, y: 0.65, }, '#0F0', 0.03, fontName, 'center');
+    keyBoardInput.addListener('keyup.Minus', () => {
+        soundMixer.setVolume(soundMixer.getVolume() - 0.1);
+        if (!volumeReportText.visibleUntil || volumeReportText.visibleUntil <= 0) {
+            textToDrawn.push(volumeReportText);
+        }
+        volumeReportText.text = `Volume: ${(soundMixer.getVolume() * 100).toFixed(0)}%`;
+        volumeReportText.setVisibleUntil(500);
+    });
+    keyBoardInput.addListener('keyup.+', () => {
+        soundMixer.setVolume(soundMixer.getVolume() + 0.1);
+        if (!volumeReportText.visibleUntil || volumeReportText.visibleUntil <= 0) {
+            textToDrawn.push(volumeReportText);
+        }
+        volumeReportText.text = `Volume: ${(soundMixer.getVolume() * 100).toFixed(0)}%`;
+        volumeReportText.setVisibleUntil(500);
     });
     if (virtualGamepad) {
         virtualGamepad.addListener('keyup.vStart', setInitialState);
@@ -558,6 +571,13 @@ export function createMainSimulation(canvas, virtualGamepad) {
             drawText(ctx, text.text, text.position, text.fontSize, text.color, text.fontFamily, text.align);
             i++;
         }
+    });
+    eventLoop.setPerformanceHandler((minDt, maxDt, currentDt, average) => {
+        if (!debugPerformance)
+            return;
+        if (keyBoardInput.isKeyPressed('KeyL'))
+            eventLoop.resetPerformanceStatus();
+        drawText(ctx, `minDt: ${minDt.toFixed(2)} ms, maxDt: ${maxDt.toFixed(2)} ms, currentDt: ${currentDt.toFixed(2)} ms, average: ${average.toFixed(2)} ms`, { x: 0, y: 0.95 }, 0.02, '#0F0', fontName, 'center');
     });
     /**
      * @note deixarei um sistema para fazer asserts

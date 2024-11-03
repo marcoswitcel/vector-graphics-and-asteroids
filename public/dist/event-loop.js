@@ -1,14 +1,35 @@
+const isPerformanceCheckAvailable = performance && typeof performance.now == 'function';
+const MAX_SAMPLES_FOR_AVERAGE = 120;
 /**
- * @todo João, analisar se interessante adicionar um profiler de memória
+ * @note João, analisar se interessante adicionar um profiler de memória
  * e tempo ao `EventLoop` para ativamente coletar e talvez exibir um um frame
- * a parte as métricas.
+ * a parte as métricas. Considerar usar perfomance.now(), pois como é um recurso de desenvolvimento,
+ * posso deixar como opcional e na minha máquina vou pode ver funcionando pois sei que meu ambiente suporta.
  */
 export class EventLoop {
     constructor(context) {
         this.running = false;
         this.handlerId = 0;
         this.handlers = new Set();
+        this.performanceHandler = null;
         this.lastTimestamp = 0;
+        // performance
+        /**
+         * Em milisegundos(ms)
+         */
+        this.maxDt = 0;
+        /**
+         * Em milisegundos(ms)
+         */
+        this.minDt = Infinity;
+        /**
+         * Em milisegundos(ms)
+         */
+        this.currentDt = 0;
+        /**
+         * Em milisegundos(ms)
+         */
+        this.lastNDts = [];
         this.handleTick = (timestamp) => {
             console.assert(typeof timestamp === 'number', 'Deveria ser um número (garantindo que não é undefined)');
             if (!this.running)
@@ -21,8 +42,26 @@ export class EventLoop {
             try {
                 const deltaTime = this.lastTimestamp ? (timestamp - this.lastTimestamp) / 1000 : 0;
                 this.lastTimestamp = timestamp;
+                let startTime = 0;
+                if (isPerformanceCheckAvailable) {
+                    startTime = performance.now();
+                }
                 for (const handler of this.handlers) {
                     handler(this.context, timestamp, deltaTime);
+                }
+                if (isPerformanceCheckAvailable) {
+                    const currentDt = performance.now() - startTime;
+                    this.minDt = Math.min(this.minDt, currentDt);
+                    this.maxDt = Math.max(this.maxDt, currentDt);
+                    this.currentDt = currentDt;
+                    this.lastNDts.push(currentDt);
+                    if (this.lastNDts.length > MAX_SAMPLES_FOR_AVERAGE) {
+                        this.lastNDts.shift();
+                    }
+                    if (this.performanceHandler) {
+                        const average = this.lastNDts.reduce((p, a) => p + a, 0) / this.lastNDts.length;
+                        this.performanceHandler(this.minDt, this.maxDt, this.currentDt, average);
+                    }
                 }
                 if (this.running) {
                     requestAnimationFrame(this.handleTick);
@@ -62,5 +101,14 @@ export class EventLoop {
      */
     add(handler) {
         this.handlers.add(handler);
+    }
+    setPerformanceHandler(handler) {
+        this.performanceHandler = handler;
+    }
+    resetPerformanceStatus() {
+        this.maxDt = 0;
+        this.minDt = Infinity;
+        this.currentDt = 0;
+        this.lastNDts = [];
     }
 }
