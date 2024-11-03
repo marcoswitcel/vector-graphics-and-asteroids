@@ -79,6 +79,11 @@ type KeyStateObject = { [key in VirtualKeys]: boolean };
 
 export const vKeys: VirtualKeys[] = [ 'KeyA', 'KeyW', 'KeyS', 'KeyD', 'Space', 'vStart' ];
 
+/**
+ * Essa classe representa o gamepad virtual projetado na tela no caso de detectar o dispositivo como
+ * 'mobile'. Poderia ser adaptada para outro layouts de controles ou até mesmo deixada mais configurável,
+ * mas tal trabalho ainda não foi feito. 
+ */
 export class VirtualGamepad implements KeyBoardInputInterface {
     private keyState: KeyStateObject = { KeyA: false, KeyW: false, KeyS: false, KeyD: false, Space: false, vStart: false, };
     private target: HTMLElement;
@@ -114,7 +119,7 @@ export class VirtualGamepad implements KeyBoardInputInterface {
         
         if (this.gamepadRoot) {
             if (setupListeners) {
-                this.setupKeyListeners();
+                this.startListening();
             }
             this.gamepadRoot.setAttribute('data-gamepad', '');
             this.gamepadRoot.remove();
@@ -124,10 +129,9 @@ export class VirtualGamepad implements KeyBoardInputInterface {
 
     /**
      * 
-     * @todo João, implementar um 'cleanKeyListeners'
      * @param gamepadRoot 
      */
-    setupKeyListeners() {
+    startListening() {
         if (this.gamepadRoot == null) return;
         if (this.isListenersSetupDone) return;
         if (!this.isHTMLSetupDone) return;
@@ -183,11 +187,6 @@ export class VirtualGamepad implements KeyBoardInputInterface {
                 this.keyState[vKey] = false;
             }
         })
-    }
-
-    startListening() {
-        // @todo João, implementar
-        throw new Error("Não implementado");
     }
 
     addListener(name: string, handler: (event: Event) => void) {
