@@ -15,6 +15,9 @@ const secondaryWhite = 'rgba(255,255,255,0.7)';
 const backgroundColor = '#000';
 const shootEmmitionWindow = 333;
 
+const debugGreenColor = '#00FF00';
+const debugRedColor = '#FF0000';
+
 
 const updateWebPageTitle = (state?: string) => {
     let title = '';
@@ -153,7 +156,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
     });
 
     
-    const volumeReportText = new TextElement('', { x: 0, y: 0.65, }, '#0F0', 0.03, fontName, 'center');
+    const volumeReportText = new TextElement('', { x: 0, y: 0.65, }, debugGreenColor, 0.03, fontName, 'center');
     keyBoardInput.addListener('keyup.Minus', () => {
         soundMixer.setVolume(soundMixer.getVolume() - 0.1);
         
@@ -608,7 +611,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         
         for (const entity of context.entities) {
             if (entity.hitRadius) {
-                const color = entity.components[hittedMark] ? '#00FF00' : '#FF0000';
+                const color = entity.components[hittedMark] ? debugGreenColor : debugRedColor;
                 // @todo João, ajustar manipulação 'global' do estilo da linha
                 ctx.setLineDash([lineWidth * 2, lineWidth * 2]);
                 
@@ -644,7 +647,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             // @todo João, ajustar manipulação 'global' do estilo da linha
             ctx.setLineDash([lineWidth * 2, lineWidth * 4]);
 
-            drawLine(ctx, entity.position, endPositionForVelocity, '#00FF00', lineWidth);
+            drawLine(ctx, entity.position, endPositionForVelocity, debugGreenColor, lineWidth);
             drawLine(ctx, entity.position, endPositionForAcceleration, undefined, lineWidth);
 
             // @todo João, ajustar manipulação 'global' do estilo da linha
@@ -656,7 +659,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         if (!debugSound) return;
 
         // Deixando a largura da linha escalável
-        const color = '#00FF00';
+        const color = debugGreenColor;
         const fontSize = 0.02;
         const lineHeight = 1.6;
         const textYOffset = 0.82;
@@ -683,7 +686,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
         if (keyBoardInput.isKeyPressed('KeyL')) eventLoop.resetPerformanceStatus();
 
-        drawText(ctx, `minDt: ${minDt.toFixed(2)} ms, maxDt: ${maxDt.toFixed(2)} ms, currentDt: ${currentDt.toFixed(2)} ms, average: ${average.toFixed(2)} ms`, { x: 0,  y: 0.95 }, 0.02, '#0F0', fontName, 'center');
+        drawText(ctx, `minDt: ${minDt.toFixed(2)} ms, maxDt: ${maxDt.toFixed(2)} ms, currentDt: ${currentDt.toFixed(2)} ms, average: ${average.toFixed(2)} ms`, { x: 0,  y: 0.95 }, 0.02, debugGreenColor, fontName, 'center');
     });
 
     /**
