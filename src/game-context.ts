@@ -1,6 +1,6 @@
 import { makeDefaultPlayer } from './entity.js';
 import { makeShipBackwardsFigure, makeShipForwardFigure, makeShipStandingFigure } from './figure.js';
-import { isMobileBrowser } from './utils.js';
+import { isMobileBrowser, TextElement } from './utils.js';
 
 export const resolutionScaleNonFullscreen = isMobileBrowser() ? 1 : 0.96;
 
@@ -26,4 +26,6 @@ export class GameContext {
     waveIndex = 0;
 
     state = GameState.RUNNING;
+
+    textToDrawn: TextElement[] = []
 }

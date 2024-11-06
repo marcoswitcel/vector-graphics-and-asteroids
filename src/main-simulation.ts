@@ -93,7 +93,6 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
 
     const soundMixer = new SoundMixer(soundResourceManager);
 
-    let textToDrawn: TextElement[] = [];
     const isMobileUi = virtualGamepad != null;
     // @todo João, eventualmente posso precisar saber quando a fonte carregou
     const fontName = '"Courier Prime", monospace';
@@ -127,7 +126,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         context.entities.length = 0;
 
         // limpando textos
-        textToDrawn.length = 0;
+        context.textToDrawn.length = 0;
 
         context.entityPlayer = makeDefaultPlayer();
         context.entities.push(context.entityPlayer);
@@ -161,7 +160,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         soundMixer.setVolume(soundMixer.getVolume() - 0.1);
         
         if (!volumeReportText.visibleUntil || volumeReportText.visibleUntil <= 0) {
-            textToDrawn.push(volumeReportText);  
+            context.textToDrawn.push(volumeReportText);  
         } 
 
         volumeReportText.text = `Volume: ${(soundMixer.getVolume() * 100).toFixed(0)}%`
@@ -173,7 +172,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         soundMixer.setVolume(soundMixer.getVolume() + 0.1);
 
         if (!volumeReportText.visibleUntil || volumeReportText.visibleUntil <= 0) {
-            textToDrawn.push(volumeReportText);  
+            context.textToDrawn.push(volumeReportText);  
         } 
 
         volumeReportText.text = `Volume: ${(soundMixer.getVolume() * 100).toFixed(0)}%`
@@ -234,7 +233,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         const text = new TextElement('Maior pontuação até o momento: ' + highestScore, { x: 0, y: 0.65, }, 'white', 0.03, fontName, 'center');
         text.setVisibleUntil(2000);
         
-        textToDrawn.push(text);
+        context.textToDrawn.push(text);
     });
 
     window.addEventListener('blur', pauseGame);
@@ -326,7 +325,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
             
             const text = new TextElement('Onda ' + context.waveIndex, { x: 0, y: 0.5, }, 'white', 0.06, fontName, 'center');
             text.setVisibleUntil(2000);
-            textToDrawn.push(text);
+            context.textToDrawn.push(text);
         }
     });
 
@@ -461,8 +460,8 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         const restartKey = isMobileUi ? "start" : "r";
         const textReplayExplanation = new TextElement(`Aperte "${restartKey}" para jogar novamente`, { x: 0, y: -0.15, }, 'white', 0.03, fontName, 'center');
         
-        textToDrawn.push(textGameOver);
-        textToDrawn.push(textReplayExplanation);
+        context.textToDrawn.push(textGameOver);
+        context.textToDrawn.push(textReplayExplanation);
 
         // atualiza title
         updateWebPageTitle('fim de jogo');
@@ -581,7 +580,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         /**
          * @note João, 'fade-in' e 'fade-out' seriam um recurso interessante para usar nos textos flutuantes
          */
-        for (const text of textToDrawn) {
+        for (const text of context.textToDrawn) {
             // atualiza tempo de vida dos elementos textuais
             if (typeof text.visibleUntil === 'number') {
                 text.visibleUntil -= 1000 * deltaTime;
@@ -593,7 +592,7 @@ export function createMainSimulation(canvas: HTMLCanvasElement, virtualGamepad: 
         }
 
         // limpando
-        textToDrawn = textToDrawn.filter(text => text.visibleUntil === undefined || text.visibleUntil > 0);
+        context.textToDrawn = context.textToDrawn.filter(text => text.visibleUntil === undefined || text.visibleUntil > 0);
         
         // acionando cleanup do soundMixer
         soundMixer.clear();
